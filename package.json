@@ -1,0 +1,16 @@
+{
+  "name": "sodapci",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build:css": "npx @tailwindcss/cli -i ./src/input.css -o ./css/tailwind.css --minify",
+    "watch:css": "npx @tailwindcss/cli -i ./src/input.css -o ./css/tailwind.css --watch",
+    "check:setup": "node tools/check-tailwind-setup.mjs",
+    "check:index": "node tools/check-index-tailwind-pilot.mjs",
+    "check": "npm run check:setup && npm run check:index"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.0",
+    "tailwindcss": "^4.3.0"
+  }
+}
