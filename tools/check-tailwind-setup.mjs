@@ -43,8 +43,8 @@ assert(btnBlock.includes("color: #fff;"), "all buttons must default to white tex
 assert(btnBlock.includes("box-shadow 0.3s ease"), "buttons must animate elevation smoothly");
 assert(inputCss.includes(".btn i,"), "button icons must inherit button text color");
 assert(inputCss.includes("color: inherit;"), "button icon color must inherit from the button");
-assert(btnLightBlock.includes("color: #fff;"), "light buttons must keep white text");
-assert(btnLightBlock.includes("background: var(--color-sodap-700);"), "light buttons must use a dark enough background for white icons");
+assert(btnLightBlock.includes("background: #f8f9fa;"), "light buttons must keep a light background");
+assert(btnLightBlock.includes("color: var(--color-sodap-600);"), "light buttons must keep the SODAP-CI text color");
 assert(socialBtnBlock.includes("background: var(--color-sodap-700);"), "social buttons must keep a stable dark background");
 assert(socialBtnBlock.includes("color: #fff;"), "social button icons must stay white");
 assert(socialBtnHoverBlock.includes("transform: translateY(-1px);"), "social buttons must rise on hover");

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <head>
     <meta charset="utf-8">
@@ -9,8 +9,6 @@
     <meta content="" name="description">
 
     <!-- Favicon -->
-    <link href="img/favicon.ico" rel="icon">
-
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,85 +21,95 @@
 
     <!-- Libraries Stylesheet -->
     <link href="lib/animate/animate.min.css" rel="stylesheet">
-    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Template Stylesheet -->
+    <link href="css/tailwind.css" rel="stylesheet">
+<!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
 </head>
 
-<body>
-    <!-- Spinner Start -->
+<body class="overflow-x-hidden bg-white font-poppins text-gray-600">
+    
     <div id="spinner"
-        class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+        class="show fixed left-1/2 top-1/2 z-[99999] flex h-screen w-full -translate-x-1/2 -translate-y-1/2 items-center justify-center bg-white opacity-100 visible transition-opacity duration-500">
+        <div class="h-12 w-12 animate-spin rounded-full border-4 border-sodap-600 border-t-transparent" role="status"
+            aria-label="Chargement"></div>
     </div>
-    <!-- Spinner End -->
 
 
-    <!-- Topbar Start -->
-    <div class="container-fluid bg-primary text-white d-none d-lg-flex wow fadeIn" data-wow-delay="0.1s">
-        <div class="container py-3">
-            <div class="d-flex align-items-center">
+
+    
+    <div class="hidden bg-sodap-600 text-white lg:flex wow fadeIn" data-wow-delay="0.1s">
+        <div class="site-container py-3">
+            <div class="flex items-center">
                 <a href="index.html">
-                    <img src="img/logo.jpeg" alt="Logo" style="height: 50px;">
+                    <img src="img/logo.jpeg" alt="Logo SODAP-CI" class="h-[50px] w-auto">
                 </a>
-                <div class="ms-auto d-flex align-items-center">
-                    <small class="ms-4"><i class="fa fa-map-marker-alt me-3"></i>123 Street, New York, USA</small>
-                    <small class="ms-4"><i class="fa fa-envelope me-3"></i>info@example.com</small>
-                    <small class="ms-4"><i class="fa fa-phone-alt me-3"></i>+012 345 67890</small>
-                    <div class="ms-3 d-flex">
-                        <a class="btn btn-sm-square btn-light text-primary ms-2" href=""><i
-                                class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-sm-square btn-light text-primary ms-2" href=""><i
-                                class="fab fa-twitter"></i></a>
-                        <a class="btn btn-sm-square btn-light text-primary ms-2" href=""><i
-                                class="fab fa-linkedin-in"></i></a>
+                <div
+                    class="ml-auto flex min-w-0 items-center gap-4 pl-8 text-[15px] font-semibold xl:gap-6 xl:text-base">
+                    <small class="flex max-w-[520px] truncate min-w-0 items-center"><i
+                            class="fa fa-map-marker-alt mr-3 text-base"></i>Yamoussoukro, quartier 50 logements,
+                        derri?re l'?cole m?thodiste</small>
+                    <small class="flex items-center whitespace-nowrap"><i
+                            class="fa fa-envelope mr-3 text-base"></i>lasodapci@gmail.com</small>
+                    <small class="flex items-center whitespace-nowrap"><i class="fa fa-phone-alt mr-3 text-base"></i>+225
+                        27-33-75-73-12 / 21-21-80-58-73</small>
+                    <div class="flex gap-2">
+                        <a class="btn social-btn h-10 w-10 text-lg" href="" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn social-btn h-10 w-10 text-lg" href="" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Topbar End -->
 
 
-    <!-- Navbar Start -->
-    <div class="container-fluid bg-white sticky-top wow fadeIn" data-wow-delay="0.1s">
-        <div class="container">
-            <nav class="navbar navbar-expand-lg bg-white navbar-light p-lg-0">
-                <a href="index.html" class="navbar-brand d-lg-none">
-                    <img src="img/logo.jpeg" alt="Logo" style="height: 40px;">
+
+    
+    <div data-sticky-nav class="sticky top-0 z-50 bg-white transition-all duration-500 wow fadeIn" data-wow-delay="0.1s">
+        <div class="site-container">
+            <nav class="flex min-h-[74px] flex-wrap items-center bg-white">
+                <a href="index.html" class="lg:hidden">
+                    <img src="img/logo.jpeg" alt="Logo SODAP-CI" class="h-10 w-auto">
                 </a>
-                <button type="button" class="navbar-toggler me-0" data-bs-toggle="collapse"
-                    data-bs-target="#navbarCollapse">
-                    <span class="navbar-toggler-icon"></span>
+                <button type="button"
+                    class="ml-auto inline-flex h-11 w-11 items-center justify-center border border-gray-200 text-sodap-600 lg:hidden"
+                    data-mobile-menu-toggle aria-controls="siteNavigation" aria-expanded="false"
+                    aria-label="Ouvrir le menu">
+                    <span class="sr-only">Menu</span>
+                    <i class="fa fa-bars text-xl"></i>
                 </button>
-                <div class="collapse navbar-collapse" id="navbarCollapse">
-                    <div class="navbar-nav">
-                        <a href="index.html" class="nav-item nav-link">Accueil</a>
-                        <a href="apropos.html" class="nav-item nav-link">À Propos</a>
-                        <a href="service.html" class="nav-item nav-link">Services</a>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Projets</a>
-                            <div class="dropdown-menu bg-light rounded-0 rounded-bottom m-0">
-                                <a href="reboisement.html" class="dropdown-item">Reboisement</a>
-                                <a href="elevage.html" class="dropdown-item">Élevage</a>
-                                <a href="agriculture.html" class="dropdown-item">Agriculture</a>
-                                <a href="pisciculture.html" class="dropdown-item">Pisciculture</a>
+                <div id="siteNavigation" data-mobile-menu
+                    class="hidden w-full flex-col border-t border-gray-100 py-4 lg:flex lg:flex-row lg:items-center lg:border-0 lg:py-0">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:gap-9">
+                        <a href="index.html" class="nav-link">Accueil</a>
+                        <a href="apropos.html" class="nav-link">? Propos</a>
+                        <a href="service.html" class="nav-link">Services</a>
+                        <div class="group relative">
+                            <a href="#" class="nav-link inline-flex items-center gap-2" data-projects-toggle
+                                aria-expanded="false">
+                                Projets <i class="fa fa-chevron-down text-xs"></i>
+                            </a>
+                            <div data-projects-menu
+                                class="hidden min-w-52 bg-gray-50 py-2 shadow-lg lg:absolute lg:left-0 lg:top-full lg:group-hover:block">
+                                <a href="reboisement.html"
+                                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600">Reboisement</a>
+                                <a href="elevage.html"
+                                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600">?levage</a>
+                                <a href="agriculture.html"
+                                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600">Agriculture</a>
+                                <a href="pisciculture.html"
+                                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600">Pisciculture</a>
                             </div>
                         </div>
-                        <a href="contact.html" class="nav-item nav-link active">Contact</a>
+                        <a href="contact.html" class="nav-link">Contact</a>
                     </div>
-                    <div class="ms-auto d-none d-lg-block">
-                        <a href="" class="btn btn-primary py-2 px-3">Obtenir un Devis</a>
+                    <div class="mt-4 lg:ml-auto lg:mt-0">
+                        <a href="contact.html" class="btn btn-primary px-4 py-2">Contactez-nous</a>
                     </div>
                 </div>
             </nav>
         </div>
     </div>
-    <!-- Navbar End -->
+
 
 
     <!-- Page Header Start -->
@@ -134,7 +142,10 @@
                     <div class="col-lg-6 pe-lg-5 wow fadeIn" data-wow-delay="0.3s">
                         <h1 class="display-6 text-uppercase text-white mb-4">Have Any Query? Feel Free To Contact Us
                         </h1>
-                        <p class="text-white mb-5 wow fadeIn" data-wow-delay="0.4s">The contact form is currently inactive. Get a functional and working contact form with Ajax & PHP in a few minutes. Just copy and paste the files, add a little code and you're done. <a href="https://htmlcodex.com/contact-form">Download Now</a>.</p>
+                        <p class="text-white mb-5 wow fadeIn" data-wow-delay="0.4s">The contact form is currently
+                            inactive. Get a functional and working contact form with Ajax & PHP in a few minutes. Just
+                            copy and paste the files, add a little code and you're done. <a
+                                href="https://htmlcodex.com/contact-form">Download Now</a>.</p>
                         <div class="d-flex align-items-start wow fadeIn" data-wow-delay="0.5s">
                             <div class="btn-lg-square bg-white">
                                 <i class="bi bi-envelope-at text-dark fs-3"></i>
@@ -161,31 +172,36 @@
                             <div class="row g-3">
                                 <div class="col-sm-6">
                                     <div class="form-floating">
-                                        <input type="text" class="form-control border-0 bg-light" id="name" placeholder="Your Name">
+                                        <input type="text" class="form-control border-0 bg-light" id="name"
+                                            placeholder="Your Name">
                                         <label for="name">Your Name</label>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-floating">
-                                        <input type="email" class="form-control border-0 bg-light" id="mail" placeholder="Your Email">
+                                        <input type="email" class="form-control border-0 bg-light" id="mail"
+                                            placeholder="Your Email">
                                         <label for="mail">Your Email</label>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-floating">
-                                        <input type="text" class="form-control border-0 bg-light" id="mobile" placeholder="Your Mobile">
+                                        <input type="text" class="form-control border-0 bg-light" id="mobile"
+                                            placeholder="Your Mobile">
                                         <label for="mobile">Your Mobile</label>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-floating">
-                                        <input type="text" class="form-control border-0 bg-light" id="subject" placeholder="Subject">
+                                        <input type="text" class="form-control border-0 bg-light" id="subject"
+                                            placeholder="Subject">
                                         <label for="subject">Subject</label>
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="form-floating">
-                                        <textarea class="form-control border-0 bg-light" placeholder="Leave a message here" id="message"
+                                        <textarea class="form-control border-0 bg-light"
+                                            placeholder="Leave a message here" id="message"
                                             style="height: 130px"></textarea>
                                         <label for="message">Message</label>
                                     </div>
@@ -201,9 +217,9 @@
         </div>
         <div class="container-fluid px-0 wow fadeInUp" data-wow-delay="0.5s">
             <iframe class="w-100 h-100"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3001156.4288297426!2d-78.01371936852176!3d42.72876761954724!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4ccc4bf0f123a5a9%3A0xddcfc6c1de189567!2sNew%20York%2C%20USA!5e0!3m2!1sen!2sbd!4v1603794290143!5m2!1sen!2sbd"
-            frameborder="0" style="min-height: 500px; border:0;" allowfullscreen="" aria-hidden="false"
-            tabindex="0"></iframe>
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3001156.4288297426!2d-78.01371936852176!3d42.72876761954724!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4ccc4bf0f123a5a9%3A0xddcfc6c1de189567!2sNew%20York%2C%20USA!5e0!3m2!1sen!2sbd!4v1603794290143!5m2!1sen!2sbd"
+                frameborder="0" style="min-height: 500px; border:0;" allowfullscreen="" aria-hidden="false"
+                tabindex="0"></iframe>
         </div>
     </div>
     <!-- Contact End -->
@@ -218,12 +234,14 @@
                         <h1 class="display-6 text-uppercase mb-4">Newsletter</h1>
                         <div class="d-flex">
                             <i class="far fa-envelope-open fa-3x text-primary me-4"></i>
-                            <p class="fs-5 fst-italic mb-0">Dolores sed duo clita tempor justo dolor et stet lorem kasd labore lorem ipsum.</p>
+                            <p class="fs-5 fst-italic mb-0">Dolores sed duo clita tempor justo dolor et stet lorem kasd
+                                labore lorem ipsum.</p>
                         </div>
                     </div>
                     <div class="col-md-6 wow fadeIn" data-wow-delay="0.5s">
                         <div class="form-floating mb-3">
-                            <input type="email" class="form-control border-0 bg-light" id="mail" placeholder="Your Email">
+                            <input type="email" class="form-control border-0 bg-light" id="mail"
+                                placeholder="Your Email">
                             <label for="mail">Your Email</label>
                         </div>
                         <button class="btn btn-primary w-100 py-3" type="submit">Submit Now</button>
@@ -245,14 +263,10 @@
                     <p class="mb-2"><i class="fa fa-phone-alt text-primary me-3"></i>+012 345 67890</p>
                     <p class="mb-2"><i class="fa fa-envelope text-primary me-3"></i>info@example.com</p>
                     <div class="d-flex pt-3">
-                        <a class="btn btn-square btn-light me-2" href=""><i
-                                class="fab fa-twitter"></i></a>
-                        <a class="btn btn-square btn-light me-2" href=""><i
-                                class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-square btn-light me-2" href=""><i
-                                class="fab fa-youtube"></i></a>
-                        <a class="btn btn-square btn-light me-2" href=""><i
-                                class="fab fa-linkedin-in"></i></a>
+                        <a class="btn btn-square btn-light me-2" href=""><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-square btn-light me-2" href=""><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-square btn-light me-2" href=""><i class="fab fa-youtube"></i></a>
+                        <a class="btn btn-square btn-light me-2" href=""><i class="fab fa-linkedin-in"></i></a>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
@@ -312,7 +326,8 @@
                     <!--/*** This template is free as long as you keep the below author’s credit link/attribution link/backlink. ***/-->
                     <!--/*** If you'd like to use the template without the below author’s credit link/attribution link/backlink, ***/-->
                     <!--/*** you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". ***/-->
-                    Designed By <a class="fw-semi-bold" href="https://htmlcodex.com">HTML Codex</a> Distributed by <a href="https://themewagon.com" target="_blank">ThemeWagon</a></a>
+                    Designed By <a class="fw-semi-bold" href="https://htmlcodex.com">HTML Codex</a> Distributed by <a
+                        href="https://themewagon.com" target="_blank">ThemeWagon</a></a>
                 </div>
             </div>
         </div>
@@ -321,21 +336,17 @@
 
 
     <!-- Back to Top -->
-    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i
-            class="bi bi-arrow-up"></i></a>
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
 
 
     <!-- JavaScript Libraries -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="lib/wow/wow.min.js"></script>
     <script src="lib/easing/easing.min.js"></script>
     <script src="lib/waypoints/waypoints.min.js"></script>
     <script src="lib/counterup/counterup.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-
     <!-- Template Javascript -->
-    <script src="js/main.js"></script>
+    <script src="js/tailwind-secondary.js"></script>
 </body>
 
 </html>

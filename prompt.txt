@@ -1,0 +1,73 @@
+# Documentation de modification du site web
+
+## Objectif
+
+Le but de cette modification est d’améliorer le site web de manière professionnelle, moderne et cohérente, sans casser l’existant. Les changements doivent améliorer l’expérience utilisateur, la structure du code, la lisibilité visuelle, les animations, les transitions, les effets au survol, la typographie et l’organisation générale du projet.
+
+Avant toute modification importante, il faut analyser la structure actuelle du site, comprendre les composants existants, les pages, les styles, les dépendances et la logique déjà en place. Aucune modification massive ne doit être faite sans comprendre l’impact sur le reste du projet.
+
+## Règles générales
+
+- Conserver une architecture propre, claire et maintenable.
+- Ne pas modifier inutilement les fichiers qui ne sont pas concernés.
+- Garder une cohérence visuelle sur tout le site.
+- Respecter les bonnes pratiques HTML, CSS, JavaScript et responsive design.
+- Éviter le code dupliqué, désorganisé ou difficile à maintenir.
+- Ne pas supprimer une fonctionnalité existante sans raison claire.
+- Faire des changements progressifs et vérifiables.
+- Toujours privilégier la qualité, la lisibilité et la stabilité.
+
+## Design et interface
+
+Le site doit avoir une apparence professionnelle, moderne et soignée. Les espacements, les tailles de texte, les couleurs, les boutons, les cartes, les sections et les formulaires doivent être harmonisés.
+
+La typographie doit être lisible, élégante et adaptée au style du site. Les titres doivent avoir une hiérarchie claire, les paragraphes doivent être confortables à lire, et les éléments importants doivent être facilement repérables.
+
+## Animations, transitions et hover
+
+Les animations doivent être fluides, légères et utiles. Elles ne doivent pas ralentir le site ni gêner l’utilisateur.
+
+Les transitions doivent être appliquées avec cohérence sur les boutons, liens, cartes, menus, images et éléments interactifs. Les effets hover doivent rendre l’interface plus vivante sans être excessifs.
+
+Exemples attendus :
+
+- transitions douces sur les boutons ;
+- effets hover propres sur les cartes et liens ;
+- animations d’apparition légères pour les sections ;
+- menus et éléments interactifs fluides ;
+- aucun effet trop agressif ou amateur.
+
+## Responsive design
+
+Le site doit être parfaitement adapté aux écrans desktop, tablette et mobile. Aucun texte ne doit dépasser de son conteneur. Les sections doivent rester lisibles et bien espacées sur toutes les tailles d’écran.
+
+## Architecture du code
+
+Le code doit être structuré proprement. Les composants doivent être séparés par responsabilité. Les fichiers CSS ou composants trop longs doivent être organisés si nécessaire.
+
+Il faut privilégier :
+
+- des noms de classes clairs ;
+- des composants réutilisables ;
+- une structure logique des dossiers ;
+- un style cohérent ;
+- un code simple à comprendre et à modifier.
+
+## Accessibilité et performance
+
+Le site doit rester accessible et performant. Il faut utiliser des contrastes lisibles, des textes alternatifs pour les images importantes, des boutons compréhensibles, et éviter les animations lourdes.
+
+Les images, polices et scripts doivent être optimisés autant que possible.
+
+## Méthode de travail attendue
+
+Avant de modifier :
+
+1. analyser la structure actuelle du projet ;
+2. identifier les fichiers concernés ;
+3. proposer ou appliquer les changements de manière progressive ;
+4. vérifier que le design reste cohérent ;
+5. tester le responsive ;
+6. vérifier qu’aucune fonctionnalité existante n’est cassée.
+
+L’objectif final est d’obtenir un site plus professionnel, plus moderne, plus fluide et mieux organisé, tout en gardant une base de code propre, stable et facile à maintenir.

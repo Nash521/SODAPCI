@@ -1,523 +1,843 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-
-<head>
-    <meta charset="utf-8">
+  <head>
+    <meta charset="utf-8" />
     <title>SODAP-CI - Valoriser la terre, restaurer l'avenir</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="SODAP-CI, agriculture, reboisement, élevage, pisciculture, réhabilitation minière" name="keywords">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <meta
-        content="SODAP-CI accompagne la réhabilitation des sites miniers et le développement agropastoral durable en Côte d'Ivoire."
-        name="description">
+      content="SODAP-CI, agriculture, reboisement, élevage, pisciculture, réhabilitation minière"
+      name="keywords"
+    />
+    <meta
+      content="SODAP-CI accompagne la réhabilitation des sites miniers et le développement agropastoral durable en Côte d'Ivoire."
+      name="description"
+    />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto:wght@700;800&display=swap"
-        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto:wght@700;800&display=swap"
+      rel="stylesheet"
+    />
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css"
+    />
 
-    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet" />
 
-    <link href="css/tailwind.css" rel="stylesheet">
-</head>
+    <link href="css/tailwind.css" rel="stylesheet" />
+  </head>
 
-<body class="overflow-x-hidden bg-white font-poppins text-gray-600">
-    <div id="spinner"
-        class="show fixed left-1/2 top-1/2 z-[99999] flex h-screen w-full -translate-x-1/2 -translate-y-1/2 items-center justify-center bg-white opacity-100 visible transition-opacity duration-500">
-        <div class="h-12 w-12 animate-spin rounded-full border-4 border-sodap-600 border-t-transparent" role="status"
-            aria-label="Chargement"></div>
+  <body class="overflow-x-hidden bg-white font-poppins text-gray-600">
+    <div
+      id="spinner"
+      class="show fixed left-1/2 top-1/2 z-[99999] flex h-screen w-full -translate-x-1/2 -translate-y-1/2 items-center justify-center bg-white opacity-100 visible transition-opacity duration-500"
+    >
+      <div
+        class="h-12 w-12 animate-spin rounded-full border-4 border-sodap-600 border-t-transparent"
+        role="status"
+        aria-label="Chargement"
+      ></div>
     </div>
 
-    <div class="hidden bg-sodap-600 text-white lg:flex wow fadeIn" data-wow-delay="0.1s">
-        <div class="site-container py-3">
-            <div class="flex items-center">
-                <a href="index.html">
-                    <img src="img/logo.jpeg" alt="Logo SODAP-CI" class="h-[50px] w-auto">
+    <div
+      class="hidden bg-sodap-600 text-white lg:flex wow fadeIn"
+      data-wow-delay="0.1s"
+    >
+      <div class="site-container py-3">
+        <div class="flex items-center">
+          <a href="index.html">
+            <img
+              src="img/logo.jpeg"
+              alt="Logo SODAP-CI"
+              class="h-[50px] w-auto"
+            />
+          </a>
+          <div
+            class="ml-auto flex min-w-0 items-center gap-4 pl-8 text-[15px] font-semibold xl:gap-6 xl:text-base"
+          >
+            <small class="flex max-w-[520px] truncate min-w-0 items-center"
+              ><i class="fa fa-map-marker-alt mr-3 text-base"></i>Yamoussoukro,
+              quartier 50 logements, derrière l'école méthodiste</small
+            >
+            <small class="flex items-center whitespace-nowrap"
+              ><i class="fa fa-envelope mr-3 text-base"></i
+              >lasodapci@gmail.com</small
+            >
+            <small class="flex items-center whitespace-nowrap"
+              ><i class="fa fa-phone-alt mr-3 text-base"></i>+225 27-33-75-73-12
+              / 21-21-80-58-73</small
+            >
+            <div class="flex gap-2">
+              <a
+                class="btn social-btn h-10 w-10 text-lg"
+                href=""
+                aria-label="Facebook"
+                ><i class="fab fa-facebook-f"></i
+              ></a>
+              <a
+                class="btn social-btn h-10 w-10 text-lg"
+                href=""
+                aria-label="LinkedIn"
+                ><i class="fab fa-linkedin-in"></i
+              ></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      data-sticky-nav
+      class="sticky top-0 z-50 bg-white transition-all duration-500 wow fadeIn"
+      data-wow-delay="0.1s"
+    >
+      <div class="site-container">
+        <nav class="flex min-h-[74px] flex-wrap items-center bg-white">
+          <a href="index.html" class="lg:hidden">
+            <img src="img/logo.jpeg" alt="Logo SODAP-CI" class="h-10 w-auto" />
+          </a>
+          <button
+            type="button"
+            class="ml-auto inline-flex h-11 w-11 items-center justify-center border border-gray-200 text-sodap-600 lg:hidden"
+            data-mobile-menu-toggle
+            aria-controls="siteNavigation"
+            aria-expanded="false"
+            aria-label="Ouvrir le menu"
+          >
+            <span class="sr-only">Menu</span>
+            <i class="fa fa-bars text-xl"></i>
+          </button>
+          <div
+            id="siteNavigation"
+            data-mobile-menu
+            class="hidden w-full flex-col border-t border-gray-100 py-4 lg:flex lg:flex-row lg:items-center lg:border-0 lg:py-0"
+          >
+            <div class="flex flex-col lg:flex-row lg:items-center lg:gap-9">
+              <a href="index.html" class="nav-link active">Accueil</a>
+              <a href="apropos.html" class="nav-link">À Propos</a>
+              <a href="service.html" class="nav-link">Services</a>
+              <div class="group relative">
+                <a
+                  href="#"
+                  class="nav-link inline-flex items-center gap-2"
+                  data-projects-toggle
+                  aria-expanded="false"
+                >
+                  Projets <i class="fa fa-chevron-down text-xs"></i>
                 </a>
                 <div
-                    class="ml-auto flex min-w-0 items-center gap-4 pl-8 text-[15px] font-semibold xl:gap-6 xl:text-base">
-                    <small class="flex max-w-[520px] truncate min-w-0 items-center"><i
-                            class="fa fa-map-marker-alt mr-3 text-base"></i>Yamoussoukro, quartier 50 logements,
-                        derrière l'école méthodiste</small>
-                    <small class="flex items-center whitespace-nowrap"><i
-                            class="fa fa-envelope mr-3 text-base"></i>lasodapci@gmail.com</small>
-                    <small class="flex items-center whitespace-nowrap"><i class="fa fa-phone-alt mr-3 text-base"></i>+225
-                        27-33-75-73-12 // 21-21-80-58-73</small>
-                    <div class="flex gap-2">
-                        <a class="btn social-btn h-10 w-10 text-lg" href="" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn social-btn h-10 w-10 text-lg" href="" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
+                  data-projects-menu
+                  class="hidden min-w-52 bg-gray-50 py-2 shadow-lg lg:absolute lg:left-0 lg:top-full lg:group-hover:block"
+                >
+                  <a
+                    href="reboisement.html"
+                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600"
+                    >Reboisement</a
+                  >
+                  <a
+                    href="elevage.html"
+                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600"
+                    >Élevage</a
+                  >
+                  <a
+                    href="agriculture.html"
+                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600"
+                    >Agriculture</a
+                  >
+                  <a
+                    href="pisciculture.html"
+                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600"
+                    >Pisciculture</a
+                  >
                 </div>
+              </div>
+              <a href="contact.html" class="nav-link">Contact</a>
             </div>
-        </div>
-    </div>
-
-    <div data-sticky-nav class="sticky top-0 z-50 bg-white transition-all duration-500 wow fadeIn"
-        data-wow-delay="0.1s">
-        <div class="site-container">
-            <nav class="flex min-h-[74px] flex-wrap items-center bg-white">
-                <a href="index.html" class="lg:hidden">
-                    <img src="img/logo.jpeg" alt="Logo SODAP-CI" class="h-10 w-auto">
-                </a>
-                <button type="button"
-                    class="ml-auto inline-flex h-11 w-11 items-center justify-center border border-gray-200 text-sodap-600 lg:hidden"
-                    data-mobile-menu-toggle aria-controls="siteNavigation" aria-expanded="false"
-                    aria-label="Ouvrir le menu">
-                    <span class="sr-only">Menu</span>
-                    <i class="fa fa-bars text-xl"></i>
-                </button>
-                <div id="siteNavigation" data-mobile-menu
-                    class="hidden w-full flex-col border-t border-gray-100 py-4 lg:flex lg:flex-row lg:items-center lg:border-0 lg:py-0">
-                    <div class="flex flex-col lg:flex-row lg:items-center lg:gap-9">
-                        <a href="index.html" class="nav-link active">Accueil</a>
-                        <a href="apropos.html" class="nav-link">À Propos</a>
-                        <a href="service.html" class="nav-link">Services</a>
-                        <div class="group relative">
-                            <a href="#" class="nav-link inline-flex items-center gap-2" data-projects-toggle
-                                aria-expanded="false">
-                                Projets <i class="fa fa-chevron-down text-xs"></i>
-                            </a>
-                            <div data-projects-menu
-                                class="hidden min-w-52 bg-gray-50 py-2 shadow-lg lg:absolute lg:left-0 lg:top-full lg:group-hover:block">
-                                <a href="reboisement.html"
-                                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600">Reboisement</a>
-                                <a href="elevage.html"
-                                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600">Élevage</a>
-                                <a href="agriculture.html"
-                                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600">Agriculture</a>
-                                <a href="pisciculture.html"
-                                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600">Pisciculture</a>
-                            </div>
-                        </div>
-                        <a href="contact.html" class="nav-link">Contact</a>
-                    </div>
-                    <div class="mt-4 lg:ml-auto lg:mt-0">
-                        <a href="contact.html" class="btn btn-primary px-4 py-2">Contactez-nous</a>
-                    </div>
-                </div>
-            </nav>
-        </div>
+            <div class="mt-4 lg:ml-auto lg:mt-0">
+              <a href="contact.html" class="btn btn-primary px-4 py-2">Contactez-nous</a>
+            </div>
+          </div>
+        </nav>
+      </div>
     </div>
 
     <div class="mb-20 wow fadeIn" data-wow-delay="0.1s">
-        <div data-hero-carousel class="relative min-h-[500px] overflow-hidden lg:min-h-[660px]">
-            <div class="absolute inset-y-0 left-6 z-20 hidden flex-col justify-center gap-3 md:flex">
-                <button type="button" data-hero-indicator
-                    class="h-[70px] w-[70px] overflow-hidden border-2 border-sodap-600" aria-current="true"
-                    aria-label="Slide 1">
-                    <img class="h-full w-full object-cover" src="img/carousel-1.JPG"
-                        alt="Aperçu du développement agricole">
-                </button>
-                <button type="button" data-hero-indicator
-                    class="h-[70px] w-[70px] overflow-hidden border-2 border-white" aria-current="false"
-                    aria-label="Slide 2">
-                    <img class="h-full w-full object-cover" src="img/carousel-2.JPG"
-                        alt="Aperçu de la restauration des terres">
-                </button>
-                <button type="button" data-hero-indicator
-                    class="h-[70px] w-[70px] overflow-hidden border-2 border-white" aria-current="false"
-                    aria-label="Slide 3">
-                    <img class="h-full w-full object-cover" src="img/carousel-3.JPG"
-                        alt="Aperçu des sites restaurés">
-                </button>
-            </div>
-
-            <div data-hero-slide data-active="true"
-                class="pointer-events-auto absolute inset-0 opacity-100 transition-opacity duration-700">
-                <img class="h-full w-full object-cover" src="img/carousel-1.JPG" alt="Image">
-                <div class="absolute inset-0 flex items-center bg-black/70 px-8 md:pl-36 lg:pl-44">
-                    <div class="max-w-5xl">
-                        <h1
-                            class="animated zoomIn mb-8 font-roboto text-4xl font-extrabold uppercase leading-tight text-white md:text-6xl lg:text-7xl">
-                            Développer l’agriculture, préserver les ressources naturelles</h1>
-                        <a href="#" class="btn btn-primary px-6 py-4">Voir plus</a>
-                    </div>
-                </div>
-            </div>
-
-            <div data-hero-slide data-active="false"
-                class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700">
-                <img class="h-full w-full object-cover" src="img/carousel-2.JPG" alt="Image">
-                <div class="absolute inset-0 flex items-center bg-black/70 px-8 md:pl-36 lg:pl-44">
-                    <div class="max-w-5xl">
-                        <h1
-                            class="animated zoomIn mb-8 font-roboto text-4xl font-extrabold uppercase leading-tight text-white md:text-6xl lg:text-7xl">
-                            Valoriser la terre, restaurer</h1>
-                        <a href="#" class="btn btn-primary px-6 py-4">Voir plus</a>
-                    </div>
-                </div>
-            </div>
-
-            <div data-hero-slide data-active="false"
-                class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700">
-                <img class="h-full w-full object-cover" src="img/carousel-3.JPG" alt="Image">
-                <div class="absolute inset-0 flex items-center bg-black/70 px-8 md:pl-36 lg:pl-44">
-                    <div class="max-w-5xl">
-                        <h1
-                            class="animated zoomIn mb-8 font-roboto text-4xl font-extrabold uppercase leading-tight text-white md:text-6xl lg:text-7xl">
-                            Transformer les sites exploités en opportunités durables</h1>
-                        <a href="#" class="btn btn-primary px-6 py-4">Voir plus</a>
-                    </div>
-                </div>
-            </div>
+      <div
+        data-hero-carousel
+        class="relative min-h-[500px] overflow-hidden lg:min-h-[660px]"
+      >
+        <div
+          class="absolute inset-y-0 left-6 z-20 hidden flex-col justify-center gap-3 md:flex"
+        >
+          <button
+            type="button"
+            data-hero-indicator
+            class="h-[70px] w-[70px] overflow-hidden border-2 border-sodap-600"
+            aria-current="true"
+            aria-label="Slide 1"
+          >
+            <img
+              class="h-full w-full object-cover"
+              src="img/carousel-1.JPG"
+              alt="Aperçu du développement agricole"
+            />
+          </button>
+          <button
+            type="button"
+            data-hero-indicator
+            class="h-[70px] w-[70px] overflow-hidden border-2 border-white"
+            aria-current="false"
+            aria-label="Slide 2"
+          >
+            <img
+              class="h-full w-full object-cover"
+              src="img/carousel-2.JPG"
+              alt="Aperçu de la restauration des terres"
+            />
+          </button>
+          <button
+            type="button"
+            data-hero-indicator
+            class="h-[70px] w-[70px] overflow-hidden border-2 border-white"
+            aria-current="false"
+            aria-label="Slide 3"
+          >
+            <img
+              class="h-full w-full object-cover"
+              src="img/carousel-3.JPG"
+              alt="Aperçu des sites restaurés"
+            />
+          </button>
         </div>
+
+        <div
+          data-hero-slide
+          data-active="true"
+          class="pointer-events-auto absolute inset-0 opacity-100 transition-opacity duration-700"
+        >
+          <img
+            class="h-full w-full object-cover"
+            src="img/carousel-1.JPG"
+            alt="Image"
+          />
+          <div
+            class="absolute inset-0 flex items-center bg-black/70 px-8 md:pl-36 lg:pl-44"
+          >
+            <div class="max-w-5xl">
+              <h1
+                class="animated zoomIn mb-8 font-roboto text-4xl font-extrabold uppercase leading-tight text-white md:text-6xl lg:text-7xl"
+              >
+                Développer l’agriculture, préserver les ressources naturelles
+              </h1>
+              <a href="#" class="btn btn-primary px-6 py-4">Voir plus</a>
+            </div>
+          </div>
+        </div>
+
+        <div
+          data-hero-slide
+          data-active="false"
+          class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700"
+        >
+          <img
+            class="h-full w-full object-cover"
+            src="img/carousel-2.JPG"
+            alt="Image"
+          />
+          <div
+            class="absolute inset-0 flex items-center bg-black/70 px-8 md:pl-36 lg:pl-44"
+          >
+            <div class="max-w-5xl">
+              <h1
+                class="animated zoomIn mb-8 font-roboto text-4xl font-extrabold uppercase leading-tight text-white md:text-6xl lg:text-7xl"
+              >
+                Valoriser la terre, restaurer
+              </h1>
+              <a href="#" class="btn btn-primary px-6 py-4">Voir plus</a>
+            </div>
+          </div>
+        </div>
+
+        <div
+          data-hero-slide
+          data-active="false"
+          class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700"
+        >
+          <img
+            class="h-full w-full object-cover"
+            src="img/carousel-3.JPG"
+            alt="Image"
+          />
+          <div
+            class="absolute inset-0 flex items-center bg-black/70 px-8 md:pl-36 lg:pl-44"
+          >
+            <div class="max-w-5xl">
+              <h1
+                class="animated zoomIn mb-8 font-roboto text-4xl font-extrabold uppercase leading-tight text-white md:text-6xl lg:text-7xl"
+              >
+                Transformer les sites exploités en opportunités durables
+              </h1>
+              <a href="#" class="btn btn-primary px-6 py-4">Voir plus</a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="section-y">
-        <div class="site-container">
-            <div class="grid gap-12 lg:grid-cols-2">
-                <div class="wow fadeIn" data-wow-delay="0.1s">
-                    <div class="relative pl-8 md:pl-12">
-                        <div
-                            class="absolute left-0 top-0 -z-10 hidden h-[300px] w-[200px] border-[5px] border-sodap-600 md:block">
-                        </div>
-                        <img class="w-full object-cover" src="img/about.JPG" alt="Activités de SODAP-CI">
-                    </div>
-                </div>
-                <div class="wow fadeIn" data-wow-delay="0.5s">
-                    <h1 class="mb-6 font-roboto text-3xl font-extrabold uppercase text-gray-900 md:text-4xl">À propos
-                        de SODAP-CI</h1>
-                    <p class="mb-6">La SODAP-CI est une entreprise de soutien à la société KASSA GOLD S.A. Elle joue un
-                        rôle stratégique dans la restauration et la reconversion des terres exploitées, afin de les
-                        rendre de nouveau utiles pour des activités productives et responsables.</p>
-                    <p class="mb-6">En effet, la SODAP-CI SARL agit autour de trois principaux domaines d’expertise :
-                    </p>
-                    <div class="grid gap-6 sm:grid-cols-2">
-                        <div class="flex items-center">
-                            <div class="btn-xl-square mr-4 bg-gray-100 text-sodap-600">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor"
-                                    viewBox="0 0 24 24" class="h-8 w-8">
-                                    <path
-                                        d="M22,13C22,15.21 20.21,17 18,17H11.5C10.12,17 9,15.88 9,14.5C9,13.12 10.12,12 11.5,12C12.08,12 12.6,12.2 13,12.54V9C13,6.79 14.79,5 17,5C19.21,5 21,6.79 21,9V10.09C21.61,10.34 22,10.94 22,11.6V13M16,9A1,1 0 0,0 15,10A1,1 0 0,0 16,11A1,1 0 0,0 17,10A1,1 0 0,0 16,9M14,4L15,2L16,4L17,2L18,4H14M3,11V13H5V11H3M3,15V17H5V15H3M3,7V9H5V7H3M8.17,10.58L6.76,9.17L5.34,10.58L6.76,12L8.17,10.58M8.17,14.58L6.76,13.17L5.34,14.58L6.76,16L8.17,14.58M8.17,6.58L6.76,5.17L5.34,6.58L6.76,8L8.17,6.58Z" />
-                                </svg>
-                            </div>
-                            <h5 class="font-roboto text-lg font-bold uppercase">L'élevage</h5>
-                        </div>
-                        <div class="flex items-center">
-                            <div class="btn-xl-square mr-4 bg-gray-100 text-sodap-600">
-                                <i class="fa fa-seedling fa-2x"></i>
-                            </div>
-                            <h5 class="font-roboto text-lg font-bold uppercase">L'agriculture</h5>
-                        </div>
-                        <div class="flex items-center sm:col-span-2">
-                            <div class="btn-xl-square mr-4 bg-gray-100 text-sodap-600">
-                                <i class="fa fa-mountain fa-2x"></i>
-                            </div>
-                            <h5 class="font-roboto text-lg font-bold uppercase">La réhabilitation des sites miniers</h5>
-                        </div>
-                    </div>
-                </div>
+      <div class="site-container">
+        <div class="grid gap-12 lg:grid-cols-2 lg:items-center">
+          <div class="wow fadeIn" data-wow-delay="0.1s">
+            <div class="relative mx-auto max-w-[460px] pl-8 md:pl-12 lg:mx-0">
+              <div
+                class="absolute inset-0 z-0 hidden translate-x-4 translate-y-4 rounded-3xl border-2 border-sodap-600/80 md:block lg:translate-x-5 lg:translate-y-5"
+              ></div>
+              <div
+                class="absolute -left-1.5 -top-1.5 z-0 hidden h-4 w-4 bg-sodap-600 md:block"
+              ></div>
+              <img
+                class="relative z-10 h-[320px] w-full rounded-2xl object-cover shadow-lg md:h-[380px] lg:h-[440px]"
+                src="img/about.JPG"
+                alt="Activités de SODAP-CI"
+              />
             </div>
+          </div>
+          <div
+            class="wow fadeIn flex flex-col justify-center lg:pr-4"
+            data-wow-delay="0.5s"
+          >
+            <h1
+              class="mb-6 font-roboto text-3xl font-extrabold uppercase text-gray-900 md:text-4xl"
+            >
+              À propos de SODAP-CI
+            </h1>
+            <p class="mb-6">
+              La SODAP-CI est une entreprise de soutien à la société KASSA GOLD
+              S.A. Elle joue un rôle stratégique dans la restauration et la
+              reconversion des terres exploitées, afin de les rendre de nouveau
+              utiles pour des activités productives et responsables.
+            </p>
+            <p class="mb-6">
+              En effet, la SODAP-CI SARL agit autour de trois principaux
+              domaines d’expertise :
+            </p>
+            <div class="grid gap-6 sm:grid-cols-2">
+              <div class="flex items-center">
+                <div class="btn-xl-square mr-4 bg-gray-100 text-sodap-600">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="32"
+                    height="32"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    class="h-8 w-8"
+                  >
+                    <path
+                      d="M22,13C22,15.21 20.21,17 18,17H11.5C10.12,17 9,15.88 9,14.5C9,13.12 10.12,12 11.5,12C12.08,12 12.6,12.2 13,12.54V9C13,6.79 14.79,5 17,5C19.21,5 21,6.79 21,9V10.09C21.61,10.34 22,10.94 22,11.6V13M16,9A1,1 0 0,0 15,10A1,1 0 0,0 16,11A1,1 0 0,0 17,10A1,1 0 0,0 16,9M14,4L15,2L16,4L17,2L18,4H14M3,11V13H5V11H3M3,15V17H5V15H3M3,7V9H5V7H3M8.17,10.58L6.76,9.17L5.34,10.58L6.76,12L8.17,10.58M8.17,14.58L6.76,13.17L5.34,14.58L6.76,16L8.17,14.58M8.17,6.58L6.76,5.17L5.34,6.58L6.76,8L8.17,6.58Z"
+                    />
+                  </svg>
+                </div>
+                <h5 class="font-roboto text-lg font-bold uppercase">
+                  L'élevage
+                </h5>
+              </div>
+              <div class="flex items-center">
+                <div class="btn-xl-square mr-4 bg-gray-100 text-sodap-600">
+                  <i class="fa fa-seedling fa-2x"></i>
+                </div>
+                <h5 class="font-roboto text-lg font-bold uppercase">
+                  L'agriculture
+                </h5>
+              </div>
+              <div class="flex items-center sm:col-span-2">
+                <div class="btn-xl-square mr-4 bg-gray-100 text-sodap-600">
+                  <i class="fa fa-mountain fa-2x"></i>
+                </div>
+                <h5 class="font-roboto text-lg font-bold uppercase">
+                  La réhabilitation des sites miniers
+                </h5>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
 
     <div class="section-y">
-        <h1 class="mb-12 text-center font-roboto text-3xl font-extrabold uppercase text-gray-900 md:text-4xl wow fadeIn"
-            data-wow-delay="0.3s">Nos activités</h1>
-        <div class="site-container pt-6">
-            <div class="grid gap-0 shadow-[0_0_45px_rgb(0_0_0_/_0.08)] md:grid-cols-2 lg:grid-cols-3">
-                <div class="wow fadeIn" data-wow-delay="0.3s">
-                    <div class="feature-card p-8">
-                        <div class="btn-xxl-square mb-6 -mt-14 bg-sodap-600 text-white">
-                            <i class="fa fa-mountain fa-2x"></i>
-                        </div>
-                        <h5 class="mb-4 font-roboto text-lg font-bold uppercase">Remblayage de parcelles minières</h5>
-                        <p class="mb-6">Réhabilitation écologique des sites miniers exploités pour restaurer la terre.
-                        </p>
-                        <a class="relative z-10 flex justify-between text-sm font-semibold uppercase text-gray-600 hover:text-sodap-600"
-                            href="#">
-                            <b class="bg-white pr-4">Lire Plus</b>
-                            <i class="bi bi-arrow-right bg-white pl-4"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="wow fadeIn" data-wow-delay="0.4s">
-                    <div class="feature-card p-8">
-                        <div class="btn-xxl-square mb-6 -mt-14 bg-sodap-600 text-white">
-                            <i class="fa fa-tree fa-2x"></i>
-                        </div>
-                        <h5 class="mb-4 font-roboto text-lg font-bold uppercase">Reboisement & Réhabilitation
-                            environnementale</h5>
-                        <p class="mb-6">Plantation d’arbres et restauration des écosystèmes pour un avenir durable.</p>
-                        <a class="relative z-10 flex justify-between text-sm font-semibold uppercase text-gray-600 hover:text-sodap-600"
-                            href="#">
-                            <b class="bg-white pr-4">Lire Plus</b>
-                            <i class="bi bi-arrow-right bg-white pl-4"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="wow fadeIn" data-wow-delay="0.5s">
-                    <div class="feature-card p-8">
-                        <div class="btn-xxl-square mb-6 -mt-14 bg-sodap-600 text-white">
-                            <i class="fa fa-fish fa-2x"></i>
-                        </div>
-                        <h5 class="mb-4 font-roboto text-lg font-bold uppercase">Pisciculture sur carrières profondes
-                        </h5>
-                        <p class="mb-6">Exploitation durable des carrières pour l’élevage de poissons.</p>
-                        <a class="relative z-10 flex justify-between text-sm font-semibold uppercase text-gray-600 hover:text-sodap-600"
-                            href="#">
-                            <b class="bg-white pr-4">Lire Plus</b>
-                            <i class="bi bi-arrow-right bg-white pl-4"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="wow fadeIn" data-wow-delay="0.6s">
-                    <div class="feature-card p-8">
-                        <div class="btn-xxl-square mb-6 -mt-14 bg-sodap-600 text-white">
-                            <i class="fa fa-drumstick-bite fa-2x"></i>
-                        </div>
-                        <h5 class="mb-4 font-roboto text-lg font-bold uppercase">Élevage de volailles</h5>
-                        <p class="mb-6">Production de poulets de qualité dans une approche durable.</p>
-                        <a class="relative z-10 flex justify-between text-sm font-semibold uppercase text-gray-600 hover:text-sodap-600"
-                            href="#">
-                            <b class="bg-white pr-4">Lire Plus</b>
-                            <i class="bi bi-arrow-right bg-white pl-4"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="wow fadeIn" data-wow-delay="0.7s">
-                    <div class="feature-card p-8">
-                        <div class="btn-xxl-square mb-6 -mt-14 bg-sodap-600 text-white">
-                            <i class="fa fa-leaf fa-2x"></i>
-                        </div>
-                        <h5 class="mb-4 font-roboto text-lg font-bold uppercase">Culture de banane</h5>
-                        <p class="mb-6">Développement agricole avec des plantations de bananes durables.</p>
-                        <a class="relative z-10 flex justify-between text-sm font-semibold uppercase text-gray-600 hover:text-sodap-600"
-                            href="#">
-                            <b class="bg-white pr-4">Lire Plus</b>
-                            <i class="bi bi-arrow-right bg-white pl-4"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="wow fadeIn" data-wow-delay="0.8s">
-                    <div class="feature-card p-8">
-                        <div class="btn-xxl-square mb-6 -mt-14 bg-sodap-600 text-white">
-                            <i class="fa fa-tractor fa-2x"></i>
-                        </div>
-                        <h5 class="mb-4 font-roboto text-lg font-bold uppercase">Location de bulldozers</h5>
-                        <p class="mb-6">Mise à disposition d’engins lourds pour vos projets industriels.</p>
-                        <a class="relative z-10 flex justify-between text-sm font-semibold uppercase text-gray-600 hover:text-sodap-600"
-                            href="#">
-                            <b class="bg-white pr-4">Lire Plus</b>
-                            <i class="bi bi-arrow-right bg-white pl-4"></i>
-                        </a>
-                    </div>
-                </div>
+      <h1
+        class="mb-12 text-center font-roboto text-3xl font-extrabold uppercase text-gray-900 md:text-4xl wow fadeIn"
+        data-wow-delay="0.3s"
+      >
+        Nos activités
+      </h1>
+      <div class="site-container pt-6">
+        <div
+          class="grid gap-0 shadow-[0_0_45px_rgb(0_0_0_/_0.08)] md:grid-cols-2 lg:grid-cols-3"
+        >
+          <div class="wow fadeIn" data-wow-delay="0.3s">
+            <div class="feature-card p-8">
+              <div class="btn-xxl-square mb-6 -mt-14 bg-sodap-600 text-white">
+                <i class="fa fa-mountain fa-2x"></i>
+              </div>
+              <h5 class="mb-4 font-roboto text-lg font-bold uppercase">
+                Remblayage de parcelles minières
+              </h5>
+              <p class="mb-6">
+                Réhabilitation écologique des sites miniers exploités pour
+                restaurer la terre.
+              </p>
+              <a
+                class="relative z-10 flex justify-between text-sm font-semibold uppercase text-gray-600 hover:text-sodap-600"
+                href="#"
+              >
+                <b class="bg-white pr-4">Lire Plus</b>
+                <i class="bi bi-arrow-right bg-white pl-4"></i>
+              </a>
             </div>
+          </div>
+          <div class="wow fadeIn" data-wow-delay="0.4s">
+            <div class="feature-card p-8">
+              <div class="btn-xxl-square mb-6 -mt-14 bg-sodap-600 text-white">
+                <i class="fa fa-tree fa-2x"></i>
+              </div>
+              <h5 class="mb-4 font-roboto text-lg font-bold uppercase">
+                Reboisement & Réhabilitation environnementale
+              </h5>
+              <p class="mb-6">
+                Plantation d’arbres et restauration des écosystèmes pour un
+                avenir durable.
+              </p>
+              <a
+                class="relative z-10 flex justify-between text-sm font-semibold uppercase text-gray-600 hover:text-sodap-600"
+                href="#"
+              >
+                <b class="bg-white pr-4">Lire Plus</b>
+                <i class="bi bi-arrow-right bg-white pl-4"></i>
+              </a>
+            </div>
+          </div>
+          <div class="wow fadeIn" data-wow-delay="0.5s">
+            <div class="feature-card p-8">
+              <div class="btn-xxl-square mb-6 -mt-14 bg-sodap-600 text-white">
+                <i class="fa fa-fish fa-2x"></i>
+              </div>
+              <h5 class="mb-4 font-roboto text-lg font-bold uppercase">
+                Pisciculture sur carrières profondes
+              </h5>
+              <p class="mb-6">
+                Exploitation durable des carrières pour l’élevage de poissons.
+              </p>
+              <a
+                class="relative z-10 flex justify-between text-sm font-semibold uppercase text-gray-600 hover:text-sodap-600"
+                href="#"
+              >
+                <b class="bg-white pr-4">Lire Plus</b>
+                <i class="bi bi-arrow-right bg-white pl-4"></i>
+              </a>
+            </div>
+          </div>
+          <div class="wow fadeIn" data-wow-delay="0.6s">
+            <div class="feature-card p-8">
+              <div class="btn-xxl-square mb-6 -mt-14 bg-sodap-600 text-white">
+                <i class="fa fa-drumstick-bite fa-2x"></i>
+              </div>
+              <h5 class="mb-4 font-roboto text-lg font-bold uppercase">
+                Élevage de volailles
+              </h5>
+              <p class="mb-6">
+                Production de poulets de qualité dans une approche durable.
+              </p>
+              <a
+                class="relative z-10 flex justify-between text-sm font-semibold uppercase text-gray-600 hover:text-sodap-600"
+                href="#"
+              >
+                <b class="bg-white pr-4">Lire Plus</b>
+                <i class="bi bi-arrow-right bg-white pl-4"></i>
+              </a>
+            </div>
+          </div>
+          <div class="wow fadeIn" data-wow-delay="0.7s">
+            <div class="feature-card p-8">
+              <div class="btn-xxl-square mb-6 -mt-14 bg-sodap-600 text-white">
+                <i class="fa fa-leaf fa-2x"></i>
+              </div>
+              <h5 class="mb-4 font-roboto text-lg font-bold uppercase">
+                Culture de banane
+              </h5>
+              <p class="mb-6">
+                Développement agricole avec des plantations de bananes durables.
+              </p>
+              <a
+                class="relative z-10 flex justify-between text-sm font-semibold uppercase text-gray-600 hover:text-sodap-600"
+                href="#"
+              >
+                <b class="bg-white pr-4">Lire Plus</b>
+                <i class="bi bi-arrow-right bg-white pl-4"></i>
+              </a>
+            </div>
+          </div>
+          <div class="wow fadeIn" data-wow-delay="0.8s">
+            <div class="feature-card p-8">
+              <div class="btn-xxl-square mb-6 -mt-14 bg-sodap-600 text-white">
+                <i class="fa fa-tractor fa-2x"></i>
+              </div>
+              <h5 class="mb-4 font-roboto text-lg font-bold uppercase">
+                Location de bulldozers
+              </h5>
+              <p class="mb-6">
+                Mise à disposition d’engins lourds pour vos projets industriels.
+              </p>
+              <a
+                class="relative z-10 flex justify-between text-sm font-semibold uppercase text-gray-600 hover:text-sodap-600"
+                href="#"
+              >
+                <b class="bg-white pr-4">Lire Plus</b>
+                <i class="bi bi-arrow-right bg-white pl-4"></i>
+              </a>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
 
     <div class="section-y service">
-        <div class="site-container">
-            <div class="mx-auto max-w-2xl text-center wow fadeInUp" data-wow-delay="0.1s">
-                <h1 class="mb-12 font-roboto text-3xl font-extrabold uppercase text-gray-900 md:text-4xl">Nos projets
-                </h1>
-            </div>
-            <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-                <div class="wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="group relative mt-12 h-full bg-white shadow-[0_0_45px_rgb(0_0_0_/_0.05)]">
-                        <img class="-mt-12 ml-10 w-[calc(100%-2.5rem)] object-cover" src="img/service-1.jpg" alt="">
-                        <div class="px-8 pb-16 pt-6">
-                            <h5 class="mb-3 font-roboto text-lg font-bold uppercase">Metal Works</h5>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur tellus augue.</p>
-                        </div>
-                        <a class="btn btn-light absolute bottom-0 left-8 translate-y-1/2 px-4 py-2 shadow" href="">Read
-                            More<i class="bi bi-chevron-double-right ml-1"></i></a>
-                    </div>
-                </div>
-                <div class="wow fadeInUp" data-wow-delay="0.2s">
-                    <div class="group relative mt-12 h-full bg-white shadow-[0_0_45px_rgb(0_0_0_/_0.05)]">
-                        <img class="-mt-12 ml-10 w-[calc(100%-2.5rem)] object-cover" src="img/service-2.jpg" alt="">
-                        <div class="px-8 pb-16 pt-6">
-                            <h5 class="mb-3 font-roboto text-lg font-bold uppercase">Steel welding</h5>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur tellus augue.</p>
-                        </div>
-                        <a class="btn btn-light absolute bottom-0 left-8 translate-y-1/2 px-4 py-2 shadow" href="">Read
-                            More<i class="bi bi-chevron-double-right ml-1"></i></a>
-                    </div>
-                </div>
-                <div class="wow fadeInUp" data-wow-delay="0.3s">
-                    <div class="group relative mt-12 h-full bg-white shadow-[0_0_45px_rgb(0_0_0_/_0.05)]">
-                        <img class="-mt-12 ml-10 w-[calc(100%-2.5rem)] object-cover" src="img/service-3.jpg" alt="">
-                        <div class="px-8 pb-16 pt-6">
-                            <h5 class="mb-3 font-roboto text-lg font-bold uppercase">pipe welding</h5>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur tellus augue.</p>
-                        </div>
-                        <a class="btn btn-light absolute bottom-0 left-8 translate-y-1/2 px-4 py-2 shadow" href="">Read
-                            More<i class="bi bi-chevron-double-right ml-1"></i></a>
-                    </div>
-                </div>
-                <div class="wow fadeInUp" data-wow-delay="0.4s">
-                    <div class="group relative mt-12 h-full bg-white shadow-[0_0_45px_rgb(0_0_0_/_0.05)]">
-                        <img class="-mt-12 ml-10 w-[calc(100%-2.5rem)] object-cover" src="img/service-4.jpg" alt="">
-                        <div class="px-8 pb-16 pt-6">
-                            <h5 class="mb-3 font-roboto text-lg font-bold uppercase">Custom welding</h5>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur tellus augue.</p>
-                        </div>
-                        <a class="btn btn-light absolute bottom-0 left-8 translate-y-1/2 px-4 py-2 shadow" href="">Read
-                            More<i class="bi bi-chevron-double-right ml-1"></i></a>
-                    </div>
-                </div>
-            </div>
+      <div class="site-container">
+        <div
+          class="mx-auto max-w-2xl text-center wow fadeInUp"
+          data-wow-delay="0.1s"
+        >
+          <h1
+            class="mb-12 font-roboto text-3xl font-extrabold uppercase text-gray-900 md:text-4xl"
+          >
+            Nos projets
+          </h1>
         </div>
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <div class="wow fadeInUp" data-wow-delay="0.1s">
+            <div class="project-card">
+              <img
+                class="project-card__image"
+                src="img/service-1.jpg"
+                alt=""
+              />
+              <div class="project-card__body">
+                <h5 class="project-card__title">Metal Works</h5>
+                <p class="project-card__text">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Curabitur tellus augue.
+                </p>
+              </div>
+              <a class="btn btn-light project-card__action" href=""
+                >Read More<i class="bi bi-chevron-double-right ml-1"></i
+              ></a>
+            </div>
+          </div>
+          <div class="wow fadeInUp" data-wow-delay="0.2s">
+            <div class="project-card">
+              <img
+                class="project-card__image"
+                src="img/service-2.jpg"
+                alt=""
+              />
+              <div class="project-card__body">
+                <h5 class="project-card__title">Steel welding</h5>
+                <p class="project-card__text">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Curabitur tellus augue.
+                </p>
+              </div>
+              <a class="btn btn-light project-card__action" href=""
+                >Read More<i class="bi bi-chevron-double-right ml-1"></i
+              ></a>
+            </div>
+          </div>
+          <div class="wow fadeInUp" data-wow-delay="0.3s">
+            <div class="project-card">
+              <img
+                class="project-card__image"
+                src="img/service-3.jpg"
+                alt=""
+              />
+              <div class="project-card__body">
+                <h5 class="project-card__title">pipe welding</h5>
+                <p class="project-card__text">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Curabitur tellus augue.
+                </p>
+              </div>
+              <a class="btn btn-light project-card__action" href=""
+                >Read More<i class="bi bi-chevron-double-right ml-1"></i
+              ></a>
+            </div>
+          </div>
+          <div class="wow fadeInUp" data-wow-delay="0.4s">
+            <div class="project-card">
+              <img
+                class="project-card__image"
+                src="img/service-4.jpg"
+                alt=""
+              />
+              <div class="project-card__body">
+                <h5 class="project-card__title">Custom welding</h5>
+                <p class="project-card__text">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Curabitur tellus augue.
+                </p>
+              </div>
+              <a class="btn btn-light project-card__action" href=""
+                >Read More<i class="bi bi-chevron-double-right ml-1"></i
+              ></a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="my-20 bg-sodap-600 py-20 wow fadeIn" data-wow-delay="0.1s">
-        <div class="site-container pt-10">
-            <div class="grid gap-12 lg:grid-cols-2">
-                <div class="wow fadeIn" data-wow-delay="0.3s">
-                    <h1 class="mb-8 font-roboto text-3xl font-extrabold uppercase text-white md:text-4xl">
-                        SODAP-CI SARL - Valoriser la terre, restaurer l’avenir
-                    </h1>
-                    <p class="mb-10 text-white wow fadeIn" data-wow-delay="0.4s">
-                        Entreprise agropastorale spécialisée dans la réhabilitation des sites miniers,
-                        le développement agricole et l’élevage durable en Côte d’Ivoire.
-                    </p>
-                    <div class="flex items-start wow fadeIn" data-wow-delay="0.5s">
-                        <div class="btn-lg-square bg-white">
-                            <i class="bi bi-geo-alt text-3xl text-gray-900"></i>
-                        </div>
-                        <div class="ml-4">
-                            <h6 class="font-roboto font-bold uppercase text-white">Adresse</h6>
-                            <span class="text-white">Yamoussoukro, quartier 50 logements, derrière l'école
-                                méthodiste</span>
-                        </div>
-                    </div>
-                    <hr class="my-6 border-white/30">
-                    <div class="flex items-start wow fadeIn" data-wow-delay="0.6s">
-                        <div class="btn-lg-square bg-white">
-                            <i class="bi bi-envelope text-3xl text-gray-900"></i>
-                        </div>
-                        <div class="ml-4">
-                            <h6 class="font-roboto font-bold uppercase text-white">Email</h6>
-                            <span class="text-white">lasodapci@gmail.com</span>
-                        </div>
-                    </div>
-                    <hr class="my-6 border-white/30">
-                    <div class="flex items-start wow fadeIn" data-wow-delay="0.7s">
-                        <div class="btn-lg-square bg-white">
-                            <i class="bi bi-telephone text-3xl text-gray-900"></i>
-                        </div>
-                        <div class="ml-4">
-                            <h6 class="font-roboto font-bold uppercase text-white">Téléphone</h6>
-                            <span class="text-white">+225 27-33-75-73-12 / 21-21-80-58-73</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="wow fadeIn" data-wow-delay="0.8s">
-                    <div class="bg-white p-8 md:p-10">
-                        <h2 class="mb-8 font-roboto text-2xl font-bold uppercase text-gray-900">Demande de Rendez-vous
-                            / Contact</h2>
-                        <div class="grid gap-4 sm:grid-cols-2">
-                            <label class="block">
-                                <span class="mb-2 block text-sm font-semibold text-gray-700">Votre Nom</span>
-                                <input type="text" class="form-field" id="name" placeholder="Votre Nom">
-                            </label>
-                            <label class="block">
-                                <span class="mb-2 block text-sm font-semibold text-gray-700">Votre Email</span>
-                                <input type="email" class="form-field" id="mail" placeholder="Votre Email">
-                            </label>
-                            <label class="block">
-                                <span class="mb-2 block text-sm font-semibold text-gray-700">Votre Téléphone</span>
-                                <input type="text" class="form-field" id="mobile" placeholder="Votre Téléphone">
-                            </label>
-                            <label class="block">
-                                <span class="mb-2 block text-sm font-semibold text-gray-700">Choisissez un
-                                    service</span>
-                                <select class="form-field" id="service">
-                                    <option selected>Remblayage de parcelles minières</option>
-                                    <option value="">Reboisement & Réhabilitation environnementale</option>
-                                    <option value="">Pisciculture sur carrières profondes</option>
-                                    <option value="">Élevage de volailles (poulets)</option>
-                                    <option value="">Culture de banane</option>
-                                    <option value="">Location de bulldozers</option>
-                                </select>
-                            </label>
-                            <label class="block sm:col-span-2">
-                                <span class="mb-2 block text-sm font-semibold text-gray-700">Votre Message</span>
-                                <textarea class="form-field min-h-[130px]" placeholder="Votre message"
-                                    id="message"></textarea>
-                            </label>
-                            <div class="sm:col-span-2">
-                                <button class="btn btn-primary w-full py-4" type="submit">Envoyer ma demande</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+      <div class="site-container pt-10">
+        <div class="grid gap-12 lg:grid-cols-2">
+          <div class="wow fadeIn" data-wow-delay="0.3s">
+            <h1
+              class="mb-8 font-roboto text-3xl font-extrabold uppercase text-white md:text-4xl"
+            >
+              SODAP-CI SARL - Valoriser la terre, restaurer l’avenir
+            </h1>
+            <p class="mb-10 text-white wow fadeIn" data-wow-delay="0.4s">
+              Entreprise agropastorale spécialisée dans la réhabilitation des
+              sites miniers, le développement agricole et l’élevage durable en
+              Côte d’Ivoire.
+            </p>
+            <div class="flex items-start wow fadeIn" data-wow-delay="0.5s">
+              <div class="btn-lg-square bg-white">
+                <i class="bi bi-geo-alt text-3xl text-gray-900"></i>
+              </div>
+              <div class="ml-4">
+                <h6 class="font-roboto font-bold uppercase text-white">
+                  Adresse
+                </h6>
+                <span class="text-white"
+                  >Yamoussoukro, quartier 50 logements, derrière l'école
+                  méthodiste</span
+                >
+              </div>
             </div>
+            <hr class="my-6 border-white/30" />
+            <div class="flex items-start wow fadeIn" data-wow-delay="0.6s">
+              <div class="btn-lg-square bg-white">
+                <i class="bi bi-envelope text-3xl text-gray-900"></i>
+              </div>
+              <div class="ml-4">
+                <h6 class="font-roboto font-bold uppercase text-white">
+                  Email
+                </h6>
+                <span class="text-white">lasodapci@gmail.com</span>
+              </div>
+            </div>
+            <hr class="my-6 border-white/30" />
+            <div class="flex items-start wow fadeIn" data-wow-delay="0.7s">
+              <div class="btn-lg-square bg-white">
+                <i class="bi bi-telephone text-3xl text-gray-900"></i>
+              </div>
+              <div class="ml-4">
+                <h6 class="font-roboto font-bold uppercase text-white">
+                  Téléphone
+                </h6>
+                <span class="text-white"
+                  >+225 27-33-75-73-12 / 21-21-80-58-73</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="wow fadeIn" data-wow-delay="0.8s">
+            <div class="bg-white p-8 md:p-10">
+              <h2
+                class="mb-8 font-roboto text-2xl font-bold uppercase text-gray-900"
+              >
+                Demande de Rendez-vous / Contact
+              </h2>
+              <div class="grid gap-4 sm:grid-cols-2">
+                <label class="block">
+                  <span class="mb-2 block text-sm font-semibold text-gray-700"
+                    >Votre Nom</span
+                  >
+                  <input
+                    type="text"
+                    class="form-field"
+                    id="name"
+                    placeholder="Votre Nom"
+                  />
+                </label>
+                <label class="block">
+                  <span class="mb-2 block text-sm font-semibold text-gray-700"
+                    >Votre Email</span
+                  >
+                  <input
+                    type="email"
+                    class="form-field"
+                    id="mail"
+                    placeholder="Votre Email"
+                  />
+                </label>
+                <label class="block">
+                  <span class="mb-2 block text-sm font-semibold text-gray-700"
+                    >Votre Téléphone</span
+                  >
+                  <input
+                    type="text"
+                    class="form-field"
+                    id="mobile"
+                    placeholder="Votre Téléphone"
+                  />
+                </label>
+                <label class="block">
+                  <span class="mb-2 block text-sm font-semibold text-gray-700"
+                    >Choisissez un service</span
+                  >
+                  <select class="form-field" id="service">
+                    <option selected>Remblayage de parcelles minières</option>
+                    <option value="">
+                      Reboisement & Réhabilitation environnementale
+                    </option>
+                    <option value="">
+                      Pisciculture sur carrières profondes
+                    </option>
+                    <option value="">Élevage de volailles (poulets)</option>
+                    <option value="">Culture de banane</option>
+                    <option value="">Location de bulldozers</option>
+                  </select>
+                </label>
+                <label class="block sm:col-span-2">
+                  <span class="mb-2 block text-sm font-semibold text-gray-700"
+                    >Votre Message</span
+                  >
+                  <textarea
+                    class="form-field min-h-[130px]"
+                    placeholder="Votre message"
+                    id="message"
+                  ></textarea>
+                </label>
+                <div class="sm:col-span-2">
+                  <button class="btn btn-primary w-full py-4" type="submit">
+                    Envoyer ma demande
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
 
     <div class="bg-gray-950 py-20 footer wow fadeIn" data-wow-delay="0.1s">
-        <div class="site-container">
-            <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
-                <div>
-                    <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">Our Office</h5>
-                    <p class="mb-3 text-gray-300"><i class="fa fa-map-marker-alt mr-4 text-sodap-600"></i>123 Street,
-                        New York, USA</p>
-                    <p class="mb-3 text-gray-300"><i class="fa fa-phone-alt mr-4 text-sodap-600"></i>+012 345 67890</p>
-                    <p class="mb-3 text-gray-300"><i class="fa fa-envelope mr-4 text-sodap-600"></i>info@example.com</p>
-                    <div class="flex gap-2 pt-4">
-                        <a class="btn btn-square social-btn" href="" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-square social-btn" href="" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-                        <a class="btn btn-square social-btn" href="" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-                <div>
-                    <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">Quick Links</h5>
-                    <a class="block py-1 text-gray-300 hover:text-white" href="">About Us</a>
-                    <a class="block py-1 text-gray-300 hover:text-white" href="">Contact Us</a>
-                    <a class="block py-1 text-gray-300 hover:text-white" href="">Our Services</a>
-                    <a class="block py-1 text-gray-300 hover:text-white" href="">Terms & Condition</a>
-                    <a class="block py-1 text-gray-300 hover:text-white" href="">Support</a>
-                </div>
-                <div>
-                    <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">Business Hours</h5>
-                    <p class="mb-1 uppercase text-gray-300">Monday - Friday</p>
-                    <p class="mb-4 text-gray-400">09:00 am - 07:00 pm</p>
-                    <p class="mb-1 uppercase text-gray-300">Saturday</p>
-                    <p class="mb-4 text-gray-400">09:00 am - 12:00 pm</p>
-                    <p class="mb-1 uppercase text-gray-300">Sunday</p>
-                    <p class="text-gray-400">Closed</p>
-                </div>
-                <div>
-                    <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">Gallery</h5>
-                    <div class="grid grid-cols-3 gap-1">
-                        <img class="h-auto max-w-full" src="img/service-1.jpg" alt="">
-                        <img class="h-auto max-w-full" src="img/service-2.jpg" alt="">
-                        <img class="h-auto max-w-full" src="img/service-3.jpg" alt="">
-                        <img class="h-auto max-w-full" src="img/service-4.jpg" alt="">
-                        <img class="h-auto max-w-full" src="img/service-5.jpg" alt="">
-                        <img class="h-auto max-w-full" src="img/service-6.jpg" alt="">
-                    </div>
-                </div>
+      <div class="site-container">
+        <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">
+              Our Office
+            </h5>
+            <p class="mb-3 text-gray-300">
+              <i class="fa fa-map-marker-alt mr-4 text-sodap-600"></i>123
+              Street, New York, USA
+            </p>
+            <p class="mb-3 text-gray-300">
+              <i class="fa fa-phone-alt mr-4 text-sodap-600"></i>+012 345 67890
+            </p>
+            <p class="mb-3 text-gray-300">
+              <i class="fa fa-envelope mr-4 text-sodap-600"></i>info@example.com
+            </p>
+            <div class="flex gap-2 pt-4">
+              <a class="btn btn-square social-btn" href="" aria-label="Facebook"
+                ><i class="fab fa-facebook-f"></i
+              ></a>
+              <a class="btn btn-square social-btn" href="" aria-label="YouTube"
+                ><i class="fab fa-youtube"></i
+              ></a>
+              <a class="btn btn-square social-btn" href="" aria-label="LinkedIn"
+                ><i class="fab fa-linkedin-in"></i
+              ></a>
             </div>
+          </div>
+          <div>
+            <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">
+              Quick Links
+            </h5>
+            <a class="block py-1 text-gray-300 hover:text-white" href=""
+              >About Us</a
+            >
+            <a class="block py-1 text-gray-300 hover:text-white" href=""
+              >Contact Us</a
+            >
+            <a class="block py-1 text-gray-300 hover:text-white" href=""
+              >Our Services</a
+            >
+            <a class="block py-1 text-gray-300 hover:text-white" href=""
+              >Terms & Condition</a
+            >
+            <a class="block py-1 text-gray-300 hover:text-white" href=""
+              >Support</a
+            >
+          </div>
+          <div>
+            <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">
+              Business Hours
+            </h5>
+            <p class="mb-1 uppercase text-gray-300">Monday - Friday</p>
+            <p class="mb-4 text-gray-400">09:00 am - 07:00 pm</p>
+            <p class="mb-1 uppercase text-gray-300">Saturday</p>
+            <p class="mb-4 text-gray-400">09:00 am - 12:00 pm</p>
+            <p class="mb-1 uppercase text-gray-300">Sunday</p>
+            <p class="text-gray-400">Closed</p>
+          </div>
+          <div>
+            <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">
+              Gallery
+            </h5>
+            <div class="grid grid-cols-3 gap-1">
+              <img class="h-auto max-w-full" src="img/service-1.jpg" alt="" />
+              <img class="h-auto max-w-full" src="img/service-2.jpg" alt="" />
+              <img class="h-auto max-w-full" src="img/service-3.jpg" alt="" />
+              <img class="h-auto max-w-full" src="img/service-4.jpg" alt="" />
+              <img class="h-auto max-w-full" src="img/service-5.jpg" alt="" />
+              <img class="h-auto max-w-full" src="img/service-6.jpg" alt="" />
+            </div>
+          </div>
         </div>
+      </div>
     </div>
 
     <div class="py-6 text-gray-600 copyright">
-        <div class="site-container">
-            <div class="grid gap-4 text-center md:grid-cols-2 md:text-left">
-                <div>
-                    &copy; <a class="font-semibold" href="#">Your Site Name</a>, All Right Reserved.
-                </div>
-                <div class="md:text-right">
-                    Designed By <a class="font-semibold" href="https://htmlcodex.com">HTML Codex</a> Distributed by <a
-                        href="https://themewagon.com" target="_blank">ThemeWagon</a>
-                </div>
-            </div>
+      <div class="site-container">
+        <div class="grid gap-4 text-center md:grid-cols-2 md:text-left">
+          <div>
+            &copy; <a class="font-semibold" href="#">Your Site Name</a>, All
+            Right Reserved.
+          </div>
+          <div class="md:text-right">
+            Designed By
+            <a class="font-semibold" href="https://htmlcodex.com">HTML Codex</a>
+            Distributed by
+            <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+          </div>
         </div>
+      </div>
     </div>
 
-    <a href="#" class="back-to-top btn btn-primary btn-lg-square fixed bottom-8 right-8 z-[99] hidden">
-        <i class="bi bi-arrow-up"></i>
+    <a
+      href="#"
+      class="back-to-top btn btn-primary btn-lg-square fixed bottom-8 right-8 z-[99] hidden"
+    >
+      <i class="bi bi-arrow-up"></i>
     </a>
 
     <script src="lib/wow/wow.min.js"></script>
     <script src="js/tailwind-main.js"></script>
-</body>
-
+  </body>
 </html>
