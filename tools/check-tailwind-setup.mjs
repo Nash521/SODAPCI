@@ -35,6 +35,14 @@ assert(inputCss.includes("--color-sodap-700: #1a3e1a;"), "src/input.css must def
 assert(inputCss.includes("--font-poppins:"), "src/input.css must define the Poppins font token");
 assert(inputCss.includes("@layer components"), "src/input.css must define reusable component classes");
 
+const btnBlock = inputCss.match(/\.btn\s*\{([\s\S]*?)\n  \}/)?.[1] ?? "";
+const btnLightBlock = inputCss.match(/\.btn-light\s*\{([\s\S]*?)\n  \}/)?.[1] ?? "";
+assert(btnBlock.includes("color: #fff;"), "all buttons must default to white text");
+assert(inputCss.includes(".btn i,"), "button icons must inherit button text color");
+assert(inputCss.includes("color: inherit;"), "button icon color must inherit from the button");
+assert(btnLightBlock.includes("color: #fff;"), "light buttons must keep white text");
+assert(btnLightBlock.includes("background: var(--color-sodap-700);"), "light buttons must use a dark enough background for white icons");
+
 const config = read("tailwind.config.js");
 assert(config.includes("./*.html"), "tailwind.config.js must document root HTML scanning");
 assert(config.includes("./js/**/*.js"), "tailwind.config.js must document JS scanning");

@@ -61,6 +61,7 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    color: #fff;
     font-weight: 600;
     text-transform: uppercase;
     transition:
@@ -68,6 +69,11 @@
       background-color 0.3s ease,
       border-color 0.3s ease,
       transform 0.3s ease;
+  }
+
+  .btn i,
+  .btn svg {
+    color: inherit;
   }
 
   .btn-primary {
@@ -83,9 +89,15 @@
   }
 
   .btn-light {
-    background: #fff;
-    color: var(--color-sodap-600);
-    border: 1px solid #fff;
+    background: var(--color-sodap-700);
+    color: #fff;
+    border: 1px solid var(--color-sodap-700);
+  }
+
+  .btn-light:hover {
+    background: var(--color-sodap-600);
+    color: #fff;
+    border-color: var(--color-sodap-600);
   }
 
   .btn-square,
