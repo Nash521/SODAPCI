@@ -37,11 +37,21 @@ assert(inputCss.includes("@layer components"), "src/input.css must define reusab
 
 const btnBlock = inputCss.match(/\.btn\s*\{([\s\S]*?)\n  \}/)?.[1] ?? "";
 const btnLightBlock = inputCss.match(/\.btn-light\s*\{([\s\S]*?)\n  \}/)?.[1] ?? "";
+const socialBtnBlock = inputCss.match(/\.social-btn\s*\{([\s\S]*?)\n  \}/)?.[1] ?? "";
+const socialBtnHoverBlock = inputCss.match(/\.social-btn:hover\s*\{([\s\S]*?)\n  \}/)?.[1] ?? "";
 assert(btnBlock.includes("color: #fff;"), "all buttons must default to white text");
+assert(btnBlock.includes("box-shadow 0.3s ease"), "buttons must animate elevation smoothly");
 assert(inputCss.includes(".btn i,"), "button icons must inherit button text color");
 assert(inputCss.includes("color: inherit;"), "button icon color must inherit from the button");
 assert(btnLightBlock.includes("color: #fff;"), "light buttons must keep white text");
 assert(btnLightBlock.includes("background: var(--color-sodap-700);"), "light buttons must use a dark enough background for white icons");
+assert(socialBtnBlock.includes("background: var(--color-sodap-700);"), "social buttons must keep a stable dark background");
+assert(socialBtnBlock.includes("color: #fff;"), "social button icons must stay white");
+assert(socialBtnHoverBlock.includes("transform: translateY(-1px);"), "social buttons must rise on hover");
+assert(socialBtnHoverBlock.includes("box-shadow:"), "social buttons must gain elevation on hover");
+assert(!socialBtnHoverBlock.includes("background:"), "social button hover must not change background color");
+assert(!socialBtnHoverBlock.includes("color:"), "social button hover must not change icon color");
+assert(!socialBtnHoverBlock.includes("border-color:"), "social button hover must not change border color");
 
 const config = read("tailwind.config.js");
 assert(config.includes("./*.html"), "tailwind.config.js must document root HTML scanning");

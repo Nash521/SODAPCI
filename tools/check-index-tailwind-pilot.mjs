@@ -40,6 +40,10 @@ assert(index.includes("xl:text-base"), "topbar contact text must grow on wide sc
 assert(index.includes("h-10 w-10 text-lg"), "topbar social buttons must be larger with larger icons");
 assert(index.includes("max-w-[520px] truncate"), "topbar address must be constrained to avoid overflow");
 assert(index.includes("ml-auto flex min-w-0 items-center gap-4 pl-8"), "topbar contacts must keep spacing from the logo");
+assert(!index.includes("fa-twitter"), "index.html must not display Twitter social icons");
+assert(index.includes(">Contactez-nous</a>"), "navbar CTA must say Contactez-nous");
+assert(!/Obtenir\s+un\s+Devis/i.test(index), "navbar CTA must no longer say Obtenir un Devis");
+assert((index.match(/\bsocial-btn\b/g) ?? []).length >= 5, "social network buttons must use social-btn elevation styling");
 
 const pilotJs = read("js/tailwind-main.js");
 assert(pilotJs.includes("initMobileMenu"), "tailwind-main.js must initialize the mobile menu");

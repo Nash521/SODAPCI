@@ -68,6 +68,7 @@
       color 0.3s ease,
       background-color 0.3s ease,
       border-color 0.3s ease,
+      box-shadow 0.3s ease,
       transform 0.3s ease;
   }
 
@@ -85,6 +86,7 @@
   .btn-primary:hover {
     background: var(--color-sodap-700);
     border-color: var(--color-sodap-700);
+    box-shadow: 0 12px 22px rgb(0 0 0 / 0.14);
     transform: translateY(-1px);
   }
 
@@ -98,6 +100,17 @@
     background: var(--color-sodap-600);
     color: #fff;
     border-color: var(--color-sodap-600);
+  }
+
+  .social-btn {
+    background: var(--color-sodap-700);
+    color: #fff;
+    border: 1px solid var(--color-sodap-700);
+  }
+
+  .social-btn:hover {
+    box-shadow: 0 12px 22px rgb(0 0 0 / 0.16);
+    transform: translateY(-1px);
   }
 
   .btn-square,
