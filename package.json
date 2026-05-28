@@ -7,7 +7,8 @@
     "watch:css": "npx @tailwindcss/cli -i ./src/input.css -o ./css/tailwind.css --watch",
     "check:setup": "node tools/check-tailwind-setup.mjs",
     "check:index": "node tools/check-index-tailwind-pilot.mjs",
-    "check": "npm run check:setup && npm run check:index"
+    "check:contact": "node tools/check-contact-page.mjs",
+    "check": "npm run check:setup && npm run check:index && npm run check:contact"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.3.0",

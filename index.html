@@ -32,6 +32,483 @@
     <link href="lib/animate/animate.min.css" rel="stylesheet" />
 
     <link href="css/tailwind.css" rel="stylesheet" />
+    <style>
+      .home-hero-motion {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .home-hero-motion::before {
+        position: absolute;
+        content: "";
+        inset: 0;
+        z-index: 3;
+        pointer-events: none;
+        background:
+          repeating-linear-gradient(
+            120deg,
+            rgba(255, 255, 255, 0.05) 0 2px,
+            transparent 2px 18px
+          ),
+          linear-gradient(
+            110deg,
+            rgba(255, 255, 255, 0.08),
+            transparent 45%,
+            rgba(255, 255, 255, 0.08)
+          );
+        background-size: 170% 170%, 250% 250%;
+        animation: homeHeroSweep 14s linear infinite;
+        opacity: 0.55;
+      }
+
+      .home-animated-card,
+      .home-form-panel {
+        border: 1px solid rgba(33, 79, 33, 0.12);
+        box-shadow: 0 24px 70px rgba(13, 40, 16, 0.1);
+        transition:
+          transform 0.35s ease,
+          box-shadow 0.35s ease,
+          border-color 0.35s ease;
+      }
+
+      .home-animated-card {
+        position: relative;
+        overflow: hidden;
+        animation: homeCardIdle 5.5s ease-in-out infinite;
+      }
+
+      .home-animated-card::before {
+        position: absolute;
+        content: "";
+        inset: 0 auto 0 0;
+        width: 4px;
+        background: #214f21;
+        transform: scaleY(0);
+        transform-origin: bottom;
+        transition: transform 0.35s ease;
+      }
+
+      .home-animated-card::after {
+        position: absolute;
+        content: "";
+        top: 0;
+        left: -75%;
+        width: 45%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.5),
+          transparent
+        );
+        transform: skewX(-16deg);
+        transition: left 0.75s ease;
+        pointer-events: none;
+      }
+
+      .home-animated-card:hover {
+        transform: translateY(-10px) scale(1.01);
+        border-color: rgba(33, 79, 33, 0.38);
+        box-shadow: 0 30px 80px rgba(13, 40, 16, 0.16);
+      }
+
+      .home-animated-card:hover::before {
+        transform: scaleY(1);
+      }
+
+      .home-animated-card:hover::after {
+        left: 130%;
+      }
+
+      .home-form-panel {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(180deg, #ffffff, #f7fbf5);
+        animation: homePanelGlow 5s ease-in-out infinite;
+      }
+
+      .home-form-panel::before {
+        position: absolute;
+        content: "";
+        inset: -2px;
+        pointer-events: none;
+        background: linear-gradient(
+          130deg,
+          rgba(33, 79, 33, 0.26),
+          transparent 35%,
+          rgba(33, 79, 33, 0.18)
+        );
+        opacity: 0.35;
+        animation: homePanelSheen 9s linear infinite;
+      }
+
+      .home-form-panel:hover {
+        box-shadow: 0 26px 80px rgba(13, 40, 16, 0.2);
+        transform: translateY(-4px);
+      }
+
+      .home-cta {
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 16px 34px rgba(33, 79, 33, 0.24);
+        animation: homeCtaBreath 2.6s ease-in-out infinite;
+      }
+
+      .home-cta::after {
+        position: absolute;
+        content: "";
+        top: 0;
+        left: -45%;
+        width: 40%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.36),
+          transparent
+        );
+        transform: skewX(-18deg);
+        transition: left 0.6s ease;
+      }
+
+      .home-cta:hover::after {
+        left: 115%;
+      }
+
+      .home-about-photo-wrap {
+        position: relative;
+        overflow: hidden;
+        border-radius: 1rem;
+        box-shadow: 0 24px 70px rgba(13, 40, 16, 0.14);
+        transition: transform 0.45s ease, box-shadow 0.45s ease;
+        animation: aboutFloat 5.2s ease-in-out infinite;
+      }
+
+      .home-about-photo-wrap::after {
+        position: absolute;
+        content: "";
+        top: 0;
+        left: -60%;
+        width: 40%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.4),
+          transparent
+        );
+        transform: skewX(-16deg);
+        transition: left 0.8s ease;
+        pointer-events: none;
+      }
+
+      .home-about-photo-wrap:hover {
+        transform: translateY(-6px) scale(1.01);
+        box-shadow: 0 34px 95px rgba(13, 40, 16, 0.2);
+      }
+
+      .home-about-photo-wrap:hover::after {
+        left: 130%;
+      }
+
+      .home-about-outline {
+        transition: transform 0.45s ease, border-color 0.45s ease;
+        animation: aboutOutlinePulse 4.6s ease-in-out infinite;
+      }
+
+      .home-about-dot {
+        animation: aboutDotPulse 2.4s ease-in-out infinite;
+      }
+
+      .home-about-domain {
+        position: relative;
+        transition: transform 0.3s ease;
+      }
+
+      .home-about-domain:hover {
+        transform: translateX(6px);
+      }
+
+      .home-about-domain-icon {
+        transition:
+          transform 0.3s ease,
+          background-color 0.3s ease,
+          color 0.3s ease;
+      }
+
+      .home-about-domain:hover .home-about-domain-icon {
+        background: #214f21;
+        color: #ffffff;
+        transform: rotate(-8deg) translateY(-2px);
+      }
+
+      .project-mission-card {
+        position: relative;
+        display: grid;
+        grid-template-rows: 62% 38%;
+        aspect-ratio: 1 / 0.8;
+        overflow: hidden;
+        border-radius: 1.5rem;
+        border: 1px solid #e3ebe6;
+        background: linear-gradient(180deg, #ffffff 58%, #ecf9f2 100%);
+        padding: 0.85rem;
+        box-shadow: 0 16px 38px rgba(13, 40, 16, 0.08);
+        transition:
+          transform 0.35s ease,
+          box-shadow 0.35s ease,
+          border-color 0.35s ease;
+        animation: projectCardGlow 4.8s ease-in-out infinite;
+      }
+
+      .project-mission-card:hover {
+        transform: translateY(-8px);
+        border-color: rgba(33, 79, 33, 0.3);
+        box-shadow: 0 26px 62px rgba(13, 40, 16, 0.14);
+      }
+
+      .project-mission-card::after {
+        position: absolute;
+        content: "";
+        top: 0;
+        left: -55%;
+        width: 35%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.4),
+          transparent
+        );
+        transform: skewX(-16deg);
+        transition: left 0.75s ease;
+        pointer-events: none;
+      }
+
+      .project-mission-card:hover::after {
+        left: 130%;
+      }
+
+      .project-mission-media {
+        height: 100%;
+        width: 100%;
+        border-radius: 1.1rem;
+        object-fit: cover;
+        transition: transform 0.55s ease, filter 0.55s ease;
+      }
+
+      .project-mission-card:hover .project-mission-media {
+        transform: scale(1.045);
+        filter: saturate(1.06) contrast(1.04);
+      }
+
+      .project-mission-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 0.45rem;
+        padding: 0.65rem 0.15rem 0.1rem;
+      }
+
+      .project-mission-title {
+        margin: 0;
+        font-family: "Roboto", sans-serif;
+        font-size: 1.2rem;
+        font-weight: 800;
+        line-height: 1.2;
+        color: #0f172a;
+      }
+
+      .project-mission-desc {
+        margin: 0;
+        font-size: 0.98rem;
+        line-height: 1.45;
+        color: #374151;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .project-mission-link {
+        margin-top: 0.35rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        width: fit-content;
+        border: 1px solid rgba(33, 79, 33, 0.22);
+        background: #ffffff;
+        padding: 0.45rem 0.8rem;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #214f21;
+        transition: all 0.25s ease;
+      }
+
+      .project-mission-link:hover {
+        background: #214f21;
+        color: #ffffff;
+        border-color: #214f21;
+      }
+
+      .project-mission-link i {
+        transition: transform 0.25s ease;
+      }
+
+      .project-mission-link:hover i {
+        transform: translateX(4px);
+      }
+
+      .service .wow:nth-child(1) .project-mission-card {
+        animation-delay: 0s;
+      }
+
+      .service .wow:nth-child(2) .project-mission-card {
+        animation-delay: 0.18s;
+      }
+
+      .service .wow:nth-child(3) .project-mission-card {
+        animation-delay: 0.36s;
+      }
+
+      .service .wow:nth-child(4) .project-mission-card {
+        animation-delay: 0.54s;
+      }
+
+      @keyframes homeHeroSweep {
+        0% {
+          background-position: 0% 40%, 0% 60%;
+        }
+        100% {
+          background-position: 140% 60%, 120% 40%;
+        }
+      }
+
+      @keyframes homeCardIdle {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-4px);
+        }
+      }
+
+      @keyframes homePanelGlow {
+        0%,
+        100% {
+          box-shadow: 0 24px 70px rgba(13, 40, 16, 0.1);
+        }
+        50% {
+          box-shadow: 0 28px 90px rgba(13, 40, 16, 0.18);
+        }
+      }
+
+      @keyframes homePanelSheen {
+        0% {
+          transform: translateX(-18%);
+        }
+        50% {
+          transform: translateX(18%);
+        }
+        100% {
+          transform: translateX(-18%);
+        }
+      }
+
+      @keyframes homeCtaBreath {
+        0%,
+        100% {
+          box-shadow: 0 16px 34px rgba(33, 79, 33, 0.24);
+        }
+        50% {
+          box-shadow: 0 24px 45px rgba(33, 79, 33, 0.35);
+        }
+      }
+
+      @keyframes projectCardGlow {
+        0%,
+        100% {
+          box-shadow: 0 16px 38px rgba(13, 40, 16, 0.08);
+        }
+        50% {
+          box-shadow: 0 22px 46px rgba(13, 40, 16, 0.14);
+        }
+      }
+
+      @keyframes aboutFloat {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-5px);
+        }
+      }
+
+      @keyframes aboutOutlinePulse {
+        0%,
+        100% {
+          transform: translateX(1.25rem) translateY(1.25rem);
+          border-color: rgba(33, 79, 33, 0.8);
+        }
+        50% {
+          transform: translateX(1.45rem) translateY(1.45rem);
+          border-color: rgba(33, 79, 33, 0.55);
+        }
+      }
+
+      @keyframes aboutDotPulse {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.15);
+          opacity: 0.65;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .home-hero-motion::before,
+        .home-animated-card,
+        .home-form-panel,
+        .home-cta,
+        .home-about-photo-wrap,
+        .home-about-outline,
+        .home-about-dot,
+        .project-mission-card {
+          animation: none !important;
+        }
+      }
+
+      @media (max-width: 991.98px) {
+        .home-animated-card,
+        .home-cta {
+          animation: none;
+        }
+
+        .home-about-domain:hover {
+          transform: none;
+        }
+
+        .project-mission-card:hover {
+          transform: none;
+        }
+
+        .project-mission-card {
+          aspect-ratio: 1 / 0.95;
+          grid-template-rows: 56% 44%;
+        }
+
+        .home-animated-card:hover,
+        .home-form-panel:hover,
+        .home-about-photo-wrap:hover {
+          transform: none;
+        }
+      }
+    </style>
   </head>
 
   <body class="overflow-x-hidden bg-white font-poppins text-gray-600">
@@ -171,7 +648,7 @@
     <div class="mb-20 wow fadeIn" data-wow-delay="0.1s">
       <div
         data-hero-carousel
-        class="relative min-h-[500px] overflow-hidden lg:min-h-[660px]"
+        class="home-hero-motion relative min-h-[500px] overflow-hidden lg:min-h-[660px]"
       >
         <div
           class="absolute inset-y-0 left-6 z-20 hidden flex-col justify-center gap-3 md:flex"
@@ -297,16 +774,18 @@
           <div class="wow fadeIn" data-wow-delay="0.1s">
             <div class="relative mx-auto max-w-[460px] pl-8 md:pl-12 lg:mx-0">
               <div
-                class="absolute inset-0 z-0 hidden translate-x-4 translate-y-4 rounded-3xl border-2 border-sodap-600/80 md:block lg:translate-x-5 lg:translate-y-5"
+                class="home-about-outline absolute inset-0 z-0 hidden translate-x-4 translate-y-4 rounded-3xl border-2 border-sodap-600/80 md:block lg:translate-x-5 lg:translate-y-5"
               ></div>
               <div
-                class="absolute -left-1.5 -top-1.5 z-0 hidden h-4 w-4 bg-sodap-600 md:block"
+                class="home-about-dot absolute -left-1.5 -top-1.5 z-0 hidden h-4 w-4 bg-sodap-600 md:block"
               ></div>
-              <img
-                class="relative z-10 h-[320px] w-full rounded-2xl object-cover shadow-lg md:h-[380px] lg:h-[440px]"
-                src="img/about.JPG"
-                alt="Activités de SODAP-CI"
-              />
+              <div class="home-about-photo-wrap relative z-10">
+                <img
+                  class="h-[320px] w-full rounded-2xl object-cover shadow-lg md:h-[380px] lg:h-[440px]"
+                  src="img/about.JPG"
+                  alt="Activités de SODAP-CI"
+                />
+              </div>
             </div>
           </div>
           <div
@@ -329,8 +808,8 @@
               domaines d’expertise :
             </p>
             <div class="grid gap-6 sm:grid-cols-2">
-              <div class="flex items-center">
-                <div class="btn-xl-square mr-4 bg-gray-100 text-sodap-600">
+              <div class="home-about-domain flex items-center">
+                <div class="home-about-domain-icon btn-xl-square mr-4 bg-gray-100 text-sodap-600">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="32"
@@ -348,16 +827,16 @@
                   L'élevage
                 </h5>
               </div>
-              <div class="flex items-center">
-                <div class="btn-xl-square mr-4 bg-gray-100 text-sodap-600">
+              <div class="home-about-domain flex items-center">
+                <div class="home-about-domain-icon btn-xl-square mr-4 bg-gray-100 text-sodap-600">
                   <i class="fa fa-seedling fa-2x"></i>
                 </div>
                 <h5 class="font-roboto text-lg font-bold uppercase">
                   L'agriculture
                 </h5>
               </div>
-              <div class="flex items-center sm:col-span-2">
-                <div class="btn-xl-square mr-4 bg-gray-100 text-sodap-600">
+              <div class="home-about-domain flex items-center sm:col-span-2">
+                <div class="home-about-domain-icon btn-xl-square mr-4 bg-gray-100 text-sodap-600">
                   <i class="fa fa-mountain fa-2x"></i>
                 </div>
                 <h5 class="font-roboto text-lg font-bold uppercase">
@@ -382,16 +861,18 @@
           class="grid gap-0 shadow-[0_0_45px_rgb(0_0_0_/_0.08)] md:grid-cols-2 lg:grid-cols-3"
         >
           <div class="wow fadeIn" data-wow-delay="0.3s">
-            <div class="feature-card p-8">
-              <div class="btn-xxl-square mb-6 -mt-14 bg-sodap-600 text-white">
-                <i class="fa fa-mountain fa-2x"></i>
-              </div>
+            <div class="feature-card home-animated-card home-card-tilt p-8">
+              <img
+                class="mb-6 h-48 w-full object-cover"
+                src="img/carousel-2.JPG"
+                alt="Travaux de réhabilitation et remblayage"
+              />
               <h5 class="mb-4 font-roboto text-lg font-bold uppercase">
-                Remblayage de parcelles minières
+                Réhabilitation
               </h5>
               <p class="mb-6">
-                Réhabilitation écologique des sites miniers exploités pour
-                restaurer la terre.
+                Remblayage, reboisement, restauration environnementale et autres
+                actions de remise en état des sites.
               </p>
               <a
                 class="relative z-10 flex justify-between text-sm font-semibold uppercase text-gray-600 hover:text-sodap-600"
@@ -403,16 +884,18 @@
             </div>
           </div>
           <div class="wow fadeIn" data-wow-delay="0.4s">
-            <div class="feature-card p-8">
-              <div class="btn-xxl-square mb-6 -mt-14 bg-sodap-600 text-white">
-                <i class="fa fa-tree fa-2x"></i>
-              </div>
+            <div class="feature-card home-animated-card home-card-tilt p-8">
+              <img
+                class="mb-6 h-48 w-full object-cover"
+                src="img/carousel-1.JPG"
+                alt="Activités d’élevage et de pisciculture"
+              />
               <h5 class="mb-4 font-roboto text-lg font-bold uppercase">
-                Reboisement & Réhabilitation environnementale
+                Élevage & pisciculture
               </h5>
               <p class="mb-6">
-                Plantation d’arbres et restauration des écosystèmes pour un
-                avenir durable.
+                Élevage de poulets et pisciculture sur carrières profondes dans
+                une approche durable et productive.
               </p>
               <a
                 class="relative z-10 flex justify-between text-sm font-semibold uppercase text-gray-600 hover:text-sodap-600"
@@ -424,75 +907,18 @@
             </div>
           </div>
           <div class="wow fadeIn" data-wow-delay="0.5s">
-            <div class="feature-card p-8">
-              <div class="btn-xxl-square mb-6 -mt-14 bg-sodap-600 text-white">
-                <i class="fa fa-fish fa-2x"></i>
-              </div>
-              <h5 class="mb-4 font-roboto text-lg font-bold uppercase">
-                Pisciculture sur carrières profondes
-              </h5>
-              <p class="mb-6">
-                Exploitation durable des carrières pour l’élevage de poissons.
-              </p>
-              <a
-                class="relative z-10 flex justify-between text-sm font-semibold uppercase text-gray-600 hover:text-sodap-600"
-                href="#"
-              >
-                <b class="bg-white pr-4">Lire Plus</b>
-                <i class="bi bi-arrow-right bg-white pl-4"></i>
-              </a>
-            </div>
-          </div>
-          <div class="wow fadeIn" data-wow-delay="0.6s">
-            <div class="feature-card p-8">
-              <div class="btn-xxl-square mb-6 -mt-14 bg-sodap-600 text-white">
-                <i class="fa fa-drumstick-bite fa-2x"></i>
-              </div>
-              <h5 class="mb-4 font-roboto text-lg font-bold uppercase">
-                Élevage de volailles
-              </h5>
-              <p class="mb-6">
-                Production de poulets de qualité dans une approche durable.
-              </p>
-              <a
-                class="relative z-10 flex justify-between text-sm font-semibold uppercase text-gray-600 hover:text-sodap-600"
-                href="#"
-              >
-                <b class="bg-white pr-4">Lire Plus</b>
-                <i class="bi bi-arrow-right bg-white pl-4"></i>
-              </a>
-            </div>
-          </div>
-          <div class="wow fadeIn" data-wow-delay="0.7s">
-            <div class="feature-card p-8">
-              <div class="btn-xxl-square mb-6 -mt-14 bg-sodap-600 text-white">
-                <i class="fa fa-leaf fa-2x"></i>
-              </div>
-              <h5 class="mb-4 font-roboto text-lg font-bold uppercase">
-                Culture de banane
-              </h5>
-              <p class="mb-6">
-                Développement agricole avec des plantations de bananes durables.
-              </p>
-              <a
-                class="relative z-10 flex justify-between text-sm font-semibold uppercase text-gray-600 hover:text-sodap-600"
-                href="#"
-              >
-                <b class="bg-white pr-4">Lire Plus</b>
-                <i class="bi bi-arrow-right bg-white pl-4"></i>
-              </a>
-            </div>
-          </div>
-          <div class="wow fadeIn" data-wow-delay="0.8s">
-            <div class="feature-card p-8">
-              <div class="btn-xxl-square mb-6 -mt-14 bg-sodap-600 text-white">
-                <i class="fa fa-tractor fa-2x"></i>
-              </div>
+            <div class="feature-card home-animated-card home-card-tilt p-8">
+              <img
+                class="mb-6 h-48 w-full object-cover"
+                src="img/Mission_remblayage_Katiola1/UG2A1404.JPG"
+                alt="Bulldozer pour travaux de terrain"
+              />
               <h5 class="mb-4 font-roboto text-lg font-bold uppercase">
                 Location de bulldozers
               </h5>
               <p class="mb-6">
-                Mise à disposition d’engins lourds pour vos projets industriels.
+                Mise à disposition d’engins lourds pour vos projets
+                industriels.
               </p>
               <a
                 class="relative z-10 flex justify-between text-sm font-semibold uppercase text-gray-600 hover:text-sodap-600"
@@ -519,82 +945,78 @@
             Nos projets
           </h1>
         </div>
-        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div class="mx-auto grid max-w-5xl gap-8 md:grid-cols-2">
           <div class="wow fadeInUp" data-wow-delay="0.1s">
-            <div class="project-card">
+            <article class="project-mission-card">
               <img
-                class="project-card__image"
-                src="img/service-1.jpg"
-                alt=""
+                class="project-mission-media"
+                src="img/Mission_ALLE_PATIZIA/UG2A3034.JPG"
+                alt="Mission ALLE PATIZIA"
               />
-              <div class="project-card__body">
-                <h5 class="project-card__title">Metal Works</h5>
-                <p class="project-card__text">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Curabitur tellus augue.
+              <div class="project-mission-content">
+                <h3 class="project-mission-title">Mission ALLE PATIZIA</h3>
+                <p class="project-mission-desc">
+                  Travaux de terrain et valorisation de site à Patizia.
                 </p>
+                <a class="project-mission-link" href="#">
+                  En savoir plus <i class="bi bi-arrow-right"></i>
+                </a>
               </div>
-              <a class="btn btn-light project-card__action" href=""
-                >Read More<i class="bi bi-chevron-double-right ml-1"></i
-              ></a>
-            </div>
+            </article>
           </div>
           <div class="wow fadeInUp" data-wow-delay="0.2s">
-            <div class="project-card">
+            <article class="project-mission-card">
               <img
-                class="project-card__image"
-                src="img/service-2.jpg"
-                alt=""
+                class="project-mission-media"
+                src="img/Mission_remblayage_Katiola1/UG2A1364.JPG"
+                alt="Mission remblayage Katiola"
               />
-              <div class="project-card__body">
-                <h5 class="project-card__title">Steel welding</h5>
-                <p class="project-card__text">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Curabitur tellus augue.
+              <div class="project-mission-content">
+                <h3 class="project-mission-title">Mission remblayage Katiola</h3>
+                <p class="project-mission-desc">
+                  Remblayage et réhabilitation des parcelles à Katiola.
                 </p>
+                <a class="project-mission-link" href="#">
+                  En savoir plus <i class="bi bi-arrow-right"></i>
+                </a>
               </div>
-              <a class="btn btn-light project-card__action" href=""
-                >Read More<i class="bi bi-chevron-double-right ml-1"></i
-              ></a>
-            </div>
+            </article>
           </div>
           <div class="wow fadeInUp" data-wow-delay="0.3s">
-            <div class="project-card">
+            <article class="project-mission-card">
               <img
-                class="project-card__image"
-                src="img/service-3.jpg"
-                alt=""
+                class="project-mission-media"
+                src="img/Mission_remblayage_Katiola_2/UG2A1551.JPG"
+                alt="Mission remblayage Katiola"
               />
-              <div class="project-card__body">
-                <h5 class="project-card__title">pipe welding</h5>
-                <p class="project-card__text">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Curabitur tellus augue.
+              <div class="project-mission-content">
+                <h3 class="project-mission-title">Mission remblayage Katiola</h3>
+                <p class="project-mission-desc">
+                  Suite des opérations de remise en état des terres à Katiola.
                 </p>
+                <a class="project-mission-link" href="#">
+                  En savoir plus <i class="bi bi-arrow-right"></i>
+                </a>
               </div>
-              <a class="btn btn-light project-card__action" href=""
-                >Read More<i class="bi bi-chevron-double-right ml-1"></i
-              ></a>
-            </div>
+            </article>
           </div>
           <div class="wow fadeInUp" data-wow-delay="0.4s">
-            <div class="project-card">
+            <article class="project-mission-card">
               <img
-                class="project-card__image"
-                src="img/service-4.jpg"
-                alt=""
+                class="project-mission-media"
+                src="img/Mission_RMG_BONGOUANOU/UG2A6645.JPG"
+                alt="Mission RMG BONGOUANOU"
               />
-              <div class="project-card__body">
-                <h5 class="project-card__title">Custom welding</h5>
-                <p class="project-card__text">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Curabitur tellus augue.
+              <div class="project-mission-content">
+                <h3 class="project-mission-title">Mission RMG BONGOUANOU</h3>
+                <p class="project-mission-desc">
+                  Réhabilitation et travaux de valorisation à Bongouanou.
                 </p>
+                <a class="project-mission-link" href="#">
+                  En savoir plus <i class="bi bi-arrow-right"></i>
+                </a>
               </div>
-              <a class="btn btn-light project-card__action" href=""
-                >Read More<i class="bi bi-chevron-double-right ml-1"></i
-              ></a>
-            </div>
+            </article>
           </div>
         </div>
       </div>
@@ -657,7 +1079,7 @@
           </div>
 
           <div class="wow fadeIn" data-wow-delay="0.8s">
-            <div class="bg-white p-8 md:p-10">
+            <div class="home-form-panel home-card-tilt bg-white p-8 md:p-10">
               <h2
                 class="mb-8 font-roboto text-2xl font-bold uppercase text-gray-900"
               >
@@ -725,7 +1147,7 @@
                   ></textarea>
                 </label>
                 <div class="sm:col-span-2">
-                  <button class="btn btn-primary w-full py-4" type="submit">
+                  <button class="btn btn-primary home-cta w-full py-4" type="submit">
                     Envoyer ma demande
                   </button>
                 </div>
@@ -839,5 +1261,35 @@
 
     <script src="lib/wow/wow.min.js"></script>
     <script src="js/tailwind-main.js"></script>
+    <script>
+      (function () {
+        if (!window.matchMedia("(pointer:fine)").matches) return;
+
+        const tiltTargets = document.querySelectorAll(".home-card-tilt");
+        const maxTilt = 7;
+
+        tiltTargets.forEach(function (element) {
+          element.style.transformStyle = "preserve-3d";
+
+          element.addEventListener("mousemove", function (event) {
+            const rect = element.getBoundingClientRect();
+            const px = (event.clientX - rect.left) / rect.width;
+            const py = (event.clientY - rect.top) / rect.height;
+            const rotateY = (px - 0.5) * (maxTilt * 2);
+            const rotateX = (0.5 - py) * (maxTilt * 2);
+            element.style.transform =
+              "perspective(800px) rotateX(" +
+              rotateX.toFixed(2) +
+              "deg) rotateY(" +
+              rotateY.toFixed(2) +
+              "deg) translateY(-6px)";
+          });
+
+          element.addEventListener("mouseleave", function () {
+            element.style.transform = "";
+          });
+        });
+      })();
+    </script>
   </body>
 </html>
