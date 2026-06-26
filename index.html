@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="fr">
   <head>
     <meta charset="utf-8" />
@@ -56,7 +56,9 @@
             transparent 45%,
             rgba(255, 255, 255, 0.08)
           );
-        background-size: 170% 170%, 250% 250%;
+        background-size:
+          170% 170%,
+          250% 250%;
         animation: homeHeroSweep 14s linear infinite;
         opacity: 0.55;
       }
@@ -180,7 +182,9 @@
         overflow: hidden;
         border-radius: 1rem;
         box-shadow: 0 24px 70px rgba(13, 40, 16, 0.14);
-        transition: transform 0.45s ease, box-shadow 0.45s ease;
+        transition:
+          transform 0.45s ease,
+          box-shadow 0.45s ease;
         animation: aboutFloat 5.2s ease-in-out infinite;
       }
 
@@ -212,7 +216,9 @@
       }
 
       .home-about-outline {
-        transition: transform 0.45s ease, border-color 0.45s ease;
+        transition:
+          transform 0.45s ease,
+          border-color 0.45s ease;
         animation: aboutOutlinePulse 4.6s ease-in-out infinite;
       }
 
@@ -293,7 +299,9 @@
         width: 100%;
         border-radius: 1.1rem;
         object-fit: cover;
-        transition: transform 0.55s ease, filter 0.55s ease;
+        transition:
+          transform 0.55s ease,
+          filter 0.55s ease;
       }
 
       .project-mission-card:hover .project-mission-media {
@@ -377,10 +385,14 @@
 
       @keyframes homeHeroSweep {
         0% {
-          background-position: 0% 40%, 0% 60%;
+          background-position:
+            0% 40%,
+            0% 60%;
         }
         100% {
-          background-position: 140% 60%, 120% 40%;
+          background-position:
+            140% 60%,
+            120% 40%;
         }
       }
 
@@ -541,7 +553,7 @@
           >
             <small class="flex max-w-[520px] truncate min-w-0 items-center"
               ><i class="fa fa-map-marker-alt mr-3 text-base"></i>Yamoussoukro,
-              quartier 50 logements, derrière l'école méthodiste</small
+              50 logements, derrière l'école méthodiste</small
             >
             <small class="flex items-center whitespace-nowrap"
               ><i class="fa fa-envelope mr-3 text-base"></i
@@ -599,7 +611,6 @@
             <div class="flex flex-col lg:flex-row lg:items-center lg:gap-9">
               <a href="index.html" class="nav-link active">Accueil</a>
               <a href="apropos.html" class="nav-link">À Propos</a>
-              <a href="service.html" class="nav-link">Services</a>
               <div class="group relative">
                 <a
                   href="#"
@@ -607,38 +618,31 @@
                   data-projects-toggle
                   aria-expanded="false"
                 >
-                  Projets <i class="fa fa-chevron-down text-xs"></i>
+                  Services <i class="fa fa-chevron-down text-xs"></i>
                 </a>
                 <div
                   data-projects-menu
                   class="hidden min-w-52 bg-gray-50 py-2 shadow-lg lg:absolute lg:left-0 lg:top-full lg:group-hover:block"
                 >
                   <a
-                    href="reboisement.html"
+                    href="rehabilitation.html"
                     class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600"
-                    >Reboisement</a
+                    >Réhabilitation</a
                   >
                   <a
                     href="elevage.html"
                     class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600"
                     >Élevage</a
                   >
-                  <a
-                    href="agriculture.html"
-                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600"
-                    >Agriculture</a
-                  >
-                  <a
-                    href="pisciculture.html"
-                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600"
-                    >Pisciculture</a
-                  >
                 </div>
               </div>
+              <a href="reboisement.html" class="nav-link">Projets</a>
               <a href="contact.html" class="nav-link">Contact</a>
             </div>
             <div class="mt-4 lg:ml-auto lg:mt-0">
-              <a href="contact.html" class="btn btn-primary px-4 py-2">Contactez-nous</a>
+              <a href="contact.html" class="btn btn-primary px-4 py-2"
+                >Contactez-nous</a
+              >
             </div>
           </div>
         </nav>
@@ -711,7 +715,7 @@
               <h1
                 class="animated zoomIn mb-8 font-roboto text-4xl font-extrabold uppercase leading-tight text-white md:text-6xl lg:text-7xl"
               >
-                Développer l’agriculture, préserver les ressources naturelles
+                Développer l'agriculture, préserver les ressources naturelles
               </h1>
               <a href="#" class="btn btn-primary px-6 py-4">Voir plus</a>
             </div>
@@ -798,18 +802,21 @@
               À propos de SODAP-CI
             </h1>
             <p class="mb-6">
-              La SODAP-CI est une entreprise de soutien à la société KASSA GOLD
-              S.A. Elle joue un rôle stratégique dans la restauration et la
-              reconversion des terres exploitées, afin de les rendre de nouveau
-              utiles pour des activités productives et responsables.
+              La SODAP-CI SARL est une entreprise de soutien à la société
+              minière KASSA GOLD Holding S.A. Elle joue un rôle stratégique dans
+              la restauration et la reconversion des terres exploitées, afin de
+              les rendre de nouveau utiles pour des activités productives et
+              responsables.
             </p>
             <p class="mb-6">
               En effet, la SODAP-CI SARL agit autour de trois principaux
-              domaines d’expertise :
+              domaines d'expertise :
             </p>
             <div class="grid gap-6 sm:grid-cols-2">
               <div class="home-about-domain flex items-center">
-                <div class="home-about-domain-icon btn-xl-square mr-4 bg-gray-100 text-sodap-600">
+                <div
+                  class="home-about-domain-icon btn-xl-square mr-4 bg-gray-100 text-sodap-600"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="32"
@@ -828,7 +835,9 @@
                 </h5>
               </div>
               <div class="home-about-domain flex items-center">
-                <div class="home-about-domain-icon btn-xl-square mr-4 bg-gray-100 text-sodap-600">
+                <div
+                  class="home-about-domain-icon btn-xl-square mr-4 bg-gray-100 text-sodap-600"
+                >
                   <i class="fa fa-seedling fa-2x"></i>
                 </div>
                 <h5 class="font-roboto text-lg font-bold uppercase">
@@ -836,7 +845,9 @@
                 </h5>
               </div>
               <div class="home-about-domain flex items-center sm:col-span-2">
-                <div class="home-about-domain-icon btn-xl-square mr-4 bg-gray-100 text-sodap-600">
+                <div
+                  class="home-about-domain-icon btn-xl-square mr-4 bg-gray-100 text-sodap-600"
+                >
                   <i class="fa fa-mountain fa-2x"></i>
                 </div>
                 <h5 class="font-roboto text-lg font-bold uppercase">
@@ -888,7 +899,7 @@
               <img
                 class="mb-6 h-48 w-full object-cover"
                 src="img/carousel-1.JPG"
-                alt="Activités d’élevage et de pisciculture"
+                alt="Activités d'élevage et de pisciculture"
               />
               <h5 class="mb-4 font-roboto text-lg font-bold uppercase">
                 Élevage & pisciculture
@@ -917,8 +928,7 @@
                 Location de bulldozers
               </h5>
               <p class="mb-6">
-                Mise à disposition d’engins lourds pour vos projets
-                industriels.
+                Mise à disposition d'engins lourds pour vos projets industriels.
               </p>
               <a
                 class="relative z-10 flex justify-between text-sm font-semibold uppercase text-gray-600 hover:text-sodap-600"
@@ -972,7 +982,9 @@
                 alt="Mission remblayage Katiola"
               />
               <div class="project-mission-content">
-                <h3 class="project-mission-title">Mission remblayage Katiola</h3>
+                <h3 class="project-mission-title">
+                  Mission remblayage Katiola
+                </h3>
                 <p class="project-mission-desc">
                   Remblayage et réhabilitation des parcelles à Katiola.
                 </p>
@@ -990,7 +1002,9 @@
                 alt="Mission remblayage Katiola"
               />
               <div class="project-mission-content">
-                <h3 class="project-mission-title">Mission remblayage Katiola</h3>
+                <h3 class="project-mission-title">
+                  Mission remblayage Katiola
+                </h3>
                 <p class="project-mission-desc">
                   Suite des opérations de remise en état des terres à Katiola.
                 </p>
@@ -1029,12 +1043,12 @@
             <h1
               class="mb-8 font-roboto text-3xl font-extrabold uppercase text-white md:text-4xl"
             >
-              SODAP-CI SARL - Valoriser la terre, restaurer l’avenir
+              SODAP-CI SARL - Valoriser la terre, restaurer l'avenir
             </h1>
             <p class="mb-10 text-white wow fadeIn" data-wow-delay="0.4s">
               Entreprise agropastorale spécialisée dans la réhabilitation des
-              sites miniers, le développement agricole et l’élevage durable en
-              Côte d’Ivoire.
+              sites miniers, le développement agricole et l'élevage durable en
+              Côte d'Ivoire.
             </p>
             <div class="flex items-start wow fadeIn" data-wow-delay="0.5s">
               <div class="btn-lg-square bg-white">
@@ -1147,7 +1161,10 @@
                   ></textarea>
                 </label>
                 <div class="sm:col-span-2">
-                  <button class="btn btn-primary home-cta w-full py-4" type="submit">
+                  <button
+                    class="btn btn-primary home-cta w-full py-4"
+                    type="submit"
+                  >
                     Envoyer ma demande
                   </button>
                 </div>
@@ -1163,17 +1180,19 @@
         <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div>
             <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">
-              Our Office
+              SODAP-CI
             </h5>
             <p class="mb-3 text-gray-300">
-              <i class="fa fa-map-marker-alt mr-4 text-sodap-600"></i>123
-              Street, New York, USA
+              <i class="fa fa-map-marker-alt mr-4 text-sodap-600"></i
+              >Yamoussoukro, quartier 50 logements
             </p>
             <p class="mb-3 text-gray-300">
-              <i class="fa fa-phone-alt mr-4 text-sodap-600"></i>+012 345 67890
+              <i class="fa fa-phone-alt mr-4 text-sodap-600"></i>+225
+              27-33-75-73-12 / +225 21-21-80-58-73
             </p>
             <p class="mb-3 text-gray-300">
-              <i class="fa fa-envelope mr-4 text-sodap-600"></i>info@example.com
+              <i class="fa fa-envelope mr-4 text-sodap-600"></i
+              >lasodapci@gmail.com
             </p>
             <div class="flex gap-2 pt-4">
               <a class="btn btn-square social-btn" href="" aria-label="Facebook"
@@ -1189,46 +1208,80 @@
           </div>
           <div>
             <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">
-              Quick Links
+              Liens rapides
             </h5>
-            <a class="block py-1 text-gray-300 hover:text-white" href=""
-              >About Us</a
+            <a
+              class="block py-1 text-gray-300 hover:text-white"
+              href="index.html"
+              >Accueil</a
             >
-            <a class="block py-1 text-gray-300 hover:text-white" href=""
-              >Contact Us</a
+            <a
+              class="block py-1 text-gray-300 hover:text-white"
+              href="apropos.html"
+              >À propos</a
             >
-            <a class="block py-1 text-gray-300 hover:text-white" href=""
-              >Our Services</a
+            <a
+              class="block py-1 text-gray-300 hover:text-white"
+              href="service.html"
+              >Services</a
             >
-            <a class="block py-1 text-gray-300 hover:text-white" href=""
-              >Terms & Condition</a
+            <a
+              class="block py-1 text-gray-300 hover:text-white"
+              href="contact.html"
+              >Contact</a
             >
-            <a class="block py-1 text-gray-300 hover:text-white" href=""
-              >Support</a
+            <a
+              class="block py-1 text-gray-300 hover:text-white"
+              href="reboisement.html"
+              >Projets</a
             >
           </div>
           <div>
             <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">
-              Business Hours
+              Horaires
             </h5>
-            <p class="mb-1 uppercase text-gray-300">Monday - Friday</p>
-            <p class="mb-4 text-gray-400">09:00 am - 07:00 pm</p>
-            <p class="mb-1 uppercase text-gray-300">Saturday</p>
-            <p class="mb-4 text-gray-400">09:00 am - 12:00 pm</p>
-            <p class="mb-1 uppercase text-gray-300">Sunday</p>
-            <p class="text-gray-400">Closed</p>
+            <p class="mb-1 uppercase text-gray-300">Lundi - Vendredi</p>
+            <p class="mb-4 text-gray-400">08:00 - 17:30</p>
+            <p class="mb-1 uppercase text-gray-300">Samedi</p>
+            <p class="mb-4 text-gray-400">Sur rendez-vous</p>
+            <p class="mb-1 uppercase text-gray-300">Dimanche</p>
+            <p class="text-gray-400">Fermé</p>
           </div>
           <div>
             <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">
-              Gallery
+              Galerie
             </h5>
             <div class="grid grid-cols-3 gap-1">
-              <img class="h-auto max-w-full" src="img/service-1.jpg" alt="" />
-              <img class="h-auto max-w-full" src="img/service-2.jpg" alt="" />
-              <img class="h-auto max-w-full" src="img/service-3.jpg" alt="" />
-              <img class="h-auto max-w-full" src="img/service-4.jpg" alt="" />
-              <img class="h-auto max-w-full" src="img/service-5.jpg" alt="" />
-              <img class="h-auto max-w-full" src="img/service-6.jpg" alt="" />
+              <img
+                class="h-auto max-w-full"
+                src="img/carousel-1.JPG"
+                alt="Projet SODAP-CI 1"
+              />
+              <img
+                class="h-auto max-w-full"
+                src="img/carousel-2.JPG"
+                alt="Projet SODAP-CI 2"
+              />
+              <img
+                class="h-auto max-w-full"
+                src="img/carousel-3.JPG"
+                alt="Projet SODAP-CI 3"
+              />
+              <img
+                class="h-auto max-w-full"
+                src="img/about.JPG"
+                alt="Equipe SODAP-CI"
+              />
+              <img
+                class="h-auto max-w-full"
+                src="img/Mission_RMG_BONGOUANOU/UG2A6635.JPG"
+                alt="Mission terrain SODAP-CI"
+              />
+              <img
+                class="h-auto max-w-full"
+                src="img/Mission_RMG_BONGOUANOU/UG2A6645.JPG"
+                alt="Mission terrain SODAP-CI"
+              />
             </div>
           </div>
         </div>
@@ -1239,14 +1292,12 @@
       <div class="site-container">
         <div class="grid gap-4 text-center md:grid-cols-2 md:text-left">
           <div>
-            &copy; <a class="font-semibold" href="#">Your Site Name</a>, All
-            Right Reserved.
+            &copy; <a class="font-semibold" href="index.html">SODAP-CI</a>, Tous
+            droits reserves.
           </div>
           <div class="md:text-right">
-            Designed By
-            <a class="font-semibold" href="https://htmlcodex.com">HTML Codex</a>
-            Distributed by
-            <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+            Societe de Developpement Agricole, Piscicole et de Construction
+            Industrielle.
           </div>
         </div>
       </div>

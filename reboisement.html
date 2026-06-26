@@ -1,387 +1,439 @@
-<!DOCTYPE html>
+﻿<!doctype html>
 <html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>SODAP-CI - Projets</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="Projets SODAP-CI: Mission ALLE PATIZIA, Mission remblayage Katiola, Mission RMG BONGOUANOU." name="description" />
+    <meta content="projets, katiola, bongouanou, patizia, remblayage, rehabilitation" name="keywords" />
 
-<head>
-    <meta charset="utf-8">
-    <title>WELDORK - Welding Website Template</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="" name="keywords">
-    <meta content="" name="description">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto:wght@700;800&display=swap"
+      rel="stylesheet"
+    />
 
-    <!-- Favicon -->
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto:wght@700;800&display=swap"
-        rel="stylesheet">
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css"
+    />
+    <link href="lib/animate/animate.min.css" rel="stylesheet" />
+    <link href="css/tailwind.css" rel="stylesheet" />
+    <style>
+      .project-intro-card,
+      .project-photo-card {
+        border: 1px solid rgba(33, 79, 33, 0.12);
+        box-shadow: 0 24px 70px rgba(13, 40, 16, 0.1);
+        transition:
+          transform 0.35s ease,
+          box-shadow 0.35s ease,
+          border-color 0.35s ease;
+      }
 
-    <!-- Icon Font Stylesheet -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
+      .project-intro-card {
+        background: linear-gradient(180deg, #ffffff, #f7fbf5);
+        padding: 1.25rem 1.4rem;
+        animation: projectCardIdle 5.5s ease-in-out infinite;
+      }
 
-    <!-- Libraries Stylesheet -->
-    <link href="lib/animate/animate.min.css" rel="stylesheet">
-    <link href="css/tailwind.css" rel="stylesheet">
-<!-- Template Stylesheet -->
-    <link href="css/style.css" rel="stylesheet">
-</head>
+      .project-intro-card:hover {
+        transform: translateY(-6px);
+        border-color: rgba(33, 79, 33, 0.38);
+        box-shadow: 0 30px 80px rgba(13, 40, 16, 0.16);
+      }
 
-<body class="overflow-x-hidden bg-white font-poppins text-gray-600">
-    
-    <div id="spinner"
-        class="show fixed left-1/2 top-1/2 z-[99999] flex h-screen w-full -translate-x-1/2 -translate-y-1/2 items-center justify-center bg-white opacity-100 visible transition-opacity duration-500">
-        <div class="h-12 w-12 animate-spin rounded-full border-4 border-sodap-600 border-t-transparent" role="status"
-            aria-label="Chargement"></div>
+      .project-photo-card {
+        position: relative;
+        overflow: hidden;
+        animation: projectCardIdle 5.8s ease-in-out infinite;
+      }
+
+      .project-photo-card::after {
+        position: absolute;
+        content: "";
+        top: 0;
+        left: -60%;
+        width: 40%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.4),
+          transparent
+        );
+        transform: skewX(-16deg);
+        transition: left 0.8s ease;
+        pointer-events: none;
+      }
+
+      .project-photo-media {
+        transition: transform 0.55s ease, filter 0.55s ease;
+      }
+
+      .project-photo-card:hover .project-photo-media {
+        transform: scale(1.045);
+        filter: saturate(1.06) contrast(1.04);
+      }
+
+      .project-photo-card:hover {
+        transform: translateY(-6px) scale(1.015);
+        border-color: rgba(33, 79, 33, 0.38);
+        box-shadow: 0 30px 80px rgba(13, 40, 16, 0.16);
+      }
+
+      .project-photo-card:hover::after {
+        left: 130%;
+      }
+
+      @keyframes projectCardIdle {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-4px);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .project-intro-card,
+        .project-photo-card {
+          animation: none !important;
+        }
+      }
+
+      @media (max-width: 991.98px) {
+        .project-intro-card,
+        .project-photo-card {
+          animation: none;
+        }
+
+        .project-intro-card:hover,
+        .project-photo-card:hover {
+          transform: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="overflow-x-hidden bg-white font-poppins text-gray-600">
+    <div
+      id="spinner"
+      class="show fixed left-1/2 top-1/2 z-[99999] flex h-screen w-full -translate-x-1/2 -translate-y-1/2 items-center justify-center bg-white opacity-100 visible transition-opacity duration-500"
+    >
+      <div
+        class="h-12 w-12 animate-spin rounded-full border-4 border-sodap-600 border-t-transparent"
+        role="status"
+        aria-label="Chargement"
+      ></div>
     </div>
 
-
-
-    
     <div class="hidden bg-sodap-600 text-white lg:flex wow fadeIn" data-wow-delay="0.1s">
-        <div class="site-container py-3">
-            <div class="flex items-center">
-                <a href="index.html">
-                    <img src="img/logo.jpeg" alt="Logo SODAP-CI" class="h-[50px] w-auto">
+      <div class="site-container py-3">
+        <div class="flex items-center">
+          <a href="index.html">
+            <img src="img/logo.jpeg" alt="Logo SODAP-CI" class="h-[50px] w-auto" />
+          </a>
+          <div
+            class="ml-auto flex min-w-0 items-center gap-4 pl-8 text-[15px] font-semibold xl:gap-6 xl:text-base"
+          >
+            <small class="flex max-w-[520px] min-w-0 items-center truncate">
+              <i class="fa fa-map-marker-alt mr-3 text-base"></i>Yamoussoukro,
+              quartier 50 logements, derriÃ¨re l'Ã©cole mÃ©thodiste
+            </small>
+            <small class="flex items-center whitespace-nowrap">
+              <i class="fa fa-envelope mr-3 text-base"></i>lasodapci@gmail.com
+            </small>
+            <small class="flex items-center whitespace-nowrap">
+              <i class="fa fa-phone-alt mr-3 text-base"></i>+225 27-33-75-73-12 /
+              21-21-80-58-73
+            </small>
+            <div class="flex gap-2">
+              <a class="btn social-btn h-10 w-10 text-lg" href="" aria-label="Facebook">
+                <i class="fab fa-facebook-f"></i>
+              </a>
+              <a class="btn social-btn h-10 w-10 text-lg" href="" aria-label="LinkedIn">
+                <i class="fab fa-linkedin-in"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      data-sticky-nav
+      class="sticky top-0 z-50 bg-white transition-all duration-500 wow fadeIn"
+      data-wow-delay="0.1s"
+    >
+      <div class="site-container">
+        <nav class="flex min-h-[74px] flex-wrap items-center bg-white">
+          <a href="index.html" class="lg:hidden">
+            <img src="img/logo.jpeg" alt="Logo SODAP-CI" class="h-10 w-auto" />
+          </a>
+          <button
+            type="button"
+            class="ml-auto inline-flex h-11 w-11 items-center justify-center border border-gray-200 text-sodap-600 lg:hidden"
+            data-mobile-menu-toggle
+            aria-controls="siteNavigation"
+            aria-expanded="false"
+            aria-label="Ouvrir le menu"
+          >
+            <span class="sr-only">Menu</span>
+            <i class="fa fa-bars text-xl"></i>
+          </button>
+          <div
+            id="siteNavigation"
+            data-mobile-menu
+            class="hidden w-full flex-col border-t border-gray-100 py-4 lg:flex lg:flex-row lg:items-center lg:border-0 lg:py-0"
+          >
+            <div class="flex flex-col lg:flex-row lg:items-center lg:gap-9">
+              <a href="index.html" class="nav-link">Accueil</a>
+              <a href="apropos.html" class="nav-link">A Propos</a>
+              <div class="group relative">
+                <a
+                  href="#"
+                  class="nav-link inline-flex items-center gap-2"
+                  data-projects-toggle
+                  aria-expanded="false"
+                >
+                  Services <i class="fa fa-chevron-down text-xs"></i>
                 </a>
                 <div
-                    class="ml-auto flex min-w-0 items-center gap-4 pl-8 text-[15px] font-semibold xl:gap-6 xl:text-base">
-                    <small class="flex max-w-[520px] truncate min-w-0 items-center"><i
-                            class="fa fa-map-marker-alt mr-3 text-base"></i>Yamoussoukro, quartier 50 logements,
-                        derri?re l'?cole m?thodiste</small>
-                    <small class="flex items-center whitespace-nowrap"><i
-                            class="fa fa-envelope mr-3 text-base"></i>lasodapci@gmail.com</small>
-                    <small class="flex items-center whitespace-nowrap"><i class="fa fa-phone-alt mr-3 text-base"></i>+225
-                        27-33-75-73-12 / 21-21-80-58-73</small>
-                    <div class="flex gap-2">
-                        <a class="btn social-btn h-10 w-10 text-lg" href="" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn social-btn h-10 w-10 text-lg" href="" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
+                  data-projects-menu
+                  class="hidden min-w-52 bg-gray-50 py-2 shadow-lg lg:absolute lg:left-0 lg:top-full lg:group-hover:block"
+                >
+                  <a
+                    href="rehabilitation.html"
+                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600"
+                    >Rehabilitation</a
+                  >
+                  <a
+                    href="elevage.html"
+                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600"
+                    >Elevage</a
+                  >
                 </div>
+              </div>
+              <a href="reboisement.html" class="nav-link active">Projets</a>
+              <a href="contact.html" class="nav-link">Contact</a>
             </div>
-        </div>
-    </div>
-
-
-
-    
-    <div data-sticky-nav class="sticky top-0 z-50 bg-white transition-all duration-500 wow fadeIn" data-wow-delay="0.1s">
-        <div class="site-container">
-            <nav class="flex min-h-[74px] flex-wrap items-center bg-white">
-                <a href="index.html" class="lg:hidden">
-                    <img src="img/logo.jpeg" alt="Logo SODAP-CI" class="h-10 w-auto">
-                </a>
-                <button type="button"
-                    class="ml-auto inline-flex h-11 w-11 items-center justify-center border border-gray-200 text-sodap-600 lg:hidden"
-                    data-mobile-menu-toggle aria-controls="siteNavigation" aria-expanded="false"
-                    aria-label="Ouvrir le menu">
-                    <span class="sr-only">Menu</span>
-                    <i class="fa fa-bars text-xl"></i>
-                </button>
-                <div id="siteNavigation" data-mobile-menu
-                    class="hidden w-full flex-col border-t border-gray-100 py-4 lg:flex lg:flex-row lg:items-center lg:border-0 lg:py-0">
-                    <div class="flex flex-col lg:flex-row lg:items-center lg:gap-9">
-                        <a href="index.html" class="nav-link">Accueil</a>
-                        <a href="apropos.html" class="nav-link">? Propos</a>
-                        <a href="service.html" class="nav-link">Services</a>
-                        <div class="group relative">
-                            <a href="#" class="nav-link inline-flex items-center gap-2" data-projects-toggle
-                                aria-expanded="false">
-                                Projets <i class="fa fa-chevron-down text-xs"></i>
-                            </a>
-                            <div data-projects-menu
-                                class="hidden min-w-52 bg-gray-50 py-2 shadow-lg lg:absolute lg:left-0 lg:top-full lg:group-hover:block">
-                                <a href="reboisement.html"
-                                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600">Reboisement</a>
-                                <a href="elevage.html"
-                                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600">?levage</a>
-                                <a href="agriculture.html"
-                                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600">Agriculture</a>
-                                <a href="pisciculture.html"
-                                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600">Pisciculture</a>
-                            </div>
-                        </div>
-                        <a href="contact.html" class="nav-link">Contact</a>
-                    </div>
-                    <div class="mt-4 lg:ml-auto lg:mt-0">
-                        <a href="contact.html" class="btn btn-primary px-4 py-2">Contactez-nous</a>
-                    </div>
-                </div>
-            </nav>
-        </div>
-    </div>
-
-
-
-    <!-- Page Header Start -->
-    <div class="container-fluid page-header pt-5 mb-6 wow fadeIn" data-wow-delay="0.1s">
-        <div class="container text-center pt-5">
-            <div class="row justify-content-center">
-                <div class="col-lg-7">
-                    <div class="bg-white p-5">
-                        <h1 class="display-6 text-uppercase mb-3 animated slideInDown">Reboisement</h1>
-                        <nav aria-label="breadcrumb animated slideInDown">
-                            <ol class="breadcrumb justify-content-center mb-0">
-                                <li class="breadcrumb-item"><a href="index.html">Accueil</a></li>
-                                <li class="breadcrumb-item"><a href="#">Projets</a></li>
-                                <li class="breadcrumb-item" aria-current="page">Reboisement</li>
-                            </ol>
-                        </nav>
-                    </div>
-                </div>
+            <div class="mt-4 lg:ml-auto lg:mt-0">
+              <a href="contact.html" class="btn btn-primary px-4 py-2">Contactez-nous</a>
             </div>
-        </div>
+          </div>
+        </nav>
+      </div>
     </div>
-    <!-- Page Header End -->
 
+    <header class="relative overflow-hidden bg-sodap-600 wow fadeIn" data-wow-delay="0.1s">
+  <div class="absolute inset-0 bg-[url('../img/Mission_ALLE_PATIZIA/UG2A3034.JPG')] bg-cover bg-center opacity-25"></div>
+  <div class="absolute inset-0 bg-black/45"></div>
+  <div class="site-container relative py-16 md:py-20 lg:py-24">
+    <div class="max-w-3xl">
+      <p class="mb-4 text-sm font-semibold uppercase tracking-wide text-white/80">Nos Projets</p>
+      <h1 class="mb-6 font-roboto text-4xl font-extrabold leading-tight text-white md:text-6xl">Missions realisees sur le terrain</h1>
+      <p class="max-w-2xl text-base text-white/90 md:text-lg">
+        Decouvrez nos principales interventions avec un suivi photo des operations menees
+        sur les sites de Patizia, Katiola et Bongouanou.
+      </p>
+    </div>
+  </div>
+</header>
 
-    <!-- Features Start -->
-    <div class="container-fluid pt-6 pb-6">
-        <div class="container pt-4">
-            <div class="row g-0 feature-row wow fadeIn" data-wow-delay="0.1s">
-                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.3s">
-                    <div class="feature-item border h-100">
-                        <div class="feature-icon btn-xxl-square bg-primary mb-4 mt-n4">
-                            <i class="fa fa-hammer fa-2x text-white"></i>
-                        </div>
-                        <div class="p-5 pt-0">
-                            <h5 class="text-uppercase mb-3">Quality Welding</h5>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur tellus augue.</p>
-                            <a class="position-relative text-body text-uppercase small d-flex justify-content-between"
-                                href="#"><b class="bg-white pe-3">Read More</b> <i
-                                    class="bi bi-arrow-right bg-white ps-3"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.4s">
-                    <div class="feature-item border h-100">
-                        <div class="feature-icon btn-xxl-square bg-primary mb-4 mt-n4">
-                            <i class="fa fa-dollar-sign fa-2x text-white"></i>
-                        </div>
-                        <div class="p-5 pt-0">
-                            <h5 class="text-uppercase">Affordable Pricing</h5>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur tellus augue.</p>
-                            <a class="position-relative text-body text-uppercase small d-flex justify-content-between"
-                                href="#"><b class="bg-white pe-3">Read More</b> <i
-                                    class="bi bi-arrow-right bg-white ps-3"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.5s">
-                    <div class="feature-item border h-100">
-                        <div class="feature-icon btn-xxl-square bg-primary mb-4 mt-n4">
-                            <i class="fa fa-check-double fa-2x text-white"></i>
-                        </div>
-                        <div class="p-5 pt-0">
-                            <h5 class="text-uppercase">Best Welder</h5>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur tellus augue.</p>
-                            <a class="position-relative text-body text-uppercase small d-flex justify-content-between"
-                                href="#"><b class="bg-white pe-3">Read More</b> <i
-                                    class="bi bi-arrow-right bg-white ps-3"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.6s">
-                    <div class="feature-item border h-100">
-                        <div class="feature-icon btn-xxl-square bg-primary mb-4 mt-n4">
-                            <i class="fa fa-tools fa-2x text-white"></i>
-                        </div>
-                        <div class="p-5 pt-0">
-                            <h5 class="text-uppercase">Quality Tools</h5>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur tellus augue.</p>
-                            <a class="position-relative text-body text-uppercase small d-flex justify-content-between"
-                                href="#"><b class="bg-white pe-3">Read More</b> <i
-                                    class="bi bi-arrow-right bg-white ps-3"></i></a>
-                        </div>
-                    </div>
-                </div>
+<section class="section-y">
+  <div class="site-container">
+    <div class="project-intro-card mb-10 max-w-3xl wow fadeInUp" data-wow-delay="0.1s">
+      <h2 class="font-roboto text-3xl font-extrabold text-gray-900 md:text-4xl">Projet ALLE et PATIZIA</h2>
+      <p class="mt-4 text-gray-600">
+        Cette mission couvre la mise en valeur des parcelles, l'organisation des travaux et
+        le suivi des operations agricoles et environnementales sur le site de Patizia.
+      </p>
+    </div>
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div class="project-photo-card wow fadeInUp" data-wow-delay="0.1s">
+        <img src="img/Mission_ALLE_PATIZIA/IMG_1689.JPG" alt="Projet ALLE et PATIZIA - Vue generale" class="project-photo-media h-72 w-full object-cover shadow-[0_0_45px_rgb(0_0_0_/_0.08)]" />
+      </div>
+      <div class="project-photo-card wow fadeInUp" data-wow-delay="0.2s">
+        <img src="img/Mission_ALLE_PATIZIA/IMG_1681.JPG" alt="Projet ALLE et PATIZIA - Activites terrain" class="project-photo-media h-72 w-full object-cover shadow-[0_0_45px_rgb(0_0_0_/_0.08)]" />
+      </div>
+      <div class="project-photo-card wow fadeInUp" data-wow-delay="0.3s">
+        <img src="img/Mission_ALLE_PATIZIA/IMG_1680.JPG" alt="Projet ALLE et PATIZIA - Amenagement" class="project-photo-media h-72 w-full object-cover shadow-[0_0_45px_rgb(0_0_0_/_0.08)]" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-y bg-gray-50">
+  <div class="site-container">
+    <div class="project-intro-card mb-10 max-w-3xl wow fadeInUp" data-wow-delay="0.1s">
+      <h2 class="font-roboto text-3xl font-extrabold text-gray-900 md:text-4xl">Projet remblayage a Katiola</h2>
+      <p class="mt-4 text-gray-600">
+        Les interventions de Katiola regroupent les travaux de remblayage et de stabilisation
+        effectues sur l'ensemble des zones traitees.
+      </p>
+    </div>
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div class="project-photo-card wow fadeInUp" data-wow-delay="0.1s">
+        <img src="img/Mission_remblayage_Katiola1/UG2A1364.JPG" alt="Katiola - Remblayage de parcelles" class="project-photo-media h-72 w-full object-cover shadow-[0_0_45px_rgb(0_0_0_/_0.08)]" />
+      </div>
+      <div class="project-photo-card wow fadeInUp" data-wow-delay="0.2s">
+        <img src="img/Mission_remblayage_Katiola1/UG2A1371.JPG" alt="Katiola - Nivellement du sol" class="project-photo-media h-72 w-full object-cover shadow-[0_0_45px_rgb(0_0_0_/_0.08)]" />
+      </div>
+      <div class="project-photo-card wow fadeInUp" data-wow-delay="0.3s">
+        <img src="img/Mission_remblayage_Katiola_2/UG2A1474.JPG" alt="Katiola - Consolidation des zones" class="project-photo-media h-72 w-full object-cover shadow-[0_0_45px_rgb(0_0_0_/_0.08)]" />
+      </div>
+      <div class="project-photo-card wow fadeInUp" data-wow-delay="0.1s">
+        <img src="img/Mission_remblayage_Katiola_2/UG2A1490.JPG" alt="Katiola - Travaux de terrain" class="project-photo-media h-72 w-full object-cover shadow-[0_0_45px_rgb(0_0_0_/_0.08)]" />
+      </div>
+      <div class="project-photo-card wow fadeInUp" data-wow-delay="0.2s">
+        <img src="img/Mission_remblayage_Katiola1/UG2A1368.JPG" alt="Katiola - Site en cours de rehabilitation" class="project-photo-media h-72 w-full object-cover shadow-[0_0_45px_rgb(0_0_0_/_0.08)]" />
+      </div>
+      <div class="project-photo-card wow fadeInUp" data-wow-delay="0.3s">
+        <img src="img/Mission_remblayage_Katiola_2/UG2A1551.JPG" alt="Katiola - Resultat apres intervention" class="project-photo-media h-72 w-full object-cover shadow-[0_0_45px_rgb(0_0_0_/_0.08)]" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-y">
+  <div class="site-container">
+    <div class="project-intro-card mb-10 max-w-3xl wow fadeInUp" data-wow-delay="0.1s">
+      <h2 class="font-roboto text-3xl font-extrabold text-gray-900 md:text-4xl">Projet RMG a Bongouanou</h2>
+      <p class="mt-4 text-gray-600">
+        A Bongouanou, les actions ont porte sur la rehabilitation utile des espaces,
+        la valorisation du site et le suivi operationnel des activites.
+      </p>
+    </div>
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div class="project-photo-card wow fadeInUp" data-wow-delay="0.1s">
+        <img src="img/Mission_RMG_BONGOUANOU/UG2A6556.JPG" alt="Projet RMG a Bongouanou - Suivi" class="project-photo-media h-72 w-full object-cover shadow-[0_0_45px_rgb(0_0_0_/_0.08)]" />
+      </div>
+      <div class="project-photo-card wow fadeInUp" data-wow-delay="0.2s">
+        <img src="img/Mission_RMG_BONGOUANOU/UG2A6635.JPG" alt="Mission RMG Bongouanou - Terrain" class="project-photo-media h-72 w-full object-cover shadow-[0_0_45px_rgb(0_0_0_/_0.08)]" />
+      </div>
+      <div class="project-photo-card wow fadeInUp" data-wow-delay="0.3s">
+        <img src="img/Mission_RMG_BONGOUANOU/UG2A6644.JPG" alt="Mission RMG Bongouanou - Valorisation" class="project-photo-media h-72 w-full object-cover shadow-[0_0_45px_rgb(0_0_0_/_0.08)]" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="bg-gray-950 py-20 footer wow fadeIn" data-wow-delay="0.1s">
+      <div class="site-container">
+        <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">
+              SODAP-CI
+            </h5>
+            <p class="mb-3 text-gray-300">
+              <i class="fa fa-map-marker-alt mr-4 text-sodap-600"></i
+              >Yamoussoukro, quartier 50 logements
+            </p>
+            <p class="mb-3 text-gray-300">
+              <i class="fa fa-phone-alt mr-4 text-sodap-600"></i
+              >+225 27-33-75-73-12 / +225 21-21-80-58-73
+            </p>
+            <p class="mb-3 text-gray-300">
+              <i class="fa fa-envelope mr-4 text-sodap-600"></i
+              >lasodapci@gmail.com
+            </p>
+            <div class="flex gap-2 pt-4">
+              <a class="btn btn-square social-btn" href="" aria-label="Facebook"
+                ><i class="fab fa-facebook-f"></i
+              ></a>
+              <a class="btn btn-square social-btn" href="" aria-label="YouTube"
+                ><i class="fab fa-youtube"></i
+              ></a>
+              <a class="btn btn-square social-btn" href="" aria-label="LinkedIn"
+                ><i class="fab fa-linkedin-in"></i
+              ></a>
             </div>
-        </div>
-    </div>
-    <!-- Features End -->
-
-
-    <!-- Features Start -->
-    <div class="pb-6">
-        <div class="container-fluid feature mt-6 wow fadeIn" data-wow-delay="0.1s">
-            <div class="container">
-                <div class="row g-0 justify-content-end">
-                    <div class="col-lg-6 pt-5">
-                        <div class="mt-5">
-                            <h1 class="display-6 text-white text-uppercase mb-4 wow fadeIn" data-wow-delay="0.3s">Why
-                                You should Choose Our welding Services</h1>
-                            <p class="text-light mb-4 wow fadeIn" data-wow-delay="0.4s">Lorem ipsum dolor sit amet,
-                                consectetur adipiscing elit. Curabitur tellus augue, iaculis id elit eget, ultrices
-                                pulvinar
-                                tortor. Quisque vel lorem porttitor, malesuada arcu quis, fringilla risus. Pellentesque
-                                eu
-                                consequat augue.</p>
-                            <div class="row g-4 pt-2 mb-4">
-                                <div class="col-sm-6 wow fadeIn" data-wow-delay="0.4s">
-                                    <div class="flex-column text-center border border-5 border-primary p-5">
-                                        <h1 class="text-white" data-toggle="counter-up">9999</h1>
-                                        <p class="text-white text-uppercase mb-0">Satisfied Clients</p>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 wow fadeIn" data-wow-delay="0.5s">
-                                    <div class="flex-column text-center border border-5 border-primary p-5">
-                                        <h1 class="text-white" data-toggle="counter-up">9999</h1>
-                                        <p class="text-white text-uppercase mb-0">Complete Projects</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="border border-5 border-primary border-bottom-0 p-5">
-                                <div class="experience mb-4 wow fadeIn" data-wow-delay="0.6s">
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span class="text-white text-uppercase">Experience</span>
-                                        <span class="text-white">90%</span>
-                                    </div>
-                                    <div class="progress">
-                                        <div class="progress-bar bg-primary" role="progressbar" aria-valuenow="90"
-                                            aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-                                <div class="experience wow fadeIn" data-wow-delay="0.7s">
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span class="text-white text-uppercase">Work Done</span>
-                                        <span class="text-white">95%</span>
-                                    </div>
-                                    <div class="progress">
-                                        <div class="progress-bar bg-primary" role="progressbar" aria-valuenow="95"
-                                            aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+          </div>
+          <div>
+            <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">
+              Liens rapides
+            </h5>
+            <a class="block py-1 text-gray-300 hover:text-white" href="index.html"
+              >Accueil</a
+            >
+            <a
+              class="block py-1 text-gray-300 hover:text-white"
+              href="apropos.html"
+              >A propos</a
+            >
+            <a
+              class="block py-1 text-gray-300 hover:text-white"
+              href="service.html"
+              >Services</a
+            >
+            <a
+              class="block py-1 text-gray-300 hover:text-white"
+              href="contact.html"
+              >Contact</a
+            >
+            <a
+              class="block py-1 text-gray-300 hover:text-white"
+              href="reboisement.html"
+              >Projets</a
+            >
+          </div>
+          <div>
+            <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">
+              Horaires
+            </h5>
+            <p class="mb-1 uppercase text-gray-300">Lundi - Vendredi</p>
+            <p class="mb-4 text-gray-400">08:00 - 17:30</p>
+            <p class="mb-1 uppercase text-gray-300">Samedi</p>
+            <p class="mb-4 text-gray-400">Sur rendez-vous</p>
+            <p class="mb-1 uppercase text-gray-300">Dimanche</p>
+            <p class="text-gray-400">FermÃ©</p>
+          </div>
+          <div>
+            <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">
+              Galerie
+            </h5>
+            <div class="grid grid-cols-3 gap-1">
+              <img class="h-auto max-w-full" src="img/carousel-1.JPG" alt="Projet SODAP-CI 1" />
+              <img class="h-auto max-w-full" src="img/carousel-2.JPG" alt="Projet SODAP-CI 2" />
+              <img class="h-auto max-w-full" src="img/carousel-3.JPG" alt="Projet SODAP-CI 3" />
+              <img class="h-auto max-w-full" src="img/about.JPG" alt="Equipe SODAP-CI" />
+              <img class="h-auto max-w-full" src="img/Mission_RMG_BONGOUANOU/UG2A6635.JPG" alt="Mission terrain SODAP-CI" />
+              <img class="h-auto max-w-full" src="img/Mission_RMG_BONGOUANOU/UG2A6645.JPG" alt="Mission terrain SODAP-CI" />
             </div>
+          </div>
         </div>
+      </div>
     </div>
-    <!-- Features End -->
 
-
-    <!-- Newsletter Start -->
-    <div class="container-fluid newsletter mt-6 wow fadeIn" data-wow-delay="0.1s">
-        <div class="container pb-5">
-            <div class="bg-white p-5 mb-5">
-                <div class="row g-5">
-                    <div class="col-md-6 wow fadeIn" data-wow-delay="0.3s">
-                        <h1 class="display-6 text-uppercase mb-4">Newsletter</h1>
-                        <div class="d-flex">
-                            <i class="far fa-envelope-open fa-3x text-primary me-4"></i>
-                            <p class="fs-5 fst-italic mb-0">Dolores sed duo clita tempor justo dolor et stet lorem kasd
-                                labore lorem ipsum.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6 wow fadeIn" data-wow-delay="0.5s">
-                        <div class="form-floating mb-3">
-                            <input type="email" class="form-control border-0 bg-light" id="mail"
-                                placeholder="Your Email">
-                            <label for="mail">Your Email</label>
-                        </div>
-                        <button class="btn btn-primary w-100 py-3" type="submit">Submit Now</button>
-                    </div>
-                </div>
-            </div>
+    <div class="py-6 text-gray-600 copyright">
+      <div class="site-container">
+        <div class="grid gap-4 text-center md:grid-cols-2 md:text-left">
+          <div>
+            &copy; <a class="font-semibold" href="index.html">SODAP-CI</a>, Tous
+            droits reserves.
+          </div>
+          <div class="md:text-right">
+            Societe de Developpement Agricole, Piscicole et de Construction
+            Industrielle.
+          </div>
         </div>
+      </div>
     </div>
-    <!-- Newsletter End -->
 
+    <a
+      href="#"
+      class="back-to-top btn btn-primary btn-lg-square fixed bottom-8 right-8 z-[99] hidden"
+    >
+      <i class="bi bi-arrow-up"></i>
+    </a>
 
-    <!-- Footer Start -->
-    <div class="container-fluid bg-dark footer py-5 wow fadeIn" data-wow-delay="0.1s">
-        <div class="container py-5">
-            <div class="row g-5">
-                <div class="col-lg-3 col-md-6">
-                    <h5 class="text-uppercase text-light mb-4">Our Office</h5>
-                    <p class="mb-2"><i class="fa fa-map-marker-alt text-primary me-3"></i>123 Street, New York, USA</p>
-                    <p class="mb-2"><i class="fa fa-phone-alt text-primary me-3"></i>+012 345 67890</p>
-                    <p class="mb-2"><i class="fa fa-envelope text-primary me-3"></i>info@example.com</p>
-                    <div class="d-flex pt-3">
-                        <a class="btn btn-square btn-light me-2" href=""><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-square btn-light me-2" href=""><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-square btn-light me-2" href=""><i class="fab fa-youtube"></i></a>
-                        <a class="btn btn-square btn-light me-2" href=""><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h5 class="text-uppercase text-light mb-4">Quick Links</h5>
-                    <a class="btn btn-link" href="">About Us</a>
-                    <a class="btn btn-link" href="">Contact Us</a>
-                    <a class="btn btn-link" href="">Our Services</a>
-                    <a class="btn btn-link" href="">Terms & Condition</a>
-                    <a class="btn btn-link" href="">Support</a>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h5 class="text-uppercase text-light mb-4">Business Hours</h5>
-                    <p class="text-uppercase mb-0">Monday - Friday</p>
-                    <p>09:00 am - 07:00 pm</p>
-                    <p class="text-uppercase mb-0">Saturday</p>
-                    <p>09:00 am - 12:00 pm</p>
-                    <p class="text-uppercase mb-0">Sunday</p>
-                    <p>Closed</p>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h5 class="text-uppercase text-light mb-4">Gallery</h5>
-                    <div class="row g-1">
-                        <div class="col-4">
-                            <img class="img-fluid" src="img/service-1.jpg" alt="">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid" src="img/service-2.jpg" alt="">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid" src="img/service-3.jpg" alt="">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid" src="img/service-4.jpg" alt="">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid" src="img/service-5.jpg" alt="">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid" src="img/service-6.jpg" alt="">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Footer End -->
-
-
-    <!-- Copyright Start -->
-    <div class="container-fluid text-body copyright py-4">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    &copy; <a class="fw-semi-bold" href="#">Your Site Name</a>, All Right Reserved.
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <!--/*** This template is free as long as you keep the below author’s credit link/attribution link/backlink. ***/-->
-                    <!--/*** If you'd like to use the template without the below author’s credit link/attribution link/backlink, ***/-->
-                    <!--/*** you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". ***/-->
-                    Designed By <a class="fw-semi-bold" href="https://htmlcodex.com">HTML Codex</a> Distributed by <a
-                        href="https://themewagon.com" target="_blank">ThemeWagon</a></a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Copyright End -->
-
-
-    <!-- Back to Top -->
-    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
-
-
-    <!-- JavaScript Libraries -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="lib/wow/wow.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/waypoints/waypoints.min.js"></script>
-    <script src="lib/counterup/counterup.min.js"></script>
-    <!-- Template Javascript -->
     <script src="js/tailwind-secondary.js"></script>
-</body>
-
+  </body>
 </html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 
 <head>
@@ -186,6 +186,14 @@
         .contact-hero .btn-primary,
         .contact-shell .btn-primary,
         .contact-followup .btn-primary {
+            color: #ffffff !important;
+        }
+
+        nav .btn-primary {
+            color: #ffffff !important;
+        }
+
+        .contact-hero-card .btn-primary {
             color: #ffffff !important;
         }
 
@@ -431,24 +439,33 @@
                     <div class="flex flex-col lg:flex-row lg:items-center lg:gap-9">
                         <a href="index.html" class="nav-link">Accueil</a>
                         <a href="apropos.html" class="nav-link">À Propos</a>
-                        <a href="service.html" class="nav-link">Services</a>
                         <div class="group relative">
-                            <a href="#" class="nav-link inline-flex items-center gap-2" data-projects-toggle
-                                aria-expanded="false">
-                                Projets <i class="fa fa-chevron-down text-xs"></i>
-                            </a>
-                            <div data-projects-menu
-                                class="hidden min-w-52 bg-gray-50 py-2 shadow-lg lg:absolute lg:left-0 lg:top-full lg:group-hover:block">
-                                <a href="reboisement.html"
-                                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600">Reboisement</a>
-                                <a href="elevage.html" class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600">Élevage</a>
-                                <a href="agriculture.html"
-                                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600">Agriculture</a>
-                                <a href="pisciculture.html"
-                                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600">Pisciculture</a>
-                            </div>
-                        </div>
-                        <a href="contact.html" class="nav-link">Contact</a>
+                <a
+                  href="#"
+                  class="nav-link inline-flex items-center gap-2"
+                  data-projects-toggle
+                  aria-expanded="false"
+                >
+                  Services <i class="fa fa-chevron-down text-xs"></i>
+                </a>
+                <div
+                  data-projects-menu
+                  class="hidden min-w-52 bg-gray-50 py-2 shadow-lg lg:absolute lg:left-0 lg:top-full lg:group-hover:block"
+                >
+                  <a
+                    href="rehabilitation.html"
+                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600"
+                    >Réhabilitation</a
+                  >
+                  <a
+                    href="elevage.html"
+                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600"
+                    >Élevage</a
+                  >
+                </div>
+              </div>
+              <a href="reboisement.html" class="nav-link">Projets</a>
+              <a href="contact.html" class="nav-link">Contact</a>
                     </div>
                     <div class="mt-4 lg:ml-auto lg:mt-0">
                         <a href="contact.html" class="btn btn-primary px-4 py-2">Contactez-nous</a>
@@ -470,7 +487,7 @@
                     <p class="mb-2 text-xs font-bold uppercase tracking-wide text-sodap-600">Réponse sous 24h ouvrées</p>
                     <h2 class="mb-3 font-roboto text-2xl font-bold uppercase text-gray-900">Un interlocuteur pour vos projets</h2>
                     <p class="mb-5 leading-7">Agriculture, élevage, pisciculture, reboisement et travaux terrain : décrivez votre besoin, nous vous orientons.</p>
-                    <a href="#formulaire-contact" class="btn btn-primary w-full px-5 py-3">Demander un accompagnement</a>
+                    <a href="#formulaire-contact" class="btn btn-primary w-full px-5 py-3 text-white">Demander un accompagnement</a>
                 </aside>
             </div>
             <nav aria-label="Navigation secondaire" class="mt-10">
@@ -580,7 +597,7 @@
             </div>
 
             <section class="contact-map-panel relative mt-8 rounded-2xl" aria-label="Localisation SODAP-CI">
-                <iframe class="min-h-[360px] w-full border-0 md:min-h-[470px]" title="Carte de localisation SODAP-CI à Yamoussoukro" src="https://maps.google.com/maps?q=Yamoussoukro%20Cote%20d%27Ivoire&t=&z=13&ie=UTF8&iwloc=&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+                <iframe class="min-h-[360px] w-full border-0 md:min-h-[470px]" title="Carte de localisation SODAP-CI à Yamoussoukro, Côte d'Ivoire" src="https://maps.google.com/maps?q=Yamoussoukro%20Cote%20d%27Ivoire&t=&z=13&ie=UTF8&iwloc=&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
                 <div class="contact-map-note rounded-2xl p-5 lg:absolute lg:bottom-6 lg:right-6">
                     <p class="mb-2 text-sm font-bold uppercase tracking-wide text-sodap-600">Point de rencontre</p>
                     <h3 class="mb-2 font-roboto text-lg font-bold uppercase text-gray-900">Yamoussoukro</h3>
@@ -610,61 +627,107 @@
 
 
     <!-- Footer Start -->
-    <footer class="bg-gray-950 text-gray-300">
-        <div class="mx-auto max-w-6xl px-4 py-12">
-            <div class="grid gap-8 lg:grid-cols-[1.2fr_1fr_1fr]">
-                <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
-                    <h3 class="mb-3 font-roboto text-2xl font-bold uppercase text-white">SODAP-CI</h3>
-                    <p class="mb-5 leading-7 text-gray-300">Société engagée dans l'accompagnement de projets agricoles, d'élevage, de pisciculture, de reboisement et de travaux terrain.</p>
-                    <div class="space-y-3 text-sm">
-                        <p class="flex items-start gap-3"><i class="fa fa-map-marker-alt mt-1 text-sodap-600"></i><span>Yamoussoukro, quartier 50 logements</span></p>
-                        <p class="flex items-start gap-3"><i class="fa fa-phone-alt mt-1 text-sodap-600"></i><a href="tel:+2252733757312" class="hover:text-white">+225 27-33-75-73-12</a></p>
-                        <p class="flex items-start gap-3"><i class="fa fa-envelope mt-1 text-sodap-600"></i><a href="mailto:lasodapci@gmail.com" class="hover:text-white">lasodapci@gmail.com</a></p>
-                    </div>
-                    <div class="mt-6 flex items-center gap-3">
-                        <a class="inline-flex h-9 w-9 items-center justify-center rounded-sm border border-white/20 text-white transition hover:-translate-y-1 hover:bg-white hover:text-gray-900" href="" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a class="inline-flex h-9 w-9 items-center justify-center rounded-sm border border-white/20 text-white transition hover:-translate-y-1 hover:bg-white hover:text-gray-900" href="" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-
-                <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-1">
-                    <div>
-                        <h4 class="mb-4 font-roboto text-lg font-bold uppercase tracking-wide text-white">Navigation</h4>
-                        <div class="space-y-2 text-sm">
-                            <a class="block transition hover:text-white" href="index.html">Accueil</a>
-                            <a class="block transition hover:text-white" href="apropos.html">À propos</a>
-                            <a class="block transition hover:text-white" href="service.html">Services</a>
-                            <a class="block text-sodap-600" href="contact.html">Contact</a>
-                        </div>
-                    </div>
-                    <div>
-                        <h4 class="mb-4 font-roboto text-lg font-bold uppercase tracking-wide text-white">Projets</h4>
-                        <div class="space-y-2 text-sm">
-                            <a class="block transition hover:text-white" href="reboisement.html">Reboisement</a>
-                            <a class="block transition hover:text-white" href="elevage.html">Élevage</a>
-                            <a class="block transition hover:text-white" href="agriculture.html">Agriculture</a>
-                            <a class="block transition hover:text-white" href="pisciculture.html">Pisciculture</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="rounded-2xl border border-sodap-600/40 bg-sodap-600/10 p-6">
-                    <h4 class="mb-4 font-roboto text-lg font-bold uppercase tracking-wide text-white">Horaires</h4>
-                    <div class="space-y-3 text-sm">
-                        <p><span class="block text-xs font-semibold uppercase tracking-wide text-gray-400">Lundi - Vendredi</span><span class="text-white">08h00 - 17h30</span></p>
-                        <p><span class="block text-xs font-semibold uppercase tracking-wide text-gray-400">Samedi</span><span class="text-white">Sur rendez-vous</span></p>
-                        <p class="pt-2 leading-6 text-gray-300">Réponse sous 24h ouvrées pour les demandes envoyées par email.</p>
-                    </div>
-                </div>
+    <div class="bg-gray-950 py-20 footer wow fadeIn" data-wow-delay="0.1s">
+      <div class="site-container">
+        <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">
+              SODAP-CI
+            </h5>
+            <p class="mb-3 text-gray-300">
+              <i class="fa fa-map-marker-alt mr-4 text-sodap-600"></i
+              >Yamoussoukro, quartier 50 logements
+            </p>
+            <p class="mb-3 text-gray-300">
+              <i class="fa fa-phone-alt mr-4 text-sodap-600"></i
+              >+225 27-33-75-73-12 / +225 21-21-80-58-73
+            </p>
+            <p class="mb-3 text-gray-300">
+              <i class="fa fa-envelope mr-4 text-sodap-600"></i
+              >lasodapci@gmail.com
+            </p>
+            <div class="flex gap-2 pt-4">
+              <a class="btn btn-square social-btn" href="" aria-label="Facebook"
+                ><i class="fab fa-facebook-f"></i
+              ></a>
+              <a class="btn btn-square social-btn" href="" aria-label="YouTube"
+                ><i class="fab fa-youtube"></i
+              ></a>
+              <a class="btn btn-square social-btn" href="" aria-label="LinkedIn"
+                ><i class="fab fa-linkedin-in"></i
+              ></a>
             </div>
-        </div>
-        <div class="border-t border-white/10">
-            <div class="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-5 text-sm text-gray-400 md:flex-row md:items-center md:justify-between">
-                <p>&copy; <a class="font-semibold text-white hover:text-sodap-600" href="index.html">SODAP-CI</a>, Tous droits réservés.</p>
-                <p>Conception web adaptée pour SODAP-CI.</p>
+          </div>
+          <div>
+            <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">
+              Liens rapides
+            </h5>
+            <a class="block py-1 text-gray-300 hover:text-white" href="index.html"
+              >Accueil</a
+            >
+            <a
+              class="block py-1 text-gray-300 hover:text-white"
+              href="apropos.html"
+              >À propos</a
+            >
+            <a
+              class="block py-1 text-gray-300 hover:text-white"
+              href="service.html"
+              >Services</a
+            >
+            <a
+              class="block py-1 text-gray-300 hover:text-white"
+              href="contact.html"
+              >Contact</a
+            >
+            <a
+              class="block py-1 text-gray-300 hover:text-white"
+              href="reboisement.html"
+              >Projets</a
+            >
+          </div>
+          <div>
+            <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">
+              Horaires
+            </h5>
+            <p class="mb-1 uppercase text-gray-300">Lundi - Vendredi</p>
+            <p class="mb-4 text-gray-400">08:00 - 17:30</p>
+            <p class="mb-1 uppercase text-gray-300">Samedi</p>
+            <p class="mb-4 text-gray-400">Sur rendez-vous</p>
+            <p class="mb-1 uppercase text-gray-300">Dimanche</p>
+            <p class="text-gray-400">Fermé</p>
+          </div>
+          <div>
+            <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">
+              Galerie
+            </h5>
+            <div class="grid grid-cols-3 gap-1">
+              <img class="h-auto max-w-full" src="img/carousel-1.JPG" alt="Projet SODAP-CI 1" />
+              <img class="h-auto max-w-full" src="img/carousel-2.JPG" alt="Projet SODAP-CI 2" />
+              <img class="h-auto max-w-full" src="img/carousel-3.JPG" alt="Projet SODAP-CI 3" />
+              <img class="h-auto max-w-full" src="img/about.JPG" alt="Equipe SODAP-CI" />
+              <img class="h-auto max-w-full" src="img/Mission_RMG_BONGOUANOU/UG2A6635.JPG" alt="Mission terrain SODAP-CI" />
+              <img class="h-auto max-w-full" src="img/Mission_RMG_BONGOUANOU/UG2A6645.JPG" alt="Mission terrain SODAP-CI" />
             </div>
+          </div>
         </div>
-    </footer>
+      </div>
+    </div>
+
+    <div class="py-6 text-gray-600 copyright">
+      <div class="site-container">
+        <div class="grid gap-4 text-center md:grid-cols-2 md:text-left">
+          <div>
+            &copy; <a class="font-semibold" href="index.html">SODAP-CI</a>, Tous
+            droits réservés.
+          </div>
+          <div class="md:text-right">
+            Société de Développement Agricole, Piscicole et de Construction
+            Industrielle.
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Footer End -->
 
 
@@ -708,3 +771,4 @@
 </body>
 
 </html>
+

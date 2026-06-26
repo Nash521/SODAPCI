@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="fr">
   <head>
     <meta charset="utf-8" />
@@ -30,6 +30,275 @@
     />
     <link href="lib/animate/animate.min.css" rel="stylesheet" />
     <link href="css/tailwind.css" rel="stylesheet" />
+    <style>
+      .about-identity-card,
+      .about-identity-media-wrap,
+      .about-principle-card,
+      .about-gallery-card {
+        border: 1px solid rgba(33, 79, 33, 0.12);
+        box-shadow: 0 24px 70px rgba(13, 40, 16, 0.1);
+        transition:
+          transform 0.35s ease,
+          box-shadow 0.35s ease,
+          border-color 0.35s ease;
+      }
+
+      .about-identity-card {
+        position: relative;
+        overflow: hidden;
+        animation: aboutCardIdle 5.5s ease-in-out infinite;
+      }
+
+      .about-identity-card::before {
+        position: absolute;
+        content: "";
+        inset: 0 auto 0 0;
+        width: 4px;
+        background: #214f21;
+        transform: scaleY(0);
+        transform-origin: bottom;
+        transition: transform 0.35s ease;
+      }
+
+      .about-identity-card::after {
+        position: absolute;
+        content: "";
+        top: 0;
+        left: -75%;
+        width: 45%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.5),
+          transparent
+        );
+        transform: skewX(-16deg);
+        transition: left 0.75s ease;
+        pointer-events: none;
+      }
+
+      .about-identity-card:hover {
+        transform: translateY(-8px) scale(1.01);
+        border-color: rgba(33, 79, 33, 0.38);
+        box-shadow: 0 30px 80px rgba(13, 40, 16, 0.16);
+      }
+
+      .about-identity-card:hover::before {
+        transform: scaleY(1);
+      }
+
+      .about-identity-card:hover::after {
+        left: 130%;
+      }
+
+      .about-identity-media-wrap {
+        position: relative;
+        overflow: hidden;
+        animation: aboutMediaFloat 5.2s ease-in-out infinite;
+      }
+
+      .about-identity-media-wrap::after {
+        position: absolute;
+        content: "";
+        top: 0;
+        left: -60%;
+        width: 40%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.4),
+          transparent
+        );
+        transform: skewX(-16deg);
+        transition: left 0.8s ease;
+        pointer-events: none;
+      }
+
+      .about-identity-media-wrap:hover {
+        transform: translateY(-6px) scale(1.01);
+        box-shadow: 0 34px 95px rgba(13, 40, 16, 0.2);
+      }
+
+      .about-identity-media-wrap:hover::after {
+        left: 130%;
+      }
+
+      .about-principle-card {
+        position: relative;
+        overflow: hidden;
+        animation: aboutCardIdle 5.5s ease-in-out infinite;
+      }
+
+      .about-principle-card:hover {
+        transform: translateY(-8px);
+        border-color: rgba(33, 79, 33, 0.38);
+        box-shadow: 0 30px 80px rgba(13, 40, 16, 0.16);
+      }
+
+      .about-principle-icon {
+        transition:
+          transform 0.3s ease,
+          background-color 0.3s ease,
+          color 0.3s ease;
+      }
+
+      .about-principle-card:hover .about-principle-icon {
+        background: #214f21;
+        color: #ffffff;
+        transform: rotate(-8deg) translateY(-2px);
+      }
+
+      .about-gallery-cta {
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 16px 34px rgba(33, 79, 33, 0.24);
+        animation: aboutCtaBreath 2.6s ease-in-out infinite;
+      }
+
+      .about-gallery-cta::after {
+        position: absolute;
+        content: "";
+        top: 0;
+        left: -45%;
+        width: 40%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.36),
+          transparent
+        );
+        transform: skewX(-18deg);
+        transition: left 0.6s ease;
+      }
+
+      .about-gallery-cta:hover::after {
+        left: 115%;
+      }
+
+      .about-gallery-card {
+        position: relative;
+        overflow: hidden;
+        animation: aboutCardIdle 5.8s ease-in-out infinite;
+      }
+
+      .about-gallery-card::after {
+        position: absolute;
+        content: "";
+        top: 0;
+        left: -60%;
+        width: 40%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.4),
+          transparent
+        );
+        transform: skewX(-16deg);
+        transition: left 0.8s ease;
+        pointer-events: none;
+      }
+
+      .about-gallery-photo {
+        transition: transform 0.55s ease, filter 0.55s ease;
+      }
+
+      .about-gallery-card:hover .about-gallery-photo {
+        transform: scale(1.045);
+        filter: saturate(1.06) contrast(1.04);
+      }
+
+      .about-gallery-card:hover::after {
+        left: 130%;
+      }
+
+      .about-gallery-card:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+
+      .about-gallery-card:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+
+      .about-gallery-card:nth-child(4) {
+        animation-delay: 0.45s;
+      }
+
+      .about-gallery-card:nth-child(5) {
+        animation-delay: 0.6s;
+      }
+
+      .about-gallery-card:nth-child(6) {
+        animation-delay: 0.75s;
+      }
+
+      .about-gallery-card:hover {
+        animation: aboutCardIdle 5.8s ease-in-out infinite;
+        transform: translateY(-6px) scale(1.02);
+        border-color: rgba(33, 79, 33, 0.38);
+        box-shadow: 0 30px 80px rgba(13, 40, 16, 0.16);
+      }
+
+      @keyframes aboutCardIdle {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-4px);
+        }
+      }
+
+      @keyframes aboutMediaFloat {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-5px);
+        }
+      }
+
+      @keyframes aboutCtaBreath {
+        0%,
+        100% {
+          box-shadow: 0 16px 34px rgba(33, 79, 33, 0.24);
+        }
+        50% {
+          box-shadow: 0 24px 45px rgba(33, 79, 33, 0.35);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .about-identity-card,
+        .about-identity-media-wrap,
+        .about-principle-card,
+        .about-gallery-card,
+        .about-gallery-cta {
+          animation: none !important;
+        }
+      }
+
+      @media (max-width: 991.98px) {
+        .about-identity-card,
+        .about-identity-media-wrap,
+        .about-principle-card,
+        .about-gallery-card,
+        .about-gallery-cta {
+          animation: none;
+        }
+
+        .about-identity-card:hover,
+        .about-identity-media-wrap:hover,
+        .about-principle-card:hover,
+        .about-gallery-card:hover {
+          transform: none;
+        }
+      }
+    </style>
   </head>
 
   <body class="overflow-x-hidden bg-white font-poppins text-gray-600">
@@ -121,8 +390,7 @@
           >
             <div class="flex flex-col lg:flex-row lg:items-center lg:gap-9">
               <a href="index.html" class="nav-link">Accueil</a>
-              <a href="apropos.html" class="nav-link active">&Agrave; Propos</a>
-              <a href="service.html" class="nav-link">Services</a>
+              <a href="apropos.html" class="nav-link active">A Propos</a>
               <div class="group relative">
                 <a
                   href="#"
@@ -130,34 +398,25 @@
                   data-projects-toggle
                   aria-expanded="false"
                 >
-                  Projets <i class="fa fa-chevron-down text-xs"></i>
+                  Services <i class="fa fa-chevron-down text-xs"></i>
                 </a>
                 <div
                   data-projects-menu
                   class="hidden min-w-52 bg-gray-50 py-2 shadow-lg lg:absolute lg:left-0 lg:top-full lg:group-hover:block"
                 >
                   <a
-                    href="reboisement.html"
+                    href="rehabilitation.html"
                     class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600"
-                    >Reboisement</a
+                    >Rehabilitation</a
                   >
                   <a
                     href="elevage.html"
                     class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600"
-                    >&Eacute;levage</a
-                  >
-                  <a
-                    href="agriculture.html"
-                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600"
-                    >Agriculture</a
-                  >
-                  <a
-                    href="pisciculture.html"
-                    class="block px-5 py-2 text-sm text-gray-700 hover:bg-white hover:text-sodap-600"
-                    >Pisciculture</a
+                    >Elevage</a
                   >
                 </div>
               </div>
+              <a href="reboisement.html" class="nav-link">Projets</a>
               <a href="contact.html" class="nav-link">Contact</a>
             </div>
             <div class="mt-4 lg:ml-auto lg:mt-0">
@@ -243,7 +502,7 @@
               pour les communautes.
             </p>
             <div class="grid gap-4 sm:grid-cols-2">
-              <article class="rounded-sm border border-gray-200 bg-white p-5">
+              <article class="about-identity-card rounded-sm border border-gray-200 bg-white p-5">
                 <h3 class="mb-2 font-roboto text-lg font-bold text-gray-900">
                   Mission
                 </h3>
@@ -252,7 +511,7 @@
                   des activites productives adaptees aux territoires.
                 </p>
               </article>
-              <article class="rounded-sm border border-gray-200 bg-white p-5">
+              <article class="about-identity-card rounded-sm border border-gray-200 bg-white p-5">
                 <h3 class="mb-2 font-roboto text-lg font-bold text-gray-900">
                   Vision
                 </h3>
@@ -265,7 +524,7 @@
           </div>
 
           <div class="wow fadeInUp" data-wow-delay="0.2s">
-            <div class="overflow-hidden rounded-3xl shadow-lg">
+            <div class="about-identity-media-wrap overflow-hidden rounded-3xl shadow-lg">
               <img
                 src="img/Mission_remblayage_Katiola_2/UG2A1490.JPG"
                 alt="Intervention de remblayage terrain"
@@ -300,9 +559,9 @@
         </div>
 
         <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <article class="feature-card p-6 wow fadeInUp" data-wow-delay="0.1s">
+          <article class="about-principle-card feature-card p-6 wow fadeInUp" data-wow-delay="0.1s">
             <div
-              class="mb-4 inline-flex btn-xl-square bg-sodap-soft text-sodap-600"
+              class="about-principle-icon mb-4 inline-flex btn-xl-square bg-sodap-soft text-sodap-600"
             >
               <i class="fa fa-leaf text-2xl"></i>
             </div>
@@ -310,12 +569,12 @@
               Responsabilite
             </h3>
             <p class="text-gray-600">
-              Protection des ecosystemes et gestion raisonnée des ressources.
+              Protection des ecosystemes et gestion raisonnÃ©e des ressources.
             </p>
           </article>
-          <article class="feature-card p-6 wow fadeInUp" data-wow-delay="0.2s">
+          <article class="about-principle-card feature-card p-6 wow fadeInUp" data-wow-delay="0.2s">
             <div
-              class="mb-4 inline-flex btn-xl-square bg-sodap-soft text-sodap-600"
+              class="about-principle-icon mb-4 inline-flex btn-xl-square bg-sodap-soft text-sodap-600"
             >
               <i class="fa fa-lightbulb text-2xl"></i>
             </div>
@@ -326,9 +585,9 @@
               Solutions adaptees aux realites techniques et sociales du terrain.
             </p>
           </article>
-          <article class="feature-card p-6 wow fadeInUp" data-wow-delay="0.3s">
+          <article class="about-principle-card feature-card p-6 wow fadeInUp" data-wow-delay="0.3s">
             <div
-              class="mb-4 inline-flex btn-xl-square bg-sodap-soft text-sodap-600"
+              class="about-principle-icon mb-4 inline-flex btn-xl-square bg-sodap-soft text-sodap-600"
             >
               <i class="fa fa-award text-2xl"></i>
             </div>
@@ -340,9 +599,9 @@
               mesurables.
             </p>
           </article>
-          <article class="feature-card p-6 wow fadeInUp" data-wow-delay="0.4s">
+          <article class="about-principle-card feature-card p-6 wow fadeInUp" data-wow-delay="0.4s">
             <div
-              class="mb-4 inline-flex btn-xl-square bg-sodap-soft text-sodap-600"
+              class="about-principle-icon mb-4 inline-flex btn-xl-square bg-sodap-soft text-sodap-600"
             >
               <i class="fa fa-users text-2xl"></i>
             </div>
@@ -375,42 +634,54 @@
               Nos interventions sur le terrain
             </h2>
           </div>
-          <a href="contact.html" class="btn btn-primary px-5 py-3"
+          <a href="contact.html" class="btn btn-primary about-gallery-cta px-5 py-3"
             >Discuter de votre projet</a
           >
         </div>
 
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <img
-            src="img/Mission_ALLE_PATIZIA/UG2A3012.JPG"
-            alt="Mission ALLE PATIZIA"
-            class="h-56 w-full rounded-sm object-cover"
-          />
-          <img
-            src="img/Mission_remblayage_Katiola1/UG2A1368.JPG"
-            alt="Mission remblayage Katiola"
-            class="h-56 w-full rounded-sm object-cover"
-          />
-          <img
-            src="img/Mission_remblayage_Katiola_2/UG2A1551.JPG"
-            alt="Suivi de rehabilitation Katiola"
-            class="h-56 w-full rounded-sm object-cover"
-          />
-          <img
-            src="img/Mission_RMG_BONGOUANOU/UG2A6639.JPG"
-            alt="Mission RMG Bongouanou"
-            class="h-56 w-full rounded-sm object-cover"
-          />
-          <img
-            src="img/Mission_ALLE_PATIZIA/IMG_1680.JPG"
-            alt="Equipe de terrain SODAP-CI"
-            class="h-56 w-full rounded-sm object-cover"
-          />
-          <img
-            src="img/PATIZIA/IMG_1151.JPG"
-            alt="Zone de projet PATIZIA"
-            class="h-56 w-full rounded-sm object-cover"
-          />
+          <div class="about-gallery-card wow fadeInUp" data-wow-delay="0.1s">
+            <img
+              src="img/Mission_ALLE_PATIZIA/UG2A3012.JPG"
+              alt="Mission ALLE PATIZIA"
+              class="about-gallery-photo h-56 w-full rounded-sm object-cover"
+            />
+          </div>
+          <div class="about-gallery-card wow fadeInUp" data-wow-delay="0.2s">
+            <img
+              src="img/Mission_remblayage_Katiola1/UG2A1368.JPG"
+              alt="Mission remblayage Katiola"
+              class="about-gallery-photo h-56 w-full rounded-sm object-cover"
+            />
+          </div>
+          <div class="about-gallery-card wow fadeInUp" data-wow-delay="0.3s">
+            <img
+              src="img/Mission_remblayage_Katiola_2/UG2A1551.JPG"
+              alt="Suivi de rehabilitation Katiola"
+              class="about-gallery-photo h-56 w-full rounded-sm object-cover"
+            />
+          </div>
+          <div class="about-gallery-card wow fadeInUp" data-wow-delay="0.4s">
+            <img
+              src="img/Mission_RMG_BONGOUANOU/UG2A6639.JPG"
+              alt="Mission RMG Bongouanou"
+              class="about-gallery-photo h-56 w-full rounded-sm object-cover"
+            />
+          </div>
+          <div class="about-gallery-card wow fadeInUp" data-wow-delay="0.5s">
+            <img
+              src="img/Mission_ALLE_PATIZIA/IMG_1680.JPG"
+              alt="Equipe de terrain SODAP-CI"
+              class="about-gallery-photo h-56 w-full rounded-sm object-cover"
+            />
+          </div>
+          <div class="about-gallery-card wow fadeInUp" data-wow-delay="0.6s">
+            <img
+              src="img/PATIZIA/IMG_1151.JPG"
+              alt="Zone de projet PATIZIA"
+              class="about-gallery-photo h-56 w-full rounded-sm object-cover"
+            />
+          </div>
         </div>
       </div>
     </section>
@@ -420,16 +691,15 @@
         <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div>
             <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">
-              Notre bureau
+              SODAP-CI
             </h5>
             <p class="mb-3 text-gray-300">
               <i class="fa fa-map-marker-alt mr-4 text-sodap-600"></i
-              >Yamoussoukro, quartier 50 logements, derri&egrave;re
-              l'&eacute;cole m&eacute;thodiste
+              >Yamoussoukro, quartier 50 logements
             </p>
             <p class="mb-3 text-gray-300">
-              <i class="fa fa-phone-alt mr-4 text-sodap-600"></i>+225
-              27-33-75-73-12
+              <i class="fa fa-phone-alt mr-4 text-sodap-600"></i
+              >+225 27-33-75-73-12 / +225 21-21-80-58-73
             </p>
             <p class="mb-3 text-gray-300">
               <i class="fa fa-envelope mr-4 text-sodap-600"></i
@@ -447,20 +717,17 @@
               ></a>
             </div>
           </div>
-
           <div>
             <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">
               Liens rapides
             </h5>
-            <a
-              class="block py-1 text-gray-300 hover:text-white"
-              href="apropos.html"
-              >&Agrave; Propos</a
+            <a class="block py-1 text-gray-300 hover:text-white" href="index.html"
+              >Accueil</a
             >
             <a
               class="block py-1 text-gray-300 hover:text-white"
-              href="contact.html"
-              >Contact</a
+              href="apropos.html"
+              >A propos</a
             >
             <a
               class="block py-1 text-gray-300 hover:text-white"
@@ -469,63 +736,37 @@
             >
             <a
               class="block py-1 text-gray-300 hover:text-white"
-              href="reboisement.html"
-              >Reboisement</a
+              href="contact.html"
+              >Contact</a
             >
             <a
               class="block py-1 text-gray-300 hover:text-white"
-              href="agriculture.html"
-              >Agriculture</a
+              href="reboisement.html"
+              >Projets</a
             >
           </div>
-
           <div>
             <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">
               Horaires
             </h5>
             <p class="mb-1 uppercase text-gray-300">Lundi - Vendredi</p>
-            <p class="mb-4 text-gray-400">09:00 - 19:00</p>
+            <p class="mb-4 text-gray-400">08:00 - 17:30</p>
             <p class="mb-1 uppercase text-gray-300">Samedi</p>
-            <p class="mb-4 text-gray-400">09:00 - 12:00</p>
+            <p class="mb-4 text-gray-400">Sur rendez-vous</p>
             <p class="mb-1 uppercase text-gray-300">Dimanche</p>
-            <p class="text-gray-400">Ferm&eacute;</p>
+            <p class="text-gray-400">FermÃ©</p>
           </div>
-
           <div>
             <h5 class="mb-6 font-roboto font-bold uppercase text-gray-100">
               Galerie
             </h5>
             <div class="grid grid-cols-3 gap-1">
-              <img
-                class="h-auto max-w-full"
-                src="img/Mission_ALLE_PATIZIA/UG2A2978.JPG"
-                alt="Mission ALLE PATIZIA"
-              />
-              <img
-                class="h-auto max-w-full"
-                src="img/Mission_remblayage_Katiola_2/UG2A1413.JPG"
-                alt="Mission Katiola"
-              />
-              <img
-                class="h-auto max-w-full"
-                src="img/Mission_RMG_BONGOUANOU/UG2A6628.JPG"
-                alt="Mission Bongouanou"
-              />
-              <img
-                class="h-auto max-w-full"
-                src="img/Mission_ALLE_PATIZIA/IMG_1702.JPG"
-                alt="Travaux terrain"
-              />
-              <img
-                class="h-auto max-w-full"
-                src="img/Mission_remblayage_Katiola1/UG2A1324.JPG"
-                alt="Travaux Katiola"
-              />
-              <img
-                class="h-auto max-w-full"
-                src="img/PATIZIA/IMG_1151.JPG"
-                alt="PATIZIA"
-              />
+              <img class="h-auto max-w-full" src="img/carousel-1.JPG" alt="Projet SODAP-CI 1" />
+              <img class="h-auto max-w-full" src="img/carousel-2.JPG" alt="Projet SODAP-CI 2" />
+              <img class="h-auto max-w-full" src="img/carousel-3.JPG" alt="Projet SODAP-CI 3" />
+              <img class="h-auto max-w-full" src="img/about.JPG" alt="Equipe SODAP-CI" />
+              <img class="h-auto max-w-full" src="img/Mission_RMG_BONGOUANOU/UG2A6635.JPG" alt="Mission terrain SODAP-CI" />
+              <img class="h-auto max-w-full" src="img/Mission_RMG_BONGOUANOU/UG2A6645.JPG" alt="Mission terrain SODAP-CI" />
             </div>
           </div>
         </div>
@@ -536,14 +777,12 @@
       <div class="site-container">
         <div class="grid gap-4 text-center md:grid-cols-2 md:text-left">
           <div>
-            &copy; <a class="font-semibold" href="#">SODAP-CI</a>, Tous droits
-            r&eacute;serv&eacute;s.
+            &copy; <a class="font-semibold" href="index.html">SODAP-CI</a>, Tous
+            droits reserves.
           </div>
           <div class="md:text-right">
-            Designed By
-            <a class="font-semibold" href="https://htmlcodex.com">HTML Codex</a>
-            Distributed by
-            <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+            Societe de Developpement Agricole, Piscicole et de Construction
+            Industrielle.
           </div>
         </div>
       </div>
