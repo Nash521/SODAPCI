@@ -34,7 +34,8 @@
       .about-identity-card,
       .about-identity-media-wrap,
       .about-principle-card,
-      .about-gallery-card {
+      .about-gallery-card,
+      .about-team-card {
         border: 1px solid rgba(33, 79, 33, 0.12);
         box-shadow: 0 24px 70px rgba(13, 40, 16, 0.1);
         transition:
@@ -242,6 +243,56 @@
         box-shadow: 0 30px 80px rgba(13, 40, 16, 0.16);
       }
 
+      .about-team-card {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(180deg, #ffffff, #f7fbf5);
+        animation: aboutCardIdle 5.6s ease-in-out infinite;
+      }
+
+      .about-team-card::after {
+        position: absolute;
+        content: "";
+        top: 0;
+        left: -60%;
+        width: 40%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.4),
+          transparent
+        );
+        transform: skewX(-16deg);
+        transition: left 0.8s ease;
+        pointer-events: none;
+      }
+
+      .about-team-card:hover {
+        transform: translateY(-8px) scale(1.01);
+        border-color: rgba(33, 79, 33, 0.38);
+        box-shadow: 0 30px 80px rgba(13, 40, 16, 0.16);
+      }
+
+      .about-team-card:hover::after {
+        left: 130%;
+      }
+
+      .about-team-photo-wrap {
+        position: relative;
+        overflow: hidden;
+        background: #eef7ec;
+      }
+
+      .about-team-photo {
+        transition: transform 0.55s ease, filter 0.55s ease;
+      }
+
+      .about-team-card:hover .about-team-photo {
+        transform: scale(1.04);
+        filter: saturate(1.05) contrast(1.03);
+      }
+
       @keyframes aboutCardIdle {
         0%,
         100% {
@@ -277,7 +328,8 @@
         .about-identity-media-wrap,
         .about-principle-card,
         .about-gallery-card,
-        .about-gallery-cta {
+        .about-gallery-cta,
+        .about-team-card {
           animation: none !important;
         }
       }
@@ -287,14 +339,16 @@
         .about-identity-media-wrap,
         .about-principle-card,
         .about-gallery-card,
-        .about-gallery-cta {
+        .about-gallery-cta,
+        .about-team-card {
           animation: none;
         }
 
         .about-identity-card:hover,
         .about-identity-media-wrap:hover,
         .about-principle-card:hover,
-        .about-gallery-card:hover {
+        .about-gallery-card:hover,
+        .about-team-card:hover {
           transform: none;
         }
       }
@@ -683,6 +737,49 @@
             />
           </div>
         </div>
+      </div>
+    </section>
+
+    <section class="section-y">
+      <div class="site-container">
+        <div
+          class="mx-auto mb-12 max-w-3xl text-center wow fadeInUp"
+          data-wow-delay="0.1s"
+        >
+          <p
+            class="mb-3 text-sm font-semibold uppercase tracking-wide text-sodap-600"
+          >
+            Equipe dirigeante
+          </p>
+          <h2
+            class="mb-4 font-roboto text-3xl font-extrabold text-gray-900 md:text-4xl"
+          >
+            Une presence de confiance au coeur de SODAP-CI
+          </h2>
+        </div>
+
+        <article
+          class="about-team-card mx-auto max-w-sm rounded-[28px] p-4 wow fadeInUp md:p-5"
+          data-wow-delay="0.2s"
+        >
+          <div class="about-team-photo-wrap rounded-[22px]">
+            <img
+              src="img/personnel/UG2A1753.JPG"
+              alt="Gerante adjointe de SODAP-CI"
+              class="about-team-photo h-[420px] w-full object-cover object-center"
+            />
+          </div>
+          <div class="px-2 pb-3 pt-5 text-center">
+            <h3 class="font-roboto text-2xl font-extrabold text-gray-900">
+              YOMIE Amandine
+            </h3>
+            <p
+              class="mt-2 text-sm font-semibold uppercase tracking-[0.24em] text-sodap-600"
+            >
+              Gerante Adjointe de SODAP-CI
+            </p>
+          </div>
+        </article>
       </div>
     </section>
 

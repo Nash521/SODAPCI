@@ -173,6 +173,28 @@
             box-shadow: 0 0 0 0.25rem rgba(33, 79, 33, 0.14) !important;
         }
 
+        .contact-form-panel input[type="file"].contact-field {
+            padding: 0.75rem 0.85rem;
+            line-height: 1.5;
+        }
+
+        .contact-form-panel input[type="file"].contact-field::file-selector-button {
+            margin-right: 0.9rem;
+            border: 0;
+            border-radius: 0.45rem;
+            background: #214f21;
+            color: #ffffff;
+            cursor: pointer;
+            padding: 0.7rem 1rem;
+            font-weight: 700;
+            transition: background 0.25s ease, transform 0.25s ease;
+        }
+
+        .contact-form-panel input[type="file"].contact-field:hover::file-selector-button {
+            background: #163a18;
+            transform: translateY(-1px);
+        }
+
         .contact-submit {
             position: relative;
             overflow: hidden;
@@ -594,6 +616,54 @@
                         </div>
                     </form>
                 </div>
+
+                <section class="mt-8 grid gap-8 lg:grid-cols-[0.75fr_1fr]">
+                    <aside class="contact-cta-panel rounded-2xl p-6 text-white lg:p-8">
+                        <p class="mb-3 text-sm font-bold uppercase tracking-wide text-white/80">Carriere et recrutement</p>
+                        <h2 class="mb-5 font-roboto text-3xl font-bold uppercase leading-tight text-white md:text-4xl">Deposez votre candidature avec le meme parcours fluide.</h2>
+                        <p class="mb-6 leading-7">Si vous souhaitez rejoindre SODAP-CI, envoyez votre profil ainsi que vos documents de candidature. Nous examinerons votre demande en fonction du poste ou du domaine recherche.</p>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3">
+                                <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-sodap-600"><i class="bi bi-person-badge text-xl"></i></span>
+                                <span>Un formulaire dedie aux demandes d'emploi</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-sodap-600"><i class="bi bi-file-earmark-arrow-up text-xl"></i></span>
+                                <span>Ajout du CV et de la lettre de motivation</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-sodap-600"><i class="bi bi-briefcase text-xl"></i></span>
+                                <span>Identification simple du poste ou domaine recherche</span>
+                            </div>
+                        </div>
+                    </aside>
+                    <form class="contact-form-panel rounded-2xl p-6 lg:p-8" action="#" method="post" enctype="multipart/form-data">
+                        <p class="mb-2 text-sm font-bold uppercase tracking-wide text-sodap-600">Demande d'emploi</p>
+                        <h2 class="mb-6 font-roboto text-2xl font-bold uppercase text-gray-900">Envoyez votre candidature</h2>
+                        <div class="grid gap-4">
+                            <label class="block">
+                                <span class="mb-2 block text-sm font-bold text-gray-700">Nom et prenom</span>
+                                <input type="text" class="contact-field" name="Nom et prenom" placeholder="Votre nom et prenom" required>
+                            </label>
+                            <label class="block">
+                                <span class="mb-2 block text-sm font-bold text-gray-700">Poste ou domaine recherche</span>
+                                <input type="text" class="contact-field" name="Poste ou domaine recherche" placeholder="Ex. technicien agricole, elevage, pisciculture" required>
+                            </label>
+                            <label class="block">
+                                <span class="mb-2 block text-sm font-bold text-gray-700">CV</span>
+                                <input type="file" class="contact-field" name="CV" accept=".pdf,.doc,.docx" required>
+                            </label>
+                            <label class="block">
+                                <span class="mb-2 block text-sm font-bold text-gray-700">Lettre de motivation</span>
+                                <input type="file" class="contact-field" name="Lettre de motivation" accept=".pdf,.doc,.docx" required>
+                            </label>
+                            <p class="text-sm leading-6 text-gray-500">Formats conseilles : PDF, DOC ou DOCX. Le CV et la lettre de motivation sont obligatoires.</p>
+                            <div>
+                                <button class="btn btn-primary contact-submit w-full px-5 py-3" type="submit">Envoyer ma candidature</button>
+                            </div>
+                        </div>
+                    </form>
+                </section>
             </div>
 
             <section class="contact-map-panel relative mt-8 rounded-2xl" aria-label="Localisation SODAP-CI">
