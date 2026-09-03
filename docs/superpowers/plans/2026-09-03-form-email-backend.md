@@ -145,7 +145,7 @@ export default {
     if (origin !== env.ALLOWED_ORIGIN) return json({ error: "Origine non autorisée." }, 403, "null");
     if (request.method !== "POST") return json({ error: "Méthode non autorisée." }, 405, origin);
     if (new URL(request.url).pathname !== "/api/contact") return json({ error: "Route introuvable." }, 404, origin);
-    return json({ error: "À implémenter." }, 400, origin);
+    return json({ error: "Champs requis manquants." }, 400, origin);
   }
 };
 ```
