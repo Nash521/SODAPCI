@@ -105,7 +105,6 @@ test('valid multipart contact form calls Resend and responds 202', { skip: 'Impl
       {
         ...env,
         RESEND_API_KEY: 'test-key',
-        CONTACT_RECIPIENT: 'forms@sodap-ci.example',
       },
     );
 
@@ -113,7 +112,7 @@ test('valid multipart contact form calls Resend and responds 202', { skip: 'Impl
     assert.equal(calls.length, 1);
     assert.equal(calls[0].url, 'https://api.resend.com/emails');
     const payload = JSON.parse(calls[0].init.body);
-    assert.deepEqual(payload.to, ['forms@sodap-ci.example']);
+    assert.deepEqual(payload.to, ['carriere@lasodapci.com']);
     assert.equal(payload.reply_to, 'ada@example.com');
   } finally {
     globalThis.fetch = originalFetch;
