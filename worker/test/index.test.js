@@ -2,7 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import worker from '../src/index.js';
 
-const env = { ALLOWED_ORIGIN: 'https://sodap-ci.example' };
+const env = {
+  ALLOWED_ORIGIN: 'https://sodap-ci.example',
+  FROM_EMAIL: 'forms@lasodapci.com',
+  RESEND_API_KEY: 'test-key',
+};
 
 function request(path, options = {}) {
   return new Request(`https://worker.example${path}`, {
@@ -20,6 +24,33 @@ function contactForm(fields = {}) {
     form.set(name, value);
   }
   return form;
+}
+
+function applicationForm(fields = {}) {
+  return contactForm({
+    name: 'Ada Lovelace',
+    email: 'ada@example.com',
+    position: 'Agronomist',
+    cv: new Blob(['cv'], { type: 'application/pdf' }),
+    coverLetter: new Blob(['letter'], { type: 'application/pdf' }),
+    ...fields,
+  });
+}
+
+function withFetch(handler) {
+  const calls = [];
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (url, init) => {
+    calls.push({ url, init });
+    return handler(url, init);
+  };
+
+  return {
+    calls,
+    restore() {
+      globalThis.fetch = originalFetch;
+    },
+  };
 }
 
 test('rejects an unauthorized Origin with 403 without granting CORS access', async () => {
@@ -63,18 +94,6 @@ test('returns 404 for an unknown route', async () => {
   assert.equal(response.status, 404);
 });
 
-test('returns 404 for /api/candidature until Task 2', async () => {
-  const response = await worker.fetch(
-    request('/api/candidature', {
-      method: 'POST',
-      body: contactForm({ name: 'Ada' }),
-    }),
-    env,
-  );
-
-  assert.equal(response.status, 404);
-});
-
 test('returns 400 for an incomplete multipart contact form', async () => {
   const response = await worker.fetch(
     request('/api/contact', {
@@ -88,13 +107,10 @@ test('returns 400 for an incomplete multipart contact form', async () => {
   assert.deepEqual(await response.json(), { message: 'Champs requis manquants.' });
 });
 
-test('valid multipart contact form calls Resend and responds 202', { skip: 'Implemented in Task 2' }, async () => {
-  const calls = [];
-  const originalFetch = globalThis.fetch;
-  globalThis.fetch = async (url, init) => {
-    calls.push({ url, init });
-    return new Response(JSON.stringify({ id: 'email-id' }), { status: 200 });
-  };
+test('valid multipart contact form calls Resend and responds 202', async () => {
+  const fetchMock = withFetch(async () => (
+    new Response(JSON.stringify({ id: 'email-id' }), { status: 200 })
+  ));
 
   try {
     const response = await worker.fetch(
@@ -107,19 +123,145 @@ test('valid multipart contact form calls Resend and responds 202', { skip: 'Impl
           message: 'Bonjour',
         }),
       }),
-      {
-        ...env,
-        RESEND_API_KEY: 'test-key',
-      },
+      env,
     );
 
     assert.equal(response.status, 202);
-    assert.equal(calls.length, 1);
-    assert.equal(calls[0].url, 'https://api.resend.com/emails');
-    const payload = JSON.parse(calls[0].init.body);
+    assert.equal(fetchMock.calls.length, 1);
+    assert.equal(fetchMock.calls[0].url, 'https://api.resend.com/emails');
+    assert.equal(fetchMock.calls[0].init.method, 'POST');
+    assert.equal(fetchMock.calls[0].init.headers.Authorization, 'Bearer test-key');
+    assert.equal(fetchMock.calls[0].init.headers['Content-Type'], 'application/json');
+    assert.equal(fetchMock.calls[0].init.headers['User-Agent'], 'sodapci-form-worker');
+    const payload = JSON.parse(fetchMock.calls[0].init.body);
     assert.deepEqual(payload.to, ['carriere@lasodapci.com']);
     assert.equal(payload.reply_to, 'ada@example.com');
+    assert.equal(payload.subject, 'Contact \u2014 Demande de contact');
   } finally {
-    globalThis.fetch = originalFetch;
+    fetchMock.restore();
+  }
+});
+
+test('returns 400 for a candidature without a CV', async () => {
+  const response = await worker.fetch(
+    request('/api/candidature', {
+      method: 'POST',
+      body: applicationForm({ cv: '' }),
+    }),
+    env,
+  );
+
+  assert.equal(response.status, 400);
+});
+
+test('returns 400 for a candidature attachment with an invalid type', async () => {
+  const response = await worker.fetch(
+    request('/api/candidature', {
+      method: 'POST',
+      body: applicationForm({
+        cv: new Blob(['executable'], { type: 'application/x-msdownload' }),
+      }),
+    }),
+    env,
+  );
+
+  assert.equal(response.status, 400);
+});
+
+test('returns 413 when a candidature attachment exceeds 5 MiB', async () => {
+  const response = await worker.fetch(
+    request('/api/candidature', {
+      method: 'POST',
+      body: applicationForm({
+        coverLetter: new Blob([new Uint8Array(5 * 1024 * 1024 + 1)], {
+          type: 'application/pdf',
+        }),
+      }),
+    }),
+    env,
+  );
+
+  assert.equal(response.status, 413);
+});
+
+test('valid candidature sends two base64 attachments and responds 202', async () => {
+  const fetchMock = withFetch(async () => (
+    new Response(JSON.stringify({ id: 'email-id' }), { status: 200 })
+  ));
+
+  try {
+    const response = await worker.fetch(
+      request('/api/candidature', {
+        method: 'POST',
+        body: applicationForm(),
+      }),
+      env,
+    );
+
+    assert.equal(response.status, 202);
+    assert.equal(fetchMock.calls.length, 1);
+    const payload = JSON.parse(fetchMock.calls[0].init.body);
+    assert.equal(payload.subject, 'Candidature \u2014 Agronomist');
+    assert.deepEqual(payload.to, ['carriere@lasodapci.com']);
+    assert.equal(payload.reply_to, 'ada@example.com');
+    assert.deepEqual(payload.attachments, [
+      { filename: 'blob', content: 'Y3Y=' },
+      { filename: 'blob', content: 'bGV0dGVy' },
+    ]);
+  } finally {
+    fetchMock.restore();
+  }
+});
+
+test('accepts a honeypot submission without calling Resend', async () => {
+  const fetchMock = withFetch(async () => {
+    throw new Error('Resend must not be called for honeypot submissions');
+  });
+
+  try {
+    const response = await worker.fetch(
+      request('/api/contact', {
+        method: 'POST',
+        body: contactForm({
+          name: 'Ada',
+          email: 'ada@example.com',
+          subject: 'Bonjour',
+          message: 'Message',
+          website: 'https://spam.example',
+        }),
+      }),
+      env,
+    );
+
+    assert.equal(response.status, 202);
+    assert.equal(fetchMock.calls.length, 0);
+  } finally {
+    fetchMock.restore();
+  }
+});
+
+test('returns a public 502 response when Resend rejects a contact email', async () => {
+  const fetchMock = withFetch(async () => (
+    new Response(JSON.stringify({ message: 'invalid sender details' }), { status: 422 })
+  ));
+
+  try {
+    const response = await worker.fetch(
+      request('/api/contact', {
+        method: 'POST',
+        body: contactForm({
+          name: 'Ada',
+          email: 'ada@example.com',
+          subject: 'Bonjour',
+          message: 'Message',
+        }),
+      }),
+      env,
+    );
+
+    assert.equal(response.status, 502);
+    assert.deepEqual(await response.json(), { message: 'Envoi temporairement indisponible.' });
+  } finally {
+    fetchMock.restore();
   }
 });
