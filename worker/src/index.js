@@ -22,7 +22,7 @@ export default {
     const origin = request.headers.get('Origin');
 
     if (origin !== env.ALLOWED_ORIGIN) {
-      return jsonResponse({ message: 'Origin non autorisée.' }, 403, env.ALLOWED_ORIGIN);
+      return jsonResponse({ message: 'Origin non autorisée.' }, 403, 'null');
     }
 
     if (request.method === 'OPTIONS') {
@@ -36,16 +36,12 @@ export default {
     }
 
     const url = new URL(request.url);
-    if (url.pathname !== '/api/contact' && url.pathname !== '/api/candidature') {
+    if (url.pathname !== '/api/contact') {
       return jsonResponse({ message: 'Route introuvable.' }, 404, origin);
     }
 
     if (request.method !== 'POST') {
       return jsonResponse({ message: 'Méthode non autorisée.' }, 405, origin);
-    }
-
-    if (url.pathname === '/api/contact') {
-      return jsonResponse({ message: 'Champs requis manquants.' }, 400, origin);
     }
 
     return jsonResponse({ message: 'Champs requis manquants.' }, 400, origin);
