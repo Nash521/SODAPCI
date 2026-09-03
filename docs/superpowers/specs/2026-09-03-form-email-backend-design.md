@@ -6,12 +6,12 @@ Permettre aux formulaires de contact et de candidature de transmettre leurs donn
 
 ## Architecture
 
-Une API Cloudflare Worker expose deux routes HTTPS :
+Une API Cloudflare Worker, liée à la route HTTPS `/api/*` du même domaine que le site statique, expose deux routes :
 
 - `POST /api/contact` reçoit le formulaire de contact.
 - `POST /api/candidature` reçoit le formulaire de candidature en `multipart/form-data`.
 
-Le navigateur envoie les formulaires vers ces routes. Le Worker valide les données, applique une limitation simple des requêtes et appelle l’API Resend. La clé `RESEND_API_KEY` est enregistrée comme secret du Worker, jamais dans le HTML ou JavaScript public. Resend envoie les messages à `carriere@lasodapci.com` depuis une adresse du domaine vérifié.
+Le navigateur envoie les formulaires vers ces routes relatives. Le Worker valide les données et appelle l’API Resend. La clé `RESEND_API_KEY` est enregistrée comme secret du Worker, jamais dans le HTML ou JavaScript public. Resend envoie les messages à `carriere@lasodapci.com` depuis une adresse du domaine vérifié.
 
 Le formulaire de candidature envoie le CV et la lettre de motivation comme pièces jointes. Les fichiers autorisés sont PDF, DOC et DOCX, avec une limite de 5 Mo par fichier. Cette limite maintient la taille de l’e-mail dans les limites de Resend une fois les fichiers encodés.
 
@@ -29,7 +29,8 @@ Le formulaire de candidature envoie le CV et la lettre de motivation comme pièc
 - Seul le domaine public du site est autorisé par CORS ; l’URL locale est autorisée uniquement en développement.
 - Aucune candidature n’est stockée par le Worker après l’envoi ; les fichiers ne sont conservés que le temps de traiter la requête.
 - Les erreurs et journaux ne doivent inclure ni les contenus des messages ni les données des pièces jointes.
-- Les requêtes invalides, trop volumineuses ou trop fréquentes reçoivent une réponse d’erreur sans appel à Resend.
+- Les requêtes invalides ou trop volumineuses reçoivent une réponse d’erreur sans appel à Resend.
+- Une règle de limitation de débit Cloudflare protège les routes `/api/*` avant que le Worker ne soit exécuté.
 
 ## Fichiers prévus
 
@@ -48,7 +49,8 @@ Avant la mise en ligne, le propriétaire du domaine devra :
 1. Créer un compte Cloudflare et un compte Resend.
 2. Vérifier un domaine expéditeur dans Resend en ajoutant les enregistrements DNS demandés.
 3. Définir `RESEND_API_KEY`, `ALLOWED_ORIGIN` et `FROM_EMAIL` comme secrets/configuration du Worker.
-4. Déployer le Worker puis renseigner son URL publique dans le site statique.
+4. Associer le Worker à la route `https://votre-domaine/api/*`, afin que les formulaires utilisent les URL relatives prévues.
+5. Ajouter une règle Cloudflare de limitation de débit sur `POST /api/*` avant la mise en production.
 
 ## Critères de réussite
 
