@@ -100,7 +100,12 @@ test('valid multipart contact form calls Resend and responds 202', { skip: 'Impl
     const response = await worker.fetch(
       request('/api/contact', {
         method: 'POST',
-        body: contactForm({ name: 'Ada', email: 'ada@example.com', message: 'Bonjour' }),
+        body: contactForm({
+          name: 'Ada',
+          email: 'ada@example.com',
+          subject: 'Demande de contact',
+          message: 'Bonjour',
+        }),
       }),
       {
         ...env,
