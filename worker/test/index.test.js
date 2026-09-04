@@ -7,6 +7,10 @@ const env = {
   FROM_EMAIL: 'forms@lasodapci.com',
   RESEND_API_KEY: 'test-key',
 };
+const DOC_SIGNATURE = new Uint8Array([
+  0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1,
+]);
+const DOCX_SIGNATURE = new Uint8Array([0x50, 0x4b, 0x03, 0x04]);
 
 function request(path, options = {}) {
   return new Request(`https://worker.example${path}`, {
@@ -26,15 +30,21 @@ function contactForm(fields = {}) {
   return form;
 }
 
+function documentFile(name, type, signature) {
+  return new File([signature], name, { type });
+}
+
 function applicationForm(fields = {}) {
   return contactForm({
     name: 'Ada Lovelace',
     email: 'ada@example.com',
     position: 'Agronomist',
     cv: new File(['cv'], 'cv.pdf', { type: 'application/pdf' }),
-    coverLetter: new File(['letter'], 'lettre.docx', {
-      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    }),
+    coverLetter: documentFile(
+      'lettre.docx',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      DOCX_SIGNATURE,
+    ),
     ...fields,
   });
 }
@@ -45,6 +55,31 @@ function requestWithFormData(path, form) {
     value: async () => form,
   });
   return incoming;
+}
+
+function streamedRequest(path, body, contentType, contentLength) {
+  const bytes = typeof body === 'string' ? new TextEncoder().encode(body) : body;
+  const headers = { 'Content-Type': contentType };
+  if (contentLength !== undefined) headers['Content-Length'] = String(contentLength);
+
+  return request(path, {
+    method: 'POST',
+    headers,
+    body: new ReadableStream({
+      start(controller) {
+        controller.enqueue(bytes);
+        controller.close();
+      },
+    }),
+    duplex: 'half',
+  });
+}
+
+function contactBodyOfSize(size) {
+  const prefix = 'name=Ada&email=ada%40example.com&subject=Bonjour&message=Message&padding=';
+  const prefixLength = new TextEncoder().encode(prefix).byteLength;
+  assert.ok(size >= prefixLength);
+  return `${prefix}${'a'.repeat(size - prefixLength)}`;
 }
 
 function formWithValues(values) {
@@ -69,6 +104,20 @@ function withFetch(handler) {
       globalThis.fetch = originalFetch;
     },
   };
+}
+
+async function expectNoResend(expectedStatus, action) {
+  const fetchMock = withFetch(async () => {
+    throw new Error('Resend must not be called');
+  });
+
+  try {
+    const response = await action();
+    assert.equal(response.status, expectedStatus);
+    assert.equal(fetchMock.calls.length, 0);
+  } finally {
+    fetchMock.restore();
+  }
 }
 
 test('rejects an unauthorized Origin with 403 without granting CORS access', async () => {
@@ -207,6 +256,125 @@ test('valid multipart contact form calls Resend and responds 202', async () => {
     fetchMock.restore();
   }
 });
+
+test('accepts a streamed contact body at the 64 KiB limit without Content-Length', async () => {
+  const fetchMock = withFetch(async () => (
+    new Response(JSON.stringify({ id: 'email-id' }), { status: 200 })
+  ));
+  const incoming = streamedRequest(
+    '/api/contact',
+    contactBodyOfSize(64 * 1024),
+    'application/x-www-form-urlencoded',
+  );
+
+  try {
+    assert.equal(incoming.headers.get('Content-Length'), null);
+    const response = await worker.fetch(incoming, env);
+
+    assert.equal(response.status, 202);
+    assert.equal(fetchMock.calls.length, 1);
+  } finally {
+    fetchMock.restore();
+  }
+});
+
+test('rejects an oversized streamed contact body without Content-Length or Resend', async () => {
+  const incoming = streamedRequest(
+    '/api/contact',
+    contactBodyOfSize(64 * 1024 + 1),
+    'application/x-www-form-urlencoded',
+  );
+
+  assert.equal(incoming.headers.get('Content-Length'), null);
+  await expectNoResend(413, () => worker.fetch(incoming, env));
+});
+
+test('rejects an oversized streamed candidature body without Content-Length or Resend', async () => {
+  const incoming = streamedRequest(
+    '/api/candidature',
+    new Uint8Array(11 * 1024 * 1024 + 1),
+    'application/octet-stream',
+  );
+
+  assert.equal(incoming.headers.get('Content-Length'), null);
+  await expectNoResend(413, () => worker.fetch(incoming, env));
+});
+
+for (const { name, path, form } of [
+  {
+    name: 'contact names longer than 120 characters',
+    path: '/api/contact',
+    form: contactForm({
+      name: 'a'.repeat(121),
+      email: 'ada@example.com',
+      subject: 'Bonjour',
+      message: 'Message',
+    }),
+  },
+  {
+    name: 'contact email addresses longer than 254 characters',
+    path: '/api/contact',
+    form: contactForm({
+      name: 'Ada',
+      email: `${'a'.repeat(243)}@example.com`,
+      subject: 'Bonjour',
+      message: 'Message',
+    }),
+  },
+  {
+    name: 'contact phone numbers longer than 40 characters',
+    path: '/api/contact',
+    form: contactForm({
+      name: 'Ada',
+      email: 'ada@example.com',
+      phone: '1'.repeat(41),
+      subject: 'Bonjour',
+      message: 'Message',
+    }),
+  },
+  {
+    name: 'contact subjects longer than 120 characters',
+    path: '/api/contact',
+    form: contactForm({
+      name: 'Ada',
+      email: 'ada@example.com',
+      subject: 'a'.repeat(121),
+      message: 'Message',
+    }),
+  },
+  {
+    name: 'contact messages longer than 5000 characters',
+    path: '/api/contact',
+    form: contactForm({
+      name: 'Ada',
+      email: 'ada@example.com',
+      subject: 'Bonjour',
+      message: 'a'.repeat(5001),
+    }),
+  },
+  {
+    name: 'candidature names longer than 120 characters',
+    path: '/api/candidature',
+    form: applicationForm({ name: 'a'.repeat(121) }),
+  },
+  {
+    name: 'candidature email addresses longer than 254 characters',
+    path: '/api/candidature',
+    form: applicationForm({ email: `${'a'.repeat(243)}@example.com` }),
+  },
+  {
+    name: 'candidature positions longer than 120 characters',
+    path: '/api/candidature',
+    form: applicationForm({ position: 'a'.repeat(121) }),
+  },
+]) {
+  test(`rejects ${name} without Resend`, async () => {
+    await expectNoResend(400, () => worker.fetch(
+      request(path, { method: 'POST', body: form }),
+      env,
+    ));
+  });
+}
 
 test('includes an optional contact phone number safely in the email body', async () => {
   const fetchMock = withFetch(async () => (
@@ -350,10 +518,12 @@ test('accepts DOC and DOCX candidature attachments', async () => {
       request('/api/candidature', {
         method: 'POST',
         body: applicationForm({
-          cv: new File(['cv'], 'cv.doc', { type: 'application/msword' }),
-          coverLetter: new File(['letter'], 'lettre.docx', {
-            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          }),
+          cv: documentFile('cv.doc', 'application/msword', DOC_SIGNATURE),
+          coverLetter: documentFile(
+            'lettre.docx',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            DOCX_SIGNATURE,
+          ),
         }),
       }),
       env,
@@ -364,6 +534,80 @@ test('accepts DOC and DOCX candidature attachments', async () => {
   } finally {
     fetchMock.restore();
   }
+});
+
+test('accepts generic DOC and empty-type DOCX attachments with valid signatures', async () => {
+  const fetchMock = withFetch(async () => (
+    new Response(JSON.stringify({ id: 'email-id' }), { status: 200 })
+  ));
+
+  try {
+    const response = await worker.fetch(
+      request('/api/candidature', {
+        method: 'POST',
+        body: applicationForm({
+          cv: documentFile('cv.doc', 'application/octet-stream', DOC_SIGNATURE),
+          coverLetter: documentFile('lettre.docx', '', DOCX_SIGNATURE),
+        }),
+      }),
+      env,
+    );
+
+    assert.equal(response.status, 202);
+    assert.equal(fetchMock.calls.length, 1);
+  } finally {
+    fetchMock.restore();
+  }
+});
+
+test('rejects DOC and DOCX attachments with spoofed bytes without Resend', async () => {
+  await expectNoResend(400, () => worker.fetch(
+    request('/api/candidature', {
+      method: 'POST',
+      body: applicationForm({
+        cv: new File(['not an OLE document'], 'cv.doc', {
+          type: 'application/msword',
+        }),
+        coverLetter: new File(['not a ZIP document'], 'lettre.docx', {
+          type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        }),
+      }),
+    }),
+    env,
+  ));
+});
+
+test('rejects generic DOC and DOCX attachments with spoofed bytes without Resend', async () => {
+  await expectNoResend(400, () => worker.fetch(
+    request('/api/candidature', {
+      method: 'POST',
+      body: applicationForm({
+        cv: new File(['not an OLE document'], 'cv.doc', {
+          type: 'application/octet-stream',
+        }),
+        coverLetter: new File(['not a ZIP document'], 'lettre.docx', {
+          type: '',
+        }),
+      }),
+    }),
+    env,
+  ));
+});
+
+test('rejects DOC and DOCX files whose declared MIME type mismatches the extension', async () => {
+  await expectNoResend(400, () => worker.fetch(
+    request('/api/candidature', {
+      method: 'POST',
+      body: applicationForm({
+        cv: documentFile(
+          'cv.docx',
+          'application/msword',
+          DOCX_SIGNATURE,
+        ),
+      }),
+    }),
+    env,
+  ));
 });
 
 test('accepts a candidature attachment at the 5 MiB limit', async () => {
@@ -415,7 +659,7 @@ test('valid candidature sends two base64 attachments and responds 202', async ()
     assert.equal(payload.from, env.FROM_EMAIL);
     assert.deepEqual(payload.attachments, [
       { filename: 'cv.pdf', content: 'Y3Y=' },
-      { filename: 'lettre.docx', content: 'bGV0dGVy' },
+      { filename: 'lettre.docx', content: 'UEsDBA==' },
     ]);
   } finally {
     fetchMock.restore();
@@ -434,9 +678,11 @@ test('sanitizes attachment filenames before sending them to Resend', async () =>
         email: 'ada@example.com',
         position: 'Agronomist',
         cv: new File(['cv'], '..\\documents\\cv\r\n.pdf', { type: 'application/pdf' }),
-        coverLetter: new File(['letter'], 'lettre.docx', {
-          type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        }),
+        coverLetter: documentFile(
+          'lettre.docx',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          DOCX_SIGNATURE,
+        ),
       })),
       env,
     );
@@ -467,14 +713,14 @@ test('rejects contact subjects containing control characters', async () => {
   assert.deepEqual(await response.json(), { message: 'Champs requis manquants.' });
 });
 
-test('rejects contact subjects longer than 160 characters', async () => {
+test('rejects contact subjects longer than 120 characters', async () => {
   const response = await worker.fetch(
     request('/api/contact', {
       method: 'POST',
       body: contactForm({
         name: 'Ada',
         email: 'ada@example.com',
-        subject: 'a'.repeat(161),
+        subject: 'a'.repeat(121),
         message: 'Bonjour',
       }),
     }),
@@ -639,9 +885,11 @@ test('returns a generic CORS 502 when attachment processing rejects', async () =
     email: 'ada@example.com',
     position: 'Agronomist',
     cv: rejectingFile,
-    coverLetter: new File(['letter'], 'lettre.docx', {
-      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    }),
+    coverLetter: documentFile(
+      'lettre.docx',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      DOCX_SIGNATURE,
+    ),
   });
 
   const response = await worker.fetch(
