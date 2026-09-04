@@ -7,22 +7,6 @@
         }
     }
 
-    function getServerError(payload) {
-        if (!payload || typeof payload !== "object") {
-            return "";
-        }
-
-        if (typeof payload.error === "string") {
-            return payload.error;
-        }
-
-        if (payload.error && typeof payload.error.message === "string") {
-            return payload.error.message;
-        }
-
-        return typeof payload.message === "string" ? payload.message : "";
-    }
-
     function setButtonText(button, text) {
         if (!button) {
             return;
@@ -72,16 +56,14 @@
                     body: new FormData(form),
                     headers: { Accept: "application/json" },
                 });
-                let payload = null;
-
                 try {
-                    payload = await response.json();
+                    await response.json();
                 } catch (_) {
                     // A non-JSON response is handled with the generic public error below.
                 }
 
                 if (!response.ok) {
-                    setStatus(status, getServerError(payload) || "Une erreur est survenue lors de l’envoi. Veuillez réessayer.");
+                    setStatus(status, "Une erreur est survenue lors de l’envoi. Veuillez réessayer.");
                     return;
                 }
 
