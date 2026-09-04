@@ -31,8 +31,10 @@ function applicationForm(fields = {}) {
     name: 'Ada Lovelace',
     email: 'ada@example.com',
     position: 'Agronomist',
-    cv: new Blob(['cv'], { type: 'application/pdf' }),
-    coverLetter: new Blob(['letter'], { type: 'application/pdf' }),
+    cv: new File(['cv'], 'cv.pdf', { type: 'application/pdf' }),
+    coverLetter: new File(['letter'], 'lettre.docx', {
+      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    }),
     ...fields,
   });
 }
@@ -107,6 +109,42 @@ test('returns 400 for an incomplete multipart contact form', async () => {
   assert.deepEqual(await response.json(), { message: 'Champs requis manquants.' });
 });
 
+test('rejects an invalid contact email address', async () => {
+  const response = await worker.fetch(
+    request('/api/contact', {
+      method: 'POST',
+      body: contactForm({
+        name: 'Ada',
+        email: 'not-an-email',
+        subject: 'Demande de contact',
+        message: 'Bonjour',
+      }),
+    }),
+    env,
+  );
+
+  assert.equal(response.status, 400);
+  assert.deepEqual(await response.json(), { message: 'Adresse email invalide.' });
+});
+
+test('rejects whitespace-only required contact fields', async () => {
+  const response = await worker.fetch(
+    request('/api/contact', {
+      method: 'POST',
+      body: contactForm({
+        name: '   ',
+        email: 'ada@example.com',
+        subject: 'Demande de contact',
+        message: 'Bonjour',
+      }),
+    }),
+    env,
+  );
+
+  assert.equal(response.status, 400);
+  assert.deepEqual(await response.json(), { message: 'Champs requis manquants.' });
+});
+
 test('valid multipart contact form calls Resend and responds 202', async () => {
   const fetchMock = withFetch(async () => (
     new Response(JSON.stringify({ id: 'email-id' }), { status: 200 })
@@ -134,6 +172,7 @@ test('valid multipart contact form calls Resend and responds 202', async () => {
     assert.equal(fetchMock.calls[0].init.headers['Content-Type'], 'application/json');
     assert.equal(fetchMock.calls[0].init.headers['User-Agent'], 'sodapci-form-worker');
     const payload = JSON.parse(fetchMock.calls[0].init.body);
+    assert.equal(payload.from, env.FROM_EMAIL);
     assert.deepEqual(payload.to, ['carriere@lasodapci.com']);
     assert.equal(payload.reply_to, 'ada@example.com');
     assert.equal(payload.subject, 'Contact \u2014 Demande de contact');
@@ -152,6 +191,32 @@ test('returns 400 for a candidature without a CV', async () => {
   );
 
   assert.equal(response.status, 400);
+});
+
+test('rejects an invalid candidature email address', async () => {
+  const response = await worker.fetch(
+    request('/api/candidature', {
+      method: 'POST',
+      body: applicationForm({ email: 'not-an-email' }),
+    }),
+    env,
+  );
+
+  assert.equal(response.status, 400);
+  assert.deepEqual(await response.json(), { message: 'Adresse email invalide.' });
+});
+
+test('rejects whitespace-only required candidature fields', async () => {
+  const response = await worker.fetch(
+    request('/api/candidature', {
+      method: 'POST',
+      body: applicationForm({ position: '   ' }),
+    }),
+    env,
+  );
+
+  assert.equal(response.status, 400);
+  assert.deepEqual(await response.json(), { message: 'Champs requis manquants.' });
 });
 
 test('returns 400 for a candidature attachment with an invalid type', async () => {
@@ -184,6 +249,57 @@ test('returns 413 when a candidature attachment exceeds 5 MiB', async () => {
   assert.equal(response.status, 413);
 });
 
+test('accepts DOC and DOCX candidature attachments', async () => {
+  const fetchMock = withFetch(async () => (
+    new Response(JSON.stringify({ id: 'email-id' }), { status: 200 })
+  ));
+
+  try {
+    const response = await worker.fetch(
+      request('/api/candidature', {
+        method: 'POST',
+        body: applicationForm({
+          cv: new File(['cv'], 'cv.doc', { type: 'application/msword' }),
+          coverLetter: new File(['letter'], 'lettre.docx', {
+            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          }),
+        }),
+      }),
+      env,
+    );
+
+    assert.equal(response.status, 202);
+    assert.equal(fetchMock.calls.length, 1);
+  } finally {
+    fetchMock.restore();
+  }
+});
+
+test('accepts a candidature attachment at the 5 MiB limit', async () => {
+  const fetchMock = withFetch(async () => (
+    new Response(JSON.stringify({ id: 'email-id' }), { status: 200 })
+  ));
+
+  try {
+    const response = await worker.fetch(
+      request('/api/candidature', {
+        method: 'POST',
+        body: applicationForm({
+          cv: new File([new Uint8Array(5 * 1024 * 1024)], 'cv.pdf', {
+            type: 'application/pdf',
+          }),
+        }),
+      }),
+      env,
+    );
+
+    assert.equal(response.status, 202);
+    assert.equal(fetchMock.calls.length, 1);
+  } finally {
+    fetchMock.restore();
+  }
+});
+
 test('valid candidature sends two base64 attachments and responds 202', async () => {
   const fetchMock = withFetch(async () => (
     new Response(JSON.stringify({ id: 'email-id' }), { status: 200 })
@@ -204,9 +320,10 @@ test('valid candidature sends two base64 attachments and responds 202', async ()
     assert.equal(payload.subject, 'Candidature \u2014 Agronomist');
     assert.deepEqual(payload.to, ['carriere@lasodapci.com']);
     assert.equal(payload.reply_to, 'ada@example.com');
+    assert.equal(payload.from, env.FROM_EMAIL);
     assert.deepEqual(payload.attachments, [
-      { filename: 'blob', content: 'Y3Y=' },
-      { filename: 'blob', content: 'bGV0dGVy' },
+      { filename: 'cv.pdf', content: 'Y3Y=' },
+      { filename: 'lettre.docx', content: 'bGV0dGVy' },
     ]);
   } finally {
     fetchMock.restore();
@@ -240,6 +357,27 @@ test('accepts a honeypot submission without calling Resend', async () => {
   }
 });
 
+test('accepts a candidature honeypot submission without calling Resend', async () => {
+  const fetchMock = withFetch(async () => {
+    throw new Error('Resend must not be called for honeypot submissions');
+  });
+
+  try {
+    const response = await worker.fetch(
+      request('/api/candidature', {
+        method: 'POST',
+        body: applicationForm({ website: 'https://spam.example' }),
+      }),
+      env,
+    );
+
+    assert.equal(response.status, 202);
+    assert.equal(fetchMock.calls.length, 0);
+  } finally {
+    fetchMock.restore();
+  }
+});
+
 test('returns a public 502 response when Resend rejects a contact email', async () => {
   const fetchMock = withFetch(async () => (
     new Response(JSON.stringify({ message: 'invalid sender details' }), { status: 422 })
@@ -255,6 +393,27 @@ test('returns a public 502 response when Resend rejects a contact email', async 
           subject: 'Bonjour',
           message: 'Message',
         }),
+      }),
+      env,
+    );
+
+    assert.equal(response.status, 502);
+    assert.deepEqual(await response.json(), { message: 'Envoi temporairement indisponible.' });
+  } finally {
+    fetchMock.restore();
+  }
+});
+
+test('returns a public 502 response when Resend rejects a candidature email', async () => {
+  const fetchMock = withFetch(async () => (
+    new Response(JSON.stringify({ message: 'invalid sender details' }), { status: 422 })
+  ));
+
+  try {
+    const response = await worker.fetch(
+      request('/api/candidature', {
+        method: 'POST',
+        body: applicationForm(),
       }),
       env,
     );
