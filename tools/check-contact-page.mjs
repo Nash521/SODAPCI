@@ -45,6 +45,10 @@ const mustNotInclude = [
 
 const failures = [];
 
+const forms = [...html.matchAll(/<form\b[^>]*>[\s\S]*?<\/form>/gi)].map((match) => match[0]);
+const contactForm = forms.find((form) => /\bid="formulaire-contact"/.test(form)) ?? "";
+const applicationForm = forms.find((form) => form.includes("Demande d'emploi")) ?? "";
+
 if (!contactPageHtml) {
   failures.push("Unable to locate contact page content between expected comments.");
 }
@@ -59,6 +63,26 @@ for (const snippet of mustNotInclude) {
   if (html.includes(snippet)) {
     failures.push(`Unexpected template snippet remains: ${snippet}`);
   }
+}
+
+if (!/data-form-endpoint="\/api\/contact"/.test(contactForm)) {
+  failures.push("Contact form must include data-form-endpoint=\"/api/contact\".");
+}
+
+if (!/data-form-endpoint="\/api\/candidature"/.test(applicationForm)) {
+  failures.push("Application form must include data-form-endpoint=\"/api/candidature\".");
+}
+
+if (!/<input\b[^>]*\bname="website"[^>]*>/.test(contactForm)) {
+  failures.push("Contact form must include a honeypot input named website.");
+}
+
+if (!/<input\b[^>]*\bname="website"[^>]*>/.test(applicationForm)) {
+  failures.push("Application form must include a honeypot input named website.");
+}
+
+if (!/<script\b[^>]*\bsrc="js\/contact-forms\.js"[^>]*><\/script>/.test(html)) {
+  failures.push("Contact page must load js/contact-forms.js.");
 }
 
 const classTokens = [
