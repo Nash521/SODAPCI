@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 
 const html = readFileSync("contact.html", "utf8");
+const formScript = readFileSync("js/contact-forms.js", "utf8");
 const contactPageMatch = html.match(/<!-- Page Header Start -->[\s\S]*?<!-- Contact CTA End -->/);
 const contactPageHtml = contactPageMatch ? contactPageMatch[0] : "";
 
@@ -48,6 +49,16 @@ const failures = [];
 const forms = [...html.matchAll(/<form\b[^>]*>[\s\S]*?<\/form>/gi)].map((match) => match[0]);
 const contactForm = forms.find((form) => /\bid="formulaire-contact"/.test(form)) ?? "";
 const applicationForm = forms.find((form) => form.includes("Demande d'emploi")) ?? "";
+const emailPattern = '[^\\s@]+@[^\\s@]+\\.[^\\s@]+';
+
+function hasRequiredEmailPattern(form) {
+  const emailInput = form.match(/<input\b[^>]*\bname="email"[^>]*>/i)?.[0] ?? "";
+  const pattern = emailInput.match(/\bpattern="([^"]+)"/i)?.[1];
+
+  return /\btype="email"/i.test(emailInput)
+    && /\brequired\b/i.test(emailInput)
+    && pattern === emailPattern;
+}
 
 if (!contactPageHtml) {
   failures.push("Unable to locate contact page content between expected comments.");
@@ -73,6 +84,14 @@ if (!/data-form-endpoint="\/api\/candidature"/.test(applicationForm)) {
   failures.push("Application form must include data-form-endpoint=\"/api/candidature\".");
 }
 
+if (!hasRequiredEmailPattern(contactForm)) {
+  failures.push("Contact email input must be required and use the backend email pattern.");
+}
+
+if (!hasRequiredEmailPattern(applicationForm)) {
+  failures.push("Application email input must be required and use the backend email pattern.");
+}
+
 if (!/<input\b[^>]*\bname="website"[^>]*>/.test(contactForm)) {
   failures.push("Contact form must include a honeypot input named website.");
 }
@@ -83,6 +102,10 @@ if (!/<input\b[^>]*\bname="website"[^>]*>/.test(applicationForm)) {
 
 if (!/<script\b[^>]*\bsrc="js\/contact-forms\.js"[^>]*><\/script>/.test(html)) {
   failures.push("Contact page must load js/contact-forms.js.");
+}
+
+if (!/const result = await response\.json\(\);[\s\S]*?!response\.ok \|\| !result \|\| result\.success !== true/.test(formScript)) {
+  failures.push("Contact form behavior must require a JSON success contract before resetting forms.");
 }
 
 const classTokens = [

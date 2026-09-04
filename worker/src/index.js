@@ -37,6 +37,10 @@ function jsonResponse(body, status, origin, headers = {}) {
   });
 }
 
+function successResponse(origin) {
+  return jsonResponse({ success: true, message: 'Message envoyé.' }, 202, origin);
+}
+
 function stringValue(form, field) {
   const value = form.get(field);
   return typeof value === 'string' ? value : '';
@@ -126,14 +130,14 @@ async function sendEmail(env, payload) {
 }
 
 function contactPayload(env, contact) {
-  const { name, email, subject, message } = contact;
+  const { name, email, phone, subject, message } = contact;
   return {
     from: env.FROM_EMAIL,
     to: [RECIPIENT],
     reply_to: email,
     subject: `Contact — ${subject}`,
-    text: `Nom : ${name}\nEmail : ${email}\nSujet : ${subject}\n\n${message}`,
-    html: `<h1>Nouvelle prise de contact</h1><p><strong>Nom :</strong> ${escapeHtml(name)}</p><p><strong>Email :</strong> ${escapeHtml(email)}</p><p><strong>Sujet :</strong> ${escapeHtml(subject)}</p><p>${escapeHtml(message).replace(/\n/g, '<br>')}</p>`,
+    text: `Nom : ${name}\nEmail : ${email}${phone ? `\nTéléphone : ${phone}` : ''}\nSujet : ${subject}\n\n${message}`,
+    html: `<h1>Nouvelle prise de contact</h1><p><strong>Nom :</strong> ${escapeHtml(name)}</p><p><strong>Email :</strong> ${escapeHtml(email)}</p>${phone ? `<p><strong>Téléphone :</strong> ${escapeHtml(phone)}</p>` : ''}<p><strong>Sujet :</strong> ${escapeHtml(subject)}</p><p>${escapeHtml(message).replace(/\n/g, '<br>')}</p>`,
   };
 }
 
@@ -165,13 +169,14 @@ function invalidAttachmentResponse(file, origin) {
 
 async function handleContact(form, env, origin) {
   if (nonblank(form, 'website')) {
-    return jsonResponse({ message: 'Message envoyé.' }, 202, origin);
+    return successResponse(origin);
   }
 
   const subject = stringValue(form, 'subject');
   const contact = {
     name: nonblank(form, 'name'),
     email: nonblank(form, 'email'),
+    phone: nonblank(form, 'phone'),
     subject: subject.trim(),
     message: nonblank(form, 'message'),
   };
@@ -187,13 +192,13 @@ async function handleContact(form, env, origin) {
 
   const sent = await sendEmail(env, contactPayload(env, contact));
   return sent
-    ? jsonResponse({ message: 'Message envoyé.' }, 202, origin)
+    ? successResponse(origin)
     : jsonResponse({ message: 'Envoi temporairement indisponible.' }, 502, origin);
 }
 
 async function handleApplication(form, env, origin) {
   if (nonblank(form, 'website')) {
-    return jsonResponse({ message: 'Message envoyé.' }, 202, origin);
+    return successResponse(origin);
   }
 
   const position = stringValue(form, 'position');
@@ -224,7 +229,7 @@ async function handleApplication(form, env, origin) {
     await applicationPayload(env, candidate, cv, coverLetter),
   );
   return sent
-    ? jsonResponse({ message: 'Message envoyé.' }, 202, origin)
+    ? successResponse(origin)
     : jsonResponse({ message: 'Envoi temporairement indisponible.' }, 502, origin);
 }
 

@@ -191,6 +191,7 @@ test('valid multipart contact form calls Resend and responds 202', async () => {
     );
 
     assert.equal(response.status, 202);
+    assert.deepEqual(await response.json(), { success: true, message: 'Message envoyé.' });
     assert.equal(fetchMock.calls.length, 1);
     assert.equal(fetchMock.calls[0].url, 'https://api.resend.com/emails');
     assert.equal(fetchMock.calls[0].init.method, 'POST');
@@ -202,6 +203,35 @@ test('valid multipart contact form calls Resend and responds 202', async () => {
     assert.deepEqual(payload.to, ['carriere@lasodapci.com']);
     assert.equal(payload.reply_to, 'ada@example.com');
     assert.equal(payload.subject, 'Contact \u2014 Demande de contact');
+  } finally {
+    fetchMock.restore();
+  }
+});
+
+test('includes an optional contact phone number safely in the email body', async () => {
+  const fetchMock = withFetch(async () => (
+    new Response(JSON.stringify({ id: 'email-id' }), { status: 200 })
+  ));
+
+  try {
+    const response = await worker.fetch(
+      request('/api/contact', {
+        method: 'POST',
+        body: contactForm({
+          name: 'Ada <Lovelace>',
+          email: 'ada@example.com',
+          phone: '+225 <01 02 03 04>',
+          subject: 'Demande de contact',
+          message: 'Bonjour',
+        }),
+      }),
+      env,
+    );
+
+    assert.equal(response.status, 202);
+    const payload = JSON.parse(fetchMock.calls[0].init.body);
+    assert.match(payload.text, /Téléphone : \+225 <01 02 03 04>/);
+    assert.match(payload.html, /<strong>Téléphone :<\/strong> \+225 &lt;01 02 03 04&gt;<\/p>/);
   } finally {
     fetchMock.restore();
   }
@@ -376,6 +406,7 @@ test('valid candidature sends two base64 attachments and responds 202', async ()
     );
 
     assert.equal(response.status, 202);
+    assert.deepEqual(await response.json(), { success: true, message: 'Message envoyé.' });
     assert.equal(fetchMock.calls.length, 1);
     const payload = JSON.parse(fetchMock.calls[0].init.body);
     assert.equal(payload.subject, 'Candidature \u2014 Agronomist');

@@ -1,6 +1,8 @@
 (function () {
     "use strict";
 
+    const GENERIC_ERROR_MESSAGE = "Une erreur est survenue lors de l’envoi. Veuillez réessayer.";
+
     function setStatus(status, message) {
         if (status) {
             status.textContent = message;
@@ -56,21 +58,16 @@
                     body: new FormData(form),
                     headers: { Accept: "application/json" },
                 });
-                try {
-                    await response.json();
-                } catch (_) {
-                    // A non-JSON response is handled with the generic public error below.
-                }
-
-                if (!response.ok) {
-                    setStatus(status, "Une erreur est survenue lors de l’envoi. Veuillez réessayer.");
+                const result = await response.json();
+                if (!response.ok || !result || result.success !== true) {
+                    setStatus(status, GENERIC_ERROR_MESSAGE);
                     return;
                 }
 
                 form.reset();
                 setStatus(status, "Votre demande a bien été envoyée.");
             } catch (_) {
-                setStatus(status, "Une erreur est survenue lors de l’envoi. Veuillez réessayer.");
+                setStatus(status, GENERIC_ERROR_MESSAGE);
             } finally {
                 if (submitButton) {
                     submitButton.disabled = originalDisabled;
