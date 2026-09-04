@@ -1,34 +1,49 @@
 const RECIPIENT = 'carriere@lasodapci.com';
-const ALLOWED_ATTACHMENT_TYPES = new Set([
-  'application/pdf',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+const ALLOWED_ATTACHMENT_EXTENSIONS = new Map([
+  ['application/pdf', '.pdf'],
+  ['application/msword', '.doc'],
+  ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', '.docx'],
 ]);
 const MAX_ATTACHMENT_SIZE = 5 * 1024 * 1024;
+const MAX_ATTACHMENT_FILENAME_LENGTH = 128;
+// Keep user-supplied mail-header values short enough for reliable delivery/display.
+const MAX_SUBJECT_LENGTH = 160;
+const MAX_POSITION_LENGTH = 120;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const CONTROL_CHARACTERS = /[\u0000-\u001F\u007F-\u009F]/;
+const CONTROL_CHARACTERS_GLOBAL = /[\u0000-\u001F\u007F-\u009F]/g;
 
 function corsHeaders(origin) {
+  const headers = { Vary: 'Origin' };
+  if (!origin || origin === 'null') return headers;
+
   return {
+    ...headers,
     'Access-Control-Allow-Origin': origin,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
-    Vary: 'Origin',
   };
 }
 
-function jsonResponse(body, status, origin) {
+function jsonResponse(body, status, origin, headers = {}) {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
       'Content-Type': 'application/json',
       ...corsHeaders(origin),
+      ...(status === 405 ? { Allow: 'POST, OPTIONS' } : {}),
+      ...headers,
     },
   });
 }
 
-function nonblank(form, field) {
+function stringValue(form, field) {
   const value = form.get(field);
-  return typeof value === 'string' ? value.trim() : '';
+  return typeof value === 'string' ? value : '';
+}
+
+function nonblank(form, field) {
+  return stringValue(form, field).trim();
 }
 
 function isFile(value) {
@@ -38,6 +53,29 @@ function isFile(value) {
     && typeof value.type === 'string'
     && typeof value.size === 'number'
     && typeof value.arrayBuffer === 'function';
+}
+
+function attachmentFilename(file) {
+  const filename = file.name
+    .split(/[\\/]+/)
+    .pop()
+    .replace(CONTROL_CHARACTERS_GLOBAL, '')
+    .trim();
+  const extension = filename.slice(filename.lastIndexOf('.')).toLowerCase();
+
+  if (
+    !filename
+    || filename.length > MAX_ATTACHMENT_FILENAME_LENGTH
+    || ALLOWED_ATTACHMENT_EXTENSIONS.get(file.type) !== extension
+  ) {
+    return null;
+  }
+
+  return filename;
+}
+
+function unsafeHeaderValue(value, maxLength) {
+  return value.length > maxLength || CONTROL_CHARACTERS.test(value);
 }
 
 function escapeHtml(value) {
@@ -63,7 +101,7 @@ function toBase64(bytes) {
 
 async function attachment(file) {
   const bytes = new Uint8Array(await file.arrayBuffer());
-  return { filename: file.name, content: toBase64(bytes) };
+  return { filename: attachmentFilename(file), content: toBase64(bytes) };
 }
 
 async function sendEmail(env, payload) {
@@ -116,11 +154,11 @@ function invalidAttachmentResponse(file, origin) {
   if (!isFile(file) || !file.size) {
     return jsonResponse({ message: 'Champs requis manquants.' }, 400, origin);
   }
-  if (!ALLOWED_ATTACHMENT_TYPES.has(file.type)) {
-    return jsonResponse({ message: 'Type de fichier non autorisé.' }, 400, origin);
-  }
   if (file.size > MAX_ATTACHMENT_SIZE) {
     return jsonResponse({ message: 'Fichier trop volumineux.' }, 413, origin);
+  }
+  if (!attachmentFilename(file)) {
+    return jsonResponse({ message: 'Type de fichier non autorisé.' }, 400, origin);
   }
   return null;
 }
@@ -130,10 +168,11 @@ async function handleContact(form, env, origin) {
     return jsonResponse({ message: 'Message envoyé.' }, 202, origin);
   }
 
+  const subject = stringValue(form, 'subject');
   const contact = {
     name: nonblank(form, 'name'),
     email: nonblank(form, 'email'),
-    subject: nonblank(form, 'subject'),
+    subject: subject.trim(),
     message: nonblank(form, 'message'),
   };
   if (!contact.name || !contact.email || !contact.subject || !contact.message) {
@@ -141,6 +180,9 @@ async function handleContact(form, env, origin) {
   }
   if (!EMAIL_PATTERN.test(contact.email)) {
     return jsonResponse({ message: 'Adresse email invalide.' }, 400, origin);
+  }
+  if (unsafeHeaderValue(subject, MAX_SUBJECT_LENGTH)) {
+    return jsonResponse({ message: 'Champs requis manquants.' }, 400, origin);
   }
 
   const sent = await sendEmail(env, contactPayload(env, contact));
@@ -154,16 +196,20 @@ async function handleApplication(form, env, origin) {
     return jsonResponse({ message: 'Message envoyé.' }, 202, origin);
   }
 
+  const position = stringValue(form, 'position');
   const candidate = {
     name: nonblank(form, 'name'),
     email: nonblank(form, 'email'),
-    position: nonblank(form, 'position'),
+    position: position.trim(),
   };
   if (!candidate.name || !candidate.email || !candidate.position) {
     return jsonResponse({ message: 'Champs requis manquants.' }, 400, origin);
   }
   if (!EMAIL_PATTERN.test(candidate.email)) {
     return jsonResponse({ message: 'Adresse email invalide.' }, 400, origin);
+  }
+  if (unsafeHeaderValue(position, MAX_POSITION_LENGTH)) {
+    return jsonResponse({ message: 'Champs requis manquants.' }, 400, origin);
   }
 
   const cv = form.get('cv');
@@ -209,13 +255,19 @@ export default {
       return jsonResponse({ message: 'Méthode non autorisée.' }, 405, origin);
     }
 
+    let form;
     try {
-      const form = await request.formData();
-      return url.pathname === '/api/contact'
-        ? handleContact(form, env, origin)
-        : handleApplication(form, env, origin);
+      form = await request.formData();
     } catch {
       return jsonResponse({ message: 'Champs requis manquants.' }, 400, origin);
+    }
+
+    try {
+      return await (url.pathname === '/api/contact'
+        ? handleContact(form, env, origin)
+        : handleApplication(form, env, origin));
+    } catch {
+      return jsonResponse({ message: 'Envoi temporairement indisponible.' }, 502, origin);
     }
   },
 };

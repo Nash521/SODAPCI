@@ -39,6 +39,22 @@ function applicationForm(fields = {}) {
   });
 }
 
+function requestWithFormData(path, form) {
+  const incoming = request(path, { method: 'POST' });
+  Object.defineProperty(incoming, 'formData', {
+    value: async () => form,
+  });
+  return incoming;
+}
+
+function formWithValues(values) {
+  return {
+    get(name) {
+      return values[name] ?? null;
+    },
+  };
+}
+
 function withFetch(handler) {
   const calls = [];
   const originalFetch = globalThis.fetch;
@@ -65,7 +81,7 @@ test('rejects an unauthorized Origin with 403 without granting CORS access', asy
   );
 
   assert.equal(response.status, 403);
-  assert.equal(response.headers.get('Access-Control-Allow-Origin'), 'null');
+  assert.equal(response.headers.get('Access-Control-Allow-Origin'), null);
   assert.equal(response.headers.get('Vary'), 'Origin');
 });
 
@@ -94,6 +110,16 @@ test('returns 404 for an unknown route', async () => {
   const response = await worker.fetch(request('/api/unknown'), env);
 
   assert.equal(response.status, 404);
+});
+
+test('returns Allow header for a method that is not permitted', async () => {
+  const response = await worker.fetch(
+    request('/api/contact', { method: 'GET' }),
+    env,
+  );
+
+  assert.equal(response.status, 405);
+  assert.equal(response.headers.get('Allow'), 'POST, OPTIONS');
 });
 
 test('returns 400 for an incomplete multipart contact form', async () => {
@@ -233,6 +259,41 @@ test('returns 400 for a candidature attachment with an invalid type', async () =
   assert.equal(response.status, 400);
 });
 
+test('rejects a candidature attachment whose filename extension mismatches its MIME type', async () => {
+  const response = await worker.fetch(
+    request('/api/candidature', {
+      method: 'POST',
+      body: applicationForm({
+        cv: new File(['executable'], '..\\..\\resume.exe', {
+          type: 'application/pdf',
+        }),
+      }),
+    }),
+    env,
+  );
+
+  assert.equal(response.status, 400);
+  assert.deepEqual(await response.json(), { message: 'Type de fichier non autoris\u00e9.' });
+});
+
+test('rejects an attachment filename longer than 128 characters', async () => {
+  const response = await worker.fetch(
+    requestWithFormData('/api/candidature', formWithValues({
+      name: 'Ada Lovelace',
+      email: 'ada@example.com',
+      position: 'Agronomist',
+      cv: new File(['cv'], `${'a'.repeat(125)}.pdf`, { type: 'application/pdf' }),
+      coverLetter: new File(['letter'], 'lettre.docx', {
+        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      }),
+    })),
+    env,
+  );
+
+  assert.equal(response.status, 400);
+  assert.deepEqual(await response.json(), { message: 'Type de fichier non autoris\u00e9.' });
+});
+
 test('returns 413 when a candidature attachment exceeds 5 MiB', async () => {
   const response = await worker.fetch(
     request('/api/candidature', {
@@ -330,6 +391,95 @@ test('valid candidature sends two base64 attachments and responds 202', async ()
   }
 });
 
+test('sanitizes attachment filenames before sending them to Resend', async () => {
+  const fetchMock = withFetch(async () => (
+    new Response(JSON.stringify({ id: 'email-id' }), { status: 200 })
+  ));
+
+  try {
+    const response = await worker.fetch(
+      requestWithFormData('/api/candidature', formWithValues({
+        name: 'Ada Lovelace',
+        email: 'ada@example.com',
+        position: 'Agronomist',
+        cv: new File(['cv'], '..\\documents\\cv\r\n.pdf', { type: 'application/pdf' }),
+        coverLetter: new File(['letter'], 'lettre.docx', {
+          type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        }),
+      })),
+      env,
+    );
+
+    assert.equal(response.status, 202);
+    const payload = JSON.parse(fetchMock.calls[0].init.body);
+    assert.equal(payload.attachments[0].filename, 'cv.pdf');
+  } finally {
+    fetchMock.restore();
+  }
+});
+
+test('rejects contact subjects containing control characters', async () => {
+  const response = await worker.fetch(
+    request('/api/contact', {
+      method: 'POST',
+      body: contactForm({
+        name: 'Ada',
+        email: 'ada@example.com',
+        subject: 'Demande de contact\r\n',
+        message: 'Bonjour',
+      }),
+    }),
+    env,
+  );
+
+  assert.equal(response.status, 400);
+  assert.deepEqual(await response.json(), { message: 'Champs requis manquants.' });
+});
+
+test('rejects contact subjects longer than 160 characters', async () => {
+  const response = await worker.fetch(
+    request('/api/contact', {
+      method: 'POST',
+      body: contactForm({
+        name: 'Ada',
+        email: 'ada@example.com',
+        subject: 'a'.repeat(161),
+        message: 'Bonjour',
+      }),
+    }),
+    env,
+  );
+
+  assert.equal(response.status, 400);
+  assert.deepEqual(await response.json(), { message: 'Champs requis manquants.' });
+});
+
+test('rejects candidature positions containing control characters', async () => {
+  const response = await worker.fetch(
+    request('/api/candidature', {
+      method: 'POST',
+      body: applicationForm({ position: 'Agronomist\r' }),
+    }),
+    env,
+  );
+
+  assert.equal(response.status, 400);
+  assert.deepEqual(await response.json(), { message: 'Champs requis manquants.' });
+});
+
+test('rejects candidature positions longer than 120 characters', async () => {
+  const response = await worker.fetch(
+    request('/api/candidature', {
+      method: 'POST',
+      body: applicationForm({ position: 'a'.repeat(121) }),
+    }),
+    env,
+  );
+
+  assert.equal(response.status, 400);
+  assert.deepEqual(await response.json(), { message: 'Champs requis manquants.' });
+});
+
 test('accepts a honeypot submission without calling Resend', async () => {
   const fetchMock = withFetch(async () => {
     throw new Error('Resend must not be called for honeypot submissions');
@@ -423,4 +573,53 @@ test('returns a public 502 response when Resend rejects a candidature email', as
   } finally {
     fetchMock.restore();
   }
+});
+
+test('returns a generic CORS 502 when the contact handler rejects', async () => {
+  const form = {
+    get(name) {
+      if (name === 'name') throw new Error('unexpected form value failure');
+      return null;
+    },
+  };
+
+  const response = await worker.fetch(
+    requestWithFormData('/api/contact', form),
+    env,
+  );
+
+  assert.equal(response.status, 502);
+  assert.equal(response.headers.get('Content-Type'), 'application/json');
+  assert.equal(response.headers.get('Access-Control-Allow-Origin'), env.ALLOWED_ORIGIN);
+  assert.deepEqual(await response.json(), { message: 'Envoi temporairement indisponible.' });
+});
+
+test('returns a generic CORS 502 when attachment processing rejects', async () => {
+  const rejectingFile = {
+    name: 'cv.pdf',
+    type: 'application/pdf',
+    size: 2,
+    async arrayBuffer() {
+      throw new Error('attachment read failed');
+    },
+  };
+  const form = formWithValues({
+    name: 'Ada Lovelace',
+    email: 'ada@example.com',
+    position: 'Agronomist',
+    cv: rejectingFile,
+    coverLetter: new File(['letter'], 'lettre.docx', {
+      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    }),
+  });
+
+  const response = await worker.fetch(
+    requestWithFormData('/api/candidature', form),
+    env,
+  );
+
+  assert.equal(response.status, 502);
+  assert.equal(response.headers.get('Content-Type'), 'application/json');
+  assert.equal(response.headers.get('Access-Control-Allow-Origin'), env.ALLOWED_ORIGIN);
+  assert.deepEqual(await response.json(), { message: 'Envoi temporairement indisponible.' });
 });
