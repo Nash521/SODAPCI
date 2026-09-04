@@ -1,3 +1,7 @@
 node_modules/
 artifacts/
 .superpowers/
+.worktrees/
+worker/.dev.vars*
+!worker/.dev.vars.example
+worker/.env*

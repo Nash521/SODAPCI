@@ -580,25 +580,25 @@
                             </div>
                         </div>
                     </aside>
-                    <form id="formulaire-contact" class="contact-form-panel rounded-2xl p-6 lg:p-8" action="mailto:lasodapci@gmail.com" method="post" enctype="text/plain">
+                    <form id="formulaire-contact" class="contact-form-panel rounded-2xl p-6 lg:p-8" action="/api/contact" method="post" data-form-endpoint="/api/contact" novalidate>
                         <p class="mb-2 text-sm font-bold uppercase tracking-wide text-sodap-600">Formulaire de contact</p>
                         <h2 class="mb-6 font-roboto text-2xl font-bold uppercase text-gray-900">Envoyez votre message</h2>
                         <div class="grid gap-4 sm:grid-cols-2">
                             <label class="block">
                                 <span class="mb-2 block text-sm font-bold text-gray-700">Votre nom</span>
-                                <input type="text" class="contact-field" id="name" name="Nom" placeholder="Votre nom" required>
+                                <input type="text" class="contact-field" id="name" name="name" placeholder="Votre nom" required>
                             </label>
                             <label class="block">
                                 <span class="mb-2 block text-sm font-bold text-gray-700">Votre email</span>
-                                <input type="email" class="contact-field" id="mail" name="Email" placeholder="Votre email" required>
+                                <input type="email" class="contact-field" id="mail" name="email" placeholder="Votre email" pattern="[^\s@]+@[^\s@]+\.[^\s@]+" required>
                             </label>
                             <label class="block">
                                 <span class="mb-2 block text-sm font-bold text-gray-700">Votre téléphone</span>
-                                <input type="tel" class="contact-field" id="mobile" name="Téléphone" placeholder="Votre téléphone">
+                                <input type="tel" class="contact-field" id="mobile" name="phone" placeholder="Votre téléphone">
                             </label>
                             <label class="block">
                                 <span class="mb-2 block text-sm font-bold text-gray-700">Sujet</span>
-                                <select class="contact-field" id="subject" name="Sujet" aria-label="Sujet de la demande">
+                                <select class="contact-field" id="subject" name="subject" aria-label="Sujet de la demande" required>
                                     <option selected>Projet agricole</option>
                                     <option>Élevage</option>
                                     <option>Pisciculture</option>
@@ -608,8 +608,10 @@
                             </label>
                             <label class="block sm:col-span-2">
                                 <span class="mb-2 block text-sm font-bold text-gray-700">Votre message</span>
-                                <textarea class="contact-field" placeholder="Décrivez votre besoin" id="message" name="Message" required></textarea>
+                                <textarea class="contact-field" placeholder="Décrivez votre besoin" id="message" name="message" required></textarea>
                             </label>
+                            <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden;">
+                            <p class="text-sm leading-6 text-gray-600" data-form-status role="status" aria-live="polite"></p>
                             <div class="sm:col-span-2">
                                 <button class="btn btn-primary contact-submit w-full px-5 py-3" type="submit">Demander un accompagnement</button>
                             </div>
@@ -637,27 +639,33 @@
                             </div>
                         </div>
                     </aside>
-                    <form class="contact-form-panel rounded-2xl p-6 lg:p-8" action="#" method="post" enctype="multipart/form-data">
+                    <form class="contact-form-panel rounded-2xl p-6 lg:p-8" action="/api/candidature" method="post" enctype="multipart/form-data" data-form-endpoint="/api/candidature" novalidate>
                         <p class="mb-2 text-sm font-bold uppercase tracking-wide text-sodap-600">Demande d'emploi</p>
                         <h2 class="mb-6 font-roboto text-2xl font-bold uppercase text-gray-900">Envoyez votre candidature</h2>
                         <div class="grid gap-4">
                             <label class="block">
                                 <span class="mb-2 block text-sm font-bold text-gray-700">Nom et prenom</span>
-                                <input type="text" class="contact-field" name="Nom et prenom" placeholder="Votre nom et prenom" required>
+                                <input type="text" class="contact-field" name="name" placeholder="Votre nom et prenom" required>
+                            </label>
+                            <label class="block">
+                                <span class="mb-2 block text-sm font-bold text-gray-700">Votre email</span>
+                                <input type="email" class="contact-field" name="email" placeholder="Votre email" pattern="[^\s@]+@[^\s@]+\.[^\s@]+" required>
                             </label>
                             <label class="block">
                                 <span class="mb-2 block text-sm font-bold text-gray-700">Poste ou domaine recherche</span>
-                                <input type="text" class="contact-field" name="Poste ou domaine recherche" placeholder="Ex. technicien agricole, elevage, pisciculture" required>
+                                <input type="text" class="contact-field" name="position" placeholder="Ex. technicien agricole, elevage, pisciculture" required>
                             </label>
                             <label class="block">
                                 <span class="mb-2 block text-sm font-bold text-gray-700">CV</span>
-                                <input type="file" class="contact-field" name="CV" accept=".pdf,.doc,.docx" required>
+                                <input type="file" class="contact-field" name="cv" accept=".pdf,.doc,.docx" data-max-file-bytes="5242880" required>
                             </label>
                             <label class="block">
                                 <span class="mb-2 block text-sm font-bold text-gray-700">Lettre de motivation</span>
-                                <input type="file" class="contact-field" name="Lettre de motivation" accept=".pdf,.doc,.docx" required>
+                                <input type="file" class="contact-field" name="coverLetter" accept=".pdf,.doc,.docx" data-max-file-bytes="5242880" required>
                             </label>
                             <p class="text-sm leading-6 text-gray-500">Formats conseilles : PDF, DOC ou DOCX. Le CV et la lettre de motivation sont obligatoires.</p>
+                            <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden;">
+                            <p class="text-sm leading-6 text-gray-600" data-form-status role="status" aria-live="polite"></p>
                             <div>
                                 <button class="btn btn-primary contact-submit w-full px-5 py-3" type="submit">Envoyer ma candidature</button>
                             </div>
@@ -838,6 +846,7 @@
             });
         })();
     </script>
+    <script src="js/contact-forms.js"></script>
 </body>
 
 </html>
