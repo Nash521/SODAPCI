@@ -7,7 +7,7 @@ This Cloudflare Worker provides the form backend for the SODAP-CI site. It sends
 From the repository root, copy the example variables file and edit the copy with local values:
 
 ```powershell
-Copy-Item .dev.vars.example .dev.vars
+Copy-Item worker/.dev.vars.example worker/.dev.vars
 ```
 
 The resulting `worker/.dev.vars` is local-only and must never be committed to Git. It contains the Resend API key, sender address, and local allowed origin. Start the Worker locally with:
@@ -39,7 +39,7 @@ npx wrangler secret put ALLOWED_ORIGIN
 npm run deploy
 ```
 
-`FROM_EMAIL` must be a sender address verified in Resend. Associate the Worker with `https://votre-domaine/api/*`, using the same origin as the site, and set `ALLOWED_ORIGIN` to that site origin. Add an explicit Cloudflare rate-limit rule protecting `POST /api/*` before going live.
+`FROM_EMAIL` must use a domain verified in Resend; verifying only the sender address is not sufficient. Associate the Worker with `https://votre-domaine/api/*`, using the same origin as the site, and set `ALLOWED_ORIGIN` to that site origin. Add an explicit Cloudflare rate-limit rule protecting `POST /api/*` before going live.
 
 ## Form limits and formats
 
