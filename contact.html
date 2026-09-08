@@ -428,7 +428,7 @@
                             class="fa fa-map-marker-alt mr-3 text-base"></i>Yamoussoukro, quartier 50 logements,
                         derrière l'école méthodiste</small>
                     <small class="flex items-center whitespace-nowrap"><i
-                            class="fa fa-envelope mr-3 text-base"></i>lasodapci@gmail.com</small>
+                            class="fa fa-envelope mr-3 text-base"></i>carriere@lasodapci.com</small>
                     <small class="flex items-center whitespace-nowrap"><i class="fa fa-phone-alt mr-3 text-base"></i>+225
                         27-33-75-73-12 / 21-21-80-58-73</small>
                     <div class="flex gap-2">
@@ -508,8 +508,8 @@
                 <aside class="contact-hero-card rounded-2xl bg-white p-5">
                     <p class="mb-2 text-xs font-bold uppercase tracking-wide text-sodap-600">Réponse sous 24h ouvrées</p>
                     <h2 class="mb-3 font-roboto text-2xl font-bold uppercase text-gray-900">Un interlocuteur pour vos projets</h2>
-                    <p class="mb-5 leading-7">Agriculture, élevage, pisciculture, reboisement et travaux terrain : décrivez votre besoin, nous vous orientons.</p>
-                    <a href="#formulaire-contact" class="btn btn-primary w-full px-5 py-3 text-white">Demander un accompagnement</a>
+                    <p class="mb-5 leading-7">Agriculture, élevage, reboisement et travaux terrain : décrivez votre besoin, nous vous orientons.</p>
+                    <a href="#contact-form" class="btn btn-primary w-full px-5 py-3 text-white">Demander un accompagnement</a>
                 </aside>
             </div>
             <nav aria-label="Navigation secondaire" class="mt-10">
@@ -546,7 +546,7 @@
                     <article class="contact-card rounded-2xl p-5">
                         <div class="contact-card-icon mb-5 inline-flex h-12 w-12 items-center justify-center rounded-full"><i class="bi bi-envelope-at text-xl"></i></div>
                         <h3 class="mb-3 font-roboto text-lg font-bold uppercase text-gray-900">Email</h3>
-                        <p><a class="text-gray-600 hover:text-sodap-600" href="mailto:lasodapci@gmail.com">lasodapci@gmail.com</a></p>
+                        <p><a class="text-gray-600 hover:text-sodap-600" href="mailto:carriere@lasodapci.com">carriere@lasodapci.com</a></p>
                     </article>
                     <article class="contact-card rounded-2xl p-5">
                         <div class="contact-card-icon mb-5 inline-flex h-12 w-12 items-center justify-center rounded-full"><i class="bi bi-telephone text-xl"></i></div>
@@ -580,38 +580,40 @@
                             </div>
                         </div>
                     </aside>
-                    <form id="formulaire-contact" class="contact-form-panel rounded-2xl p-6 lg:p-8" action="mailto:lasodapci@gmail.com" method="post" enctype="text/plain">
+                    <form id="contact-form" class="contact-form-panel rounded-2xl p-6 lg:p-8" action="api/send-form.php" method="post" enctype="multipart/form-data" data-email-form>
+                        <input type="hidden" name="form_type" value="contact">
+                        <input type="text" name="website" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true">
                         <p class="mb-2 text-sm font-bold uppercase tracking-wide text-sodap-600">Formulaire de contact</p>
                         <h2 class="mb-6 font-roboto text-2xl font-bold uppercase text-gray-900">Envoyez votre message</h2>
                         <div class="grid gap-4 sm:grid-cols-2">
                             <label class="block">
                                 <span class="mb-2 block text-sm font-bold text-gray-700">Votre nom</span>
-                                <input type="text" class="contact-field" id="name" name="Nom" placeholder="Votre nom" required>
+                                <input type="text" class="contact-field" id="name" name="name" placeholder="Votre nom" required>
                             </label>
                             <label class="block">
                                 <span class="mb-2 block text-sm font-bold text-gray-700">Votre email</span>
-                                <input type="email" class="contact-field" id="mail" name="Email" placeholder="Votre email" required>
+                                <input type="email" class="contact-field" id="mail" name="email" placeholder="Votre email" required>
                             </label>
                             <label class="block">
                                 <span class="mb-2 block text-sm font-bold text-gray-700">Votre téléphone</span>
-                                <input type="tel" class="contact-field" id="mobile" name="Téléphone" placeholder="Votre téléphone">
+                                <input type="tel" class="contact-field" id="mobile" name="phone" placeholder="Votre téléphone">
                             </label>
                             <label class="block">
                                 <span class="mb-2 block text-sm font-bold text-gray-700">Sujet</span>
-                                <select class="contact-field" id="subject" name="Sujet" aria-label="Sujet de la demande">
-                                    <option selected>Projet agricole</option>
-                                    <option>Élevage</option>
-                                    <option>Pisciculture</option>
-                                    <option>Reboisement</option>
-                                    <option>Partenariat</option>
+                                <select class="contact-field" id="subject" name="subject" aria-label="Sujet de la demande">
+                                    <option value="agriculture" selected>Projet agricole</option>
+                                    <option value="elevage">Élevage</option>
+                                    <option value="reboisement">Reboisement</option>
+                                    <option value="partenariat">Partenariat</option>
                                 </select>
                             </label>
                             <label class="block sm:col-span-2">
                                 <span class="mb-2 block text-sm font-bold text-gray-700">Votre message</span>
-                                <textarea class="contact-field" placeholder="Décrivez votre besoin" id="message" name="Message" required></textarea>
+                                <textarea class="contact-field" placeholder="Décrivez votre besoin" id="message" name="message" minlength="10" required></textarea>
                             </label>
                             <div class="sm:col-span-2">
                                 <button class="btn btn-primary contact-submit w-full px-5 py-3" type="submit">Demander un accompagnement</button>
+                                <p class="hidden" aria-live="polite" data-form-status></p>
                             </div>
                         </div>
                     </form>
@@ -637,29 +639,36 @@
                             </div>
                         </div>
                     </aside>
-                    <form class="contact-form-panel rounded-2xl p-6 lg:p-8" action="#" method="post" enctype="multipart/form-data">
+                    <form id="application-form" class="contact-form-panel rounded-2xl p-6 lg:p-8" action="api/send-form.php" method="post" enctype="multipart/form-data" data-email-form>
+                        <input type="hidden" name="form_type" value="application">
+                        <input type="text" name="website" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true">
                         <p class="mb-2 text-sm font-bold uppercase tracking-wide text-sodap-600">Demande d'emploi</p>
                         <h2 class="mb-6 font-roboto text-2xl font-bold uppercase text-gray-900">Envoyez votre candidature</h2>
                         <div class="grid gap-4">
                             <label class="block">
                                 <span class="mb-2 block text-sm font-bold text-gray-700">Nom et prenom</span>
-                                <input type="text" class="contact-field" name="Nom et prenom" placeholder="Votre nom et prenom" required>
+                                <input type="text" class="contact-field" name="name" placeholder="Votre nom et prenom" required>
+                            </label>
+                            <label class="block">
+                                <span class="mb-2 block text-sm font-bold text-gray-700">Votre email</span>
+                                <input type="email" class="contact-field" name="email" placeholder="Votre email" required>
                             </label>
                             <label class="block">
                                 <span class="mb-2 block text-sm font-bold text-gray-700">Poste ou domaine recherche</span>
-                                <input type="text" class="contact-field" name="Poste ou domaine recherche" placeholder="Ex. technicien agricole, elevage, pisciculture" required>
+                                <input type="text" class="contact-field" name="position" placeholder="Ex. technicien agricole, élevage" required>
                             </label>
                             <label class="block">
                                 <span class="mb-2 block text-sm font-bold text-gray-700">CV</span>
-                                <input type="file" class="contact-field" name="CV" accept=".pdf,.doc,.docx" required>
+                                <input type="file" class="contact-field" name="cv" accept=".pdf,.doc,.docx" required>
                             </label>
                             <label class="block">
                                 <span class="mb-2 block text-sm font-bold text-gray-700">Lettre de motivation</span>
-                                <input type="file" class="contact-field" name="Lettre de motivation" accept=".pdf,.doc,.docx" required>
+                                <input type="file" class="contact-field" name="cover_letter" accept=".pdf,.doc,.docx" required>
                             </label>
-                            <p class="text-sm leading-6 text-gray-500">Formats conseilles : PDF, DOC ou DOCX. Le CV et la lettre de motivation sont obligatoires.</p>
+                            <p class="text-sm leading-6 text-gray-500">Formats conseillés : PDF, DOC ou DOCX. Le CV et la lettre de motivation sont obligatoires. 5 Mo maximum par fichier et 10 Mo maximum au total.</p>
                             <div>
                                 <button class="btn btn-primary contact-submit w-full px-5 py-3" type="submit">Envoyer ma candidature</button>
+                                <p class="hidden" aria-live="polite" data-form-status></p>
                             </div>
                         </div>
                     </form>
@@ -714,7 +723,7 @@
             </p>
             <p class="mb-3 text-gray-300">
               <i class="fa fa-envelope mr-4 text-sodap-600"></i
-              >lasodapci@gmail.com
+              >carriere@lasodapci.com
             </p>
             <div class="flex gap-2 pt-4">
               <a class="btn btn-square social-btn" href="" aria-label="Facebook"
@@ -792,7 +801,7 @@
             droits réservés.
           </div>
           <div class="md:text-right">
-            Société de Développement Agricole, Piscicole et de Construction
+            Société de Développement Agricole et de Construction
             Industrielle.
           </div>
         </div>
@@ -813,6 +822,7 @@
     <script src="lib/counterup/counterup.min.js"></script>
     <!-- Template Javascript -->
     <script src="js/tailwind-secondary.js"></script>
+    <script src="js/forms.js"></script>
     <script>
         (function () {
             if (!window.matchMedia("(pointer:fine)").matches) return;
