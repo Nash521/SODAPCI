@@ -1,0 +1,19 @@
+{
+  "name": "sodapci/website-forms",
+  "description": "Website form handling for SODAP-CI.",
+  "type": "project",
+  "license": "proprietary",
+  "require": {
+    "php": ">=8.1",
+    "ext-fileinfo": "*",
+    "phpmailer/phpmailer": "^6.10"
+  },
+  "autoload": {
+    "psr-4": {
+      "Sodapci\\Forms\\": "api/src/"
+    }
+  },
+  "scripts": {
+    "test": "php tests/php/run.php"
+  }
+}
