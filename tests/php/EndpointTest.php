@@ -27,7 +27,7 @@ function validContactPost(array $override = []): array
 }
 
 /** @return array{0: FormController, 1: \ArrayObject<int, array<string, mixed>>, 2: string} */
-function endpointController(?callable $mailer = null, int $limit = 5, ?callable $clock = null): array
+function endpointController(?callable $mailer = null, int $limit = 5, ?callable $clock = null, ?array $config = null): array
 {
     $directory = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'sodapci-endpoint-' . bin2hex(random_bytes(8));
     $captured = new \ArrayObject();
@@ -35,7 +35,7 @@ function endpointController(?callable $mailer = null, int $limit = 5, ?callable 
         $captured[] = $message;
     };
     $limiter = new RateLimiter($directory, $limit, 3600, $clock, str_repeat('r', 32));
-    return [new FormController(new FormValidator(), new MessageFactory(), $limiter, $mailer, endpointConfig()), $captured, $directory];
+    return [new FormController(new FormValidator(), new MessageFactory(), $limiter, $mailer, $config ?? endpointConfig()), $captured, $directory];
 }
 
 function removeEndpointDirectory(string $directory): void
@@ -63,13 +63,38 @@ test('rejects a GET request', function (): void {
     }
 });
 
-test('rejects malformed, foreign and suffix-bypass origins while allowing no Origin header', function (): void {
+test('accepts only canonical allowed HTTPS origins and rejects non-origin syntax', function (): void {
     [$controller, , $directory] = endpointController();
     try {
-        foreach (['not a url', 'https://evil.example', 'https://lasodapci.com.evil.example'] as $origin) {
+        foreach ([
+            'not a url',
+            'https://evil.example',
+            'https://lasodapci.com.evil.example',
+            'https://lasodapci.com:444',
+            'https://lasodapci.com/evil',
+            'https://lasodapci.com?x=1',
+            'https://lasodapci.com#fragment',
+            'https://user@lasodapci.com',
+        ] as $origin) {
             assertSame(403, $controller->handle(['REQUEST_METHOD' => 'POST', 'HTTP_ORIGIN' => $origin, 'REMOTE_ADDR' => '192.0.2.2'], validContactPost(), [])['status']);
         }
+        assertSame(200, $controller->handle(['REQUEST_METHOD' => 'POST', 'HTTP_ORIGIN' => 'https://lasodapci.com/', 'HTTP_ACCEPT' => 'application/json', 'REMOTE_ADDR' => '192.0.2.20'], validContactPost(), [])['status']);
+        assertSame(200, $controller->handle(['REQUEST_METHOD' => 'POST', 'HTTP_ORIGIN' => 'https://lasodapci.com', 'HTTP_ACCEPT' => 'application/json', 'REMOTE_ADDR' => '192.0.2.21'], validContactPost(), [])['status']);
         assertSame(200, $controller->handle(['REQUEST_METHOD' => 'POST', 'HTTP_ACCEPT' => 'application/json', 'REMOTE_ADDR' => '192.0.2.3'], validContactPost(), [])['status']);
+    } finally {
+        removeEndpointDirectory($directory);
+    }
+});
+
+test('allows HTTP only for explicitly configured local test hosts and ports', function (): void {
+    [$controller, , $directory] = endpointController(null, 5, null, [
+        'allowed_hosts' => ['localhost'],
+        'local_http_ports' => [8080],
+    ]);
+    try {
+        assertSame(200, $controller->handle(['REQUEST_METHOD' => 'POST', 'HTTP_ORIGIN' => 'http://localhost:8080', 'HTTP_ACCEPT' => 'application/json', 'REMOTE_ADDR' => '192.0.2.22'], validContactPost(), [])['status']);
+        assertSame(403, $controller->handle(['REQUEST_METHOD' => 'POST', 'HTTP_ORIGIN' => 'http://localhost:8081', 'REMOTE_ADDR' => '192.0.2.23'], validContactPost(), [])['status']);
+        assertSame(403, $controller->handle(['REQUEST_METHOD' => 'POST', 'HTTP_ORIGIN' => 'http://lasodapci.com', 'REMOTE_ADDR' => '192.0.2.24'], validContactPost(), [])['status']);
     } finally {
         removeEndpointDirectory($directory);
     }

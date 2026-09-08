@@ -95,3 +95,19 @@ test('rejects unsafe SMTP configuration without exposing its password', function
 
     throw new RuntimeException('Unsafe encryption setting was accepted.');
 });
+
+test('maps TLS configuration to PHPMailer STARTTLS', function (): void {
+    $config = smtpConfig();
+    $config['smtp_encryption'] = 'tls';
+    $recording = new RecordingMailer();
+
+    (new SmtpMailer($config, static fn (): RecordingMailer => $recording))->send([
+        'subject' => 'Sujet TLS',
+        'html' => '<p>Bonjour</p>',
+        'text' => 'Bonjour',
+        'reply_to' => 'awa@example.test',
+        'attachments' => [],
+    ]);
+
+    assertSame(PHPMailer::ENCRYPTION_STARTTLS, $recording->SMTPSecure);
+});

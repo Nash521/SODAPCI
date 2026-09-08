@@ -17,6 +17,9 @@ final class FormController
     /** @var list<string> */
     private array $allowedHosts;
 
+    /** @var list<int> */
+    private array $localHttpPorts;
+
     /** @param callable(array): void $mailer @param array<string, mixed> $config */
     public function __construct(
         private readonly FormValidator $validator,
@@ -38,6 +41,18 @@ final class FormController
             $this->allowedHosts[] = $normalized;
         }
         $this->allowedHosts = array_values(array_unique($this->allowedHosts));
+        $ports = $config['local_http_ports'] ?? [80];
+        if (!is_array($ports) || $ports === []) {
+            throw new InvalidArgumentException('Invalid form controller configuration.');
+        }
+        $this->localHttpPorts = [];
+        foreach ($ports as $port) {
+            if (!is_int($port) || $port < 1 || $port > 65535) {
+                throw new InvalidArgumentException('Invalid form controller configuration.');
+            }
+            $this->localHttpPorts[] = $port;
+        }
+        $this->localHttpPorts = array_values(array_unique($this->localHttpPorts));
     }
 
     /** @param array<string, mixed> $server @param array<string, mixed> $post @param array<string, mixed> $files @return array{status: int, headers: array<string, string>, body: string} */
@@ -96,17 +111,48 @@ final class FormController
             return false;
         }
         $parts = parse_url($origin);
-        if (!is_array($parts) || array_key_exists('user', $parts) || array_key_exists('pass', $parts) || ($parts['scheme'] ?? null) !== 'https') {
+        if (
+            !is_array($parts)
+            || array_key_exists('user', $parts)
+            || array_key_exists('pass', $parts)
+            || array_key_exists('query', $parts)
+            || array_key_exists('fragment', $parts)
+            || (isset($parts['path']) && $parts['path'] !== '/')
+            || !isset($parts['scheme'], $parts['host'])
+            || !is_string($parts['scheme'])
+            || !is_string($parts['host'])
+        ) {
             return false;
         }
-        $host = isset($parts['host']) && is_string($parts['host']) ? $this->normalizeHost($parts['host']) : null;
-        return $host !== null && in_array($host, $this->allowedHosts, true);
+        $host = $this->normalizeHost($parts['host']);
+        if ($host === null || !in_array($host, $this->allowedHosts, true)) {
+            return false;
+        }
+        $port = $parts['port'] ?? null;
+        if ($port !== null && !is_int($port)) {
+            return false;
+        }
+
+        $scheme = strtolower($parts['scheme']);
+        if ($scheme === 'https') {
+            return $port === null || $port === 443;
+        }
+        if ($scheme !== 'http' || !in_array($host, ['localhost', '127.0.0.1'], true)) {
+            return false;
+        }
+        return in_array($port ?? 80, $this->localHttpPorts, true);
     }
 
     private function normalizeHost(string $host): ?string
     {
         $host = strtolower(rtrim(trim($host), '.'));
-        if ($host === '' || filter_var($host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) === false) {
+        if (
+            $host === ''
+            || (
+                filter_var($host, FILTER_VALIDATE_IP) === false
+                && filter_var($host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) === false
+            )
+        ) {
             return null;
         }
         return $host;
