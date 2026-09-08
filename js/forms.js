@@ -53,7 +53,21 @@
     var submitButton = form.querySelector('button[type="submit"]');
 
     form.addEventListener("submit", function (event) {
+      var runtimeSupported = typeof fetch === "function" &&
+        typeof FormData === "function" &&
+        typeof Promise === "function";
+
+      if (!runtimeSupported) {
+        return;
+      }
+
+      if (form._emailFormSubmitting) {
+        event.preventDefault();
+        return;
+      }
+
       event.preventDefault();
+      form._emailFormSubmitting = true;
       resetStatus(status);
 
       var originalLabel = submitButton ? submitButton.textContent : "";
@@ -62,20 +76,51 @@
         submitButton.textContent = "Envoi en cours…";
       }
 
-      fetch(form.action, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-        },
-        body: new FormData(form),
-      })
+      function cleanup() {
+        form._emailFormSubmitting = false;
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = originalLabel;
+        }
+      }
+
+      function showFailure(error) {
+        setStatus(status, error && error.message ? error.message : "Une erreur est survenue. Veuillez réessayer.", true);
+      }
+
+      var request;
+      try {
+        request = fetch(form.action, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+          },
+          body: new FormData(form),
+        });
+      } catch (error) {
+        showFailure(error);
+        cleanup();
+        return;
+      }
+
+      if (!request || typeof request.then !== "function") {
+        showFailure(new Error("Une erreur est survenue. Veuillez réessayer."));
+        cleanup();
+        return;
+      }
+
+      request
         .then(function (response) {
+          if (!response || typeof response.ok !== "boolean" || typeof response.text !== "function") {
+            throw new Error("Une erreur est survenue. Veuillez réessayer.");
+          }
+
           return parseResponse(response).then(function (payload) {
             if (!response.ok) {
               throw new Error(messageFrom(payload, "Une erreur est survenue. Veuillez réessayer."));
             }
 
-            if (payload && payload.success === false) {
+            if (!payload || payload.ok !== true) {
               throw new Error(messageFrom(payload, "Une erreur est survenue. Veuillez réessayer."));
             }
 
@@ -85,16 +130,8 @@
         .then(function (payload) {
           form.reset();
           setStatus(status, messageFrom(payload, "Votre message a bien été envoyé."), false);
-        })
-        .catch(function (error) {
-          setStatus(status, error && error.message ? error.message : "Une erreur est survenue. Veuillez réessayer.", true);
-        })
-        .finally(function () {
-          if (submitButton) {
-            submitButton.disabled = false;
-            submitButton.textContent = originalLabel;
-          }
-        });
+        }, showFailure)
+        .then(cleanup, cleanup);
     });
   }
 
