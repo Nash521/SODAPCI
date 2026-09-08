@@ -183,7 +183,7 @@ test('fails closed with a controlled exception when state is corrupt', function 
     });
 });
 
-test('recovers the last complete backup when the primary state is partial or missing', function (): void {
+test('fails closed when a committed primary state is corrupted', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
         $now = 100;
         $limiter = new RateLimiter($directory, 2, 60, static function () use (&$now): int {
@@ -202,14 +202,13 @@ test('recovers the last complete backup when the primary state is partial or mis
 
         file_put_contents($statePath, "101\npartial");
         $now = 102;
-        assertSame(true, $limiter->consume('192.0.2.61'));
-        assertSame("100\n102\n", file_get_contents($statePath));
+        assertThrows(RuntimeException::class, 'Rate limiter state is corrupt.', fn (): bool => $limiter->consume('192.0.2.61'));
+        assertSame("101\npartial", file_get_contents($statePath));
 
         unlink($statePath);
         $now = 103;
-        assertSame(true, $limiter->consume('192.0.2.61'));
-        assertTrue(is_file($statePath));
-        assertSame("100\n103\n", file_get_contents($statePath));
+        assertThrows(RuntimeException::class, 'Rate limiter state is corrupt.', fn (): bool => $limiter->consume('192.0.2.61'));
+        assertSame($backup, file_get_contents($backupPath));
     });
 });
 
@@ -230,7 +229,7 @@ test('does not treat an interrupted temporary state as a fresh counter', functio
     });
 });
 
-test('fails closed when a complete backup cannot be restored', function (): void {
+test('fails closed when a backup exists without a transaction marker', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
         $limiter = new RateLimiter($directory, 2, 60, static fn (): int => 100);
         assertSame(true, $limiter->consume('192.0.2.64'));
@@ -241,9 +240,28 @@ test('fails closed when a complete backup cannot be restored', function (): void
         rename($statePath, $backupPath);
         mkdir($statePath, 0700);
 
-        assertThrows(RuntimeException::class, 'Unable to recover rate limiter state.', fn (): bool => $limiter->consume('192.0.2.64'));
+        assertThrows(RuntimeException::class, 'Rate limiter state is corrupt.', fn (): bool => $limiter->consume('192.0.2.64'));
         assertSame("100\n", file_get_contents($backupPath));
         assertTrue(!is_file($statePath . '.recover.tmp'));
+    });
+});
+
+test('recovers only a transaction marked between backup rotation and primary install', function (): void {
+    withRateLimiterDirectory(function (string $directory): void {
+        $limiter = new RateLimiter($directory, 2, 60, static fn (): int => 101);
+        assertSame(true, $limiter->consume('192.0.2.65'));
+        $stateFiles = glob($directory . DIRECTORY_SEPARATOR . '*.state') ?: [];
+        assertSame(1, count($stateFiles));
+        $statePath = $stateFiles[0];
+        $old = "101\n";
+        $new = "101\n101\n";
+        rename($statePath, $statePath . '.bak');
+        file_put_contents($statePath . '.tmp', $new);
+        file_put_contents($statePath . '.txn', 'old=' . hash('sha256', $old) . "\nnew=" . hash('sha256', $new) . "\n");
+
+        assertSame(false, $limiter->consume('192.0.2.65'));
+        assertSame($new, file_get_contents($statePath));
+        assertTrue(!is_file($statePath . '.txn'));
     });
 });
 
@@ -261,7 +279,7 @@ test('reclaims expired buckets before enforcing the active-bucket quota', functi
             chmod($directory . DIRECTORY_SEPARATOR . $bucket . '.state', 0600);
         }
 
-        assertSame(false, $limiter->consume('192.0.2.71'));
+        assertThrows(RuntimeException::class, 'Rate limiter bucket quota exhausted.', fn (): bool => $limiter->consume('192.0.2.71'));
         $now = 161;
         assertSame(true, $limiter->consume('192.0.2.71'));
         assertTrue(count(glob($directory . DIRECTORY_SEPARATOR . '*.state') ?: []) < 10);

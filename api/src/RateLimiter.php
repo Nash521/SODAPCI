@@ -13,6 +13,7 @@ final class RateLimiter
     private const KEY_BYTES = 32;
     private const MAINTENANCE_LOCK = '.maintenance.lock';
     private const KEY_FILE = '.key';
+    private const TRANSACTION_SUFFIX = '.txn';
 
     /** @var Closure(): int */
     private Closure $clock;
@@ -71,7 +72,7 @@ final class RateLimiter
                 }
 
                 if ($pruned === [] && $this->countActiveBuckets($cutoff) >= self::MAX_BUCKETS) {
-                    return false;
+                    throw new RuntimeException('Rate limiter bucket quota exhausted.');
                 }
                 if (count($pruned) >= $this->limit) {
                     if ($pruned !== $timestamps) {
@@ -234,6 +235,13 @@ final class RateLimiter
     /** @return list<int> */
     private function readState(string $path): array
     {
+        if (is_file($path . self::TRANSACTION_SUFFIX) || is_file($path . self::TRANSACTION_SUFFIX . '.tmp')) {
+            if (!is_file($path . self::TRANSACTION_SUFFIX)) {
+                throw new RuntimeException('Rate limiter state is corrupt.');
+            }
+            return $this->recoverStateTransaction($path);
+        }
+
         $primary = $this->readBytes($path);
         if ($primary !== null) {
             $parsed = $this->parseState($primary);
@@ -244,13 +252,6 @@ final class RateLimiter
         }
 
         $backup = $this->readBytes($path . '.bak');
-        if ($backup !== null) {
-            $parsed = $this->parseState($backup);
-            if ($parsed !== null) {
-                $this->recoverBytes($path, $backup);
-                return $parsed;
-            }
-        }
         if ($primary === null && $backup === null && !is_file($path . '.tmp') && !is_file($path . '.recover.tmp')) {
             return [];
         }
@@ -283,9 +284,33 @@ final class RateLimiter
     private function writeState(string $path, array $timestamps): void
     {
         $contents = $timestamps === [] ? '' : implode("\n", $timestamps) . "\n";
+        $oldContents = $this->readBytes($path);
+        if ($oldContents !== null && $this->parseState($oldContents) === null) {
+            throw new RuntimeException('Rate limiter state is corrupt.');
+        }
+        $oldHash = $oldContents === null ? '-' : hash('sha256', $oldContents);
+        $newHash = hash('sha256', $contents);
         $this->writeTemp($path . '.tmp', $contents, 0600);
-        $this->installTemp($path . '.tmp', $path, $path . '.bak');
+        $marker = "old={$oldHash}\nnew={$newHash}\n";
+        $this->writeTemp($path . self::TRANSACTION_SUFFIX . '.tmp', $marker, 0600);
+        if (!@rename($path . self::TRANSACTION_SUFFIX . '.tmp', $path . self::TRANSACTION_SUFFIX)) {
+            @unlink($path . self::TRANSACTION_SUFFIX . '.tmp');
+            throw new RuntimeException('Unable to create rate limiter transaction marker.');
+        }
+
+        if (is_file($path)) {
+            if (is_file($path . '.bak') && !@unlink($path . '.bak')) {
+                throw new RuntimeException('Unable to rotate rate limiter state backup.');
+            }
+            if (!@rename($path, $path . '.bak')) {
+                throw new RuntimeException('Unable to rotate rate limiter state backup.');
+            }
+        }
+        if (!@rename($path . '.tmp', $path)) {
+            throw new RuntimeException('Unable to replace rate limiter state.');
+        }
         $this->securePermissions($path, 0600);
+        @unlink($path . self::TRANSACTION_SUFFIX);
     }
 
     private function writeTemp(string $path, string $contents, int $mode): void
@@ -358,6 +383,52 @@ final class RateLimiter
             throw new RuntimeException('Unable to recover rate limiter state.');
         }
         $this->securePermissions($path, 0600);
+    }
+
+    /** @return list<int> */
+    private function recoverStateTransaction(string $path): array
+    {
+        $marker = $this->readBytes($path . self::TRANSACTION_SUFFIX);
+        if ($marker === null || preg_match('/\Aold=([a-f0-9]{64}|-)\nnew=([a-f0-9]{64})\n\z/D', $marker, $matches) !== 1) {
+            throw new RuntimeException('Rate limiter state is corrupt.');
+        }
+        $oldHash = $matches[1];
+        $newHash = $matches[2];
+        $primary = $this->readBytes($path);
+        $primaryParsed = $primary === null ? null : $this->parseState($primary);
+
+        if ($primaryParsed !== null) {
+            $primaryHash = hash('sha256', $primary);
+            if ($primaryHash !== $newHash && $primaryHash !== $oldHash) {
+                throw new RuntimeException('Rate limiter state is corrupt.');
+            }
+            @unlink($path . self::TRANSACTION_SUFFIX);
+            @unlink($path . '.tmp');
+            return $primaryParsed;
+        }
+        if ($primary !== null) {
+            throw new RuntimeException('Rate limiter state is corrupt.');
+        }
+
+        $temporary = $this->readBytes($path . '.tmp');
+        $temporaryParsed = $temporary === null ? null : $this->parseState($temporary);
+        if ($temporaryParsed !== null && hash('sha256', $temporary) === $newHash) {
+            $this->recoverBytes($path, $temporary);
+            @unlink($path . self::TRANSACTION_SUFFIX);
+            @unlink($path . '.tmp');
+            return $temporaryParsed;
+        }
+
+        $backup = $this->readBytes($path . '.bak');
+        $backupParsed = $backup === null ? null : $this->parseState($backup);
+        if ($oldHash !== '-' && $backupParsed !== null && hash('sha256', $backup) === $oldHash) {
+            $this->recoverBytes($path, $backup);
+            @unlink($path . self::TRANSACTION_SUFFIX);
+            @unlink($path . '.tmp');
+            return $backupParsed;
+        }
+
+        throw new RuntimeException('Rate limiter state is corrupt.');
     }
 
     private function removeStateFiles(string $path): void
