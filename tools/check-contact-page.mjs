@@ -13,11 +13,12 @@ const mustInclude = [
   "contact-form-panel",
   "contact-map-panel",
   "Yamoussoukro, quartier 50 logements",
-  "lasodapci@gmail.com",
+  "carriere@lasodapci.com",
   "+225 27-33-75-73-12",
   "Demander un accompagnement",
   "Nos coordonnées",
   "Réponse sous 24h ouvrées",
+  'href="#contact-form"',
   "contact-card:hover",
   ".contact-form-panel .contact-field:focus",
   ".contact-submit::after",
@@ -44,6 +45,36 @@ const mustNotInclude = [
 ];
 
 const failures = [];
+
+function formById(id) {
+  return html.match(new RegExp(`<form\\b(?=[^>]*\\bid="${id}")[^>]*>[\\s\\S]*?<\\/form>`, "i"))?.[0] ?? "";
+}
+
+function requireFormContract(id, formType, fields) {
+  const form = formById(id);
+
+  if (!form) {
+    failures.push(`Missing form: #${id}`);
+    return;
+  }
+
+  const requiredSnippets = [
+    'action="api/send-form.php"',
+    'method="post"',
+    'enctype="multipart/form-data"',
+    `name="form_type" value="${formType}"`,
+    'name="website"',
+    'data-email-form',
+    'data-form-status',
+    ...fields.map((field) => `name="${field}"`),
+  ];
+
+  for (const snippet of requiredSnippets) {
+    if (!form.includes(snippet)) {
+      failures.push(`Missing required snippet in #${id}: ${snippet}`);
+    }
+  }
+}
 
 if (!contactPageHtml) {
   failures.push("Unable to locate contact page content between expected comments.");
@@ -89,6 +120,9 @@ for (const token of classTokens) {
     failures.push(`Legacy Bootstrap class remains in contact page content: ${token}`);
   }
 }
+
+requireFormContract("contact-form", "contact", ["name", "email", "phone", "subject", "message"]);
+requireFormContract("application-form", "application", ["name", "email", "position", "cv", "cover_letter"]);
 
 if (failures.length > 0) {
   console.error("Contact page verification failed:");

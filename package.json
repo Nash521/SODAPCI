@@ -8,7 +8,8 @@
     "check:setup": "node tools/check-tailwind-setup.mjs",
     "check:index": "node tools/check-index-tailwind-pilot.mjs",
     "check:contact": "node tools/check-contact-page.mjs",
-    "check": "npm run check:setup && npm run check:index && npm run check:contact"
+    "check:index-form": "node tools/check-index-form.mjs",
+    "check": "npm run check:setup && npm run check:index && npm run check:contact && npm run check:index-form"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.3.0",
