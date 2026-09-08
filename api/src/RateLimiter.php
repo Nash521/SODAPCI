@@ -61,7 +61,11 @@ final class RateLimiter
             $lockPath = $this->path($bucket . '.lock');
             $statePath = $this->path($bucket . '.state');
             $cutoff = $now - $this->windowSeconds;
-            if (!$this->bucketExists($statePath) && $this->countStateFiles() >= self::MAX_BUCKETS) {
+            $bucketExists = $this->bucketExists($statePath);
+            if ($bucketExists && !$this->probeExistingBucket($statePath, $lockPath, $cutoff)) {
+                $bucketExists = false;
+            }
+            if (!$bucketExists && $this->countStateFiles() >= self::MAX_BUCKETS) {
                 if ($this->lastCleanupAt !== $now) {
                     $this->cleanupExpiredBuckets($now);
                     $this->lastCleanupAt = $now;
@@ -515,6 +519,34 @@ final class RateLimiter
             }
         }
         return false;
+    }
+
+    private function probeExistingBucket(string $statePath, string $lockPath, int $cutoff): bool
+    {
+        $lock = @fopen($lockPath, 'c+b');
+        if ($lock === false) {
+            throw new RuntimeException('Unable to open rate limiter lock.');
+        }
+        $removeLock = false;
+        try {
+            $this->securePermissions($lockPath, 0600);
+            if (!@flock($lock, LOCK_EX | LOCK_NB)) {
+                return true;
+            }
+            $timestamps = $this->readState($statePath);
+            if (array_filter($timestamps, static fn (int $timestamp): bool => $timestamp >= $cutoff) !== []) {
+                return true;
+            }
+            $this->removeStateFiles($statePath);
+            $removeLock = true;
+            return false;
+        } finally {
+            @flock($lock, LOCK_UN);
+            @fclose($lock);
+            if ($removeLock) {
+                @unlink($lockPath);
+            }
+        }
     }
 
     private function countActiveBuckets(int $cutoff): int

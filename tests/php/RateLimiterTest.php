@@ -300,6 +300,27 @@ test('reclaims expired buckets before enforcing the active-bucket quota', functi
     });
 });
 
+test('treats an expired existing bucket as new for quota reservation', function (): void {
+    withRateLimiterDirectory(function (string $directory): void {
+        $now = 100;
+        $limiter = testRateLimiter($directory, 1, 60, static function () use (&$now): int {
+            return $now;
+        });
+        $staleIp = '192.0.2.120';
+        assertSame(true, $limiter->consume($staleIp));
+
+        for ($index = 0; $index < 1000; $index++) {
+            $bucket = str_pad(dechex($index + 2000), 64, '0', STR_PAD_LEFT);
+            file_put_contents($directory . DIRECTORY_SEPARATOR . $bucket . '.state', "161\n");
+            chmod($directory . DIRECTORY_SEPARATOR . $bucket . '.state', 0600);
+        }
+
+        $now = 161;
+        assertThrows(RuntimeException::class, 'Rate limiter bucket quota exhausted.', fn (): bool => $limiter->consume($staleIp));
+        assertSame(1000, count(glob($directory . DIRECTORY_SEPARATOR . '*.state') ?: []));
+    });
+});
+
 test('rejects invalid constructor arguments', function (): void {
     assertThrows(InvalidArgumentException::class, 'Rate limit must be positive.', fn (): RateLimiter => new RateLimiter(sys_get_temp_dir(), 0, 60));
     assertThrows(InvalidArgumentException::class, 'Rate limit must be positive.', fn (): RateLimiter => new RateLimiter(sys_get_temp_dir(), -1, 60));
