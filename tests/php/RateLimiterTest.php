@@ -169,6 +169,8 @@ test('rejects invalid constructor arguments', function (): void {
 test('a second process waits while the same IP lock is held', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
         $ip = '203.0.113.25';
+        new RateLimiter($directory, 1, 60, static fn (): int => 1_700_000_000);
+        assertTrue(is_dir($directory), 'The rate limiter state directory was not created.');
         $key = hash('sha256', $ip);
         $lockPath = $directory . DIRECTORY_SEPARATOR . $key . '.lock';
         $lock = fopen($lockPath, 'c+b');
@@ -183,35 +185,34 @@ test('a second process waits while the same IP lock is held', function (): void 
 declare(strict_types=1);
 require %s;
 $limiter = new \Sodapci\Forms\RateLimiter((string) $argv[1], 1, 60, static fn (): int => 1700000000);
-fwrite(STDOUT, 'ready');
-fflush(STDOUT);
-usleep(200000);
+file_put_contents((string) $argv[3], 'ready');
+usleep(500000);
 echo $limiter->consume((string) $argv[2]) ? '1' : '0';
 PHP;
         file_put_contents($script, sprintf(
             $childCode,
             var_export($autoload, true),
         ));
+        $readyFile = tempnam(sys_get_temp_dir(), 'sodapci-rate-ready-');
+        assertTrue($readyFile !== false, 'Could not create the child readiness marker.');
+        unlink($readyFile);
 
         $process = null;
         $pipes = [];
         try {
-            $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($script) . ' ' . escapeshellarg($directory) . ' ' . escapeshellarg($ip);
+            $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($script) . ' ' . escapeshellarg($directory) . ' ' . escapeshellarg($ip) . ' ' . escapeshellarg($readyFile);
             $process = proc_open($command, [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
             assertTrue(is_resource($process), 'Could not start the child process.');
-            stream_set_blocking($pipes[1], false);
 
-            $output = '';
             $readyDeadline = microtime(true) + 2.0;
             do {
-                $output .= (string) stream_get_contents($pipes[1]);
-                if (str_contains($output, 'ready')) {
+                if (is_file($readyFile)) {
                     break;
                 }
                 usleep(10_000);
             } while (microtime(true) < $readyDeadline);
-            assertTrue(str_contains($output, 'ready'), 'The child process did not start.');
-            usleep(300_000);
+            assertTrue(is_file($readyFile), 'The child process did not start.');
+            usleep(700_000);
             $status = proc_get_status($process);
             assertSame(true, $status['running'], 'The child process entered consume while the lock was held.');
 
@@ -225,12 +226,10 @@ PHP;
                 if (!$status['running']) {
                     break;
                 }
-                $output .= (string) stream_get_contents($pipes[1]);
                 usleep(10_000);
             } while (microtime(true) < $deadline);
-            $output .= (string) stream_get_contents($pipes[1]);
             assertSame(false, $status['running'], 'The child process did not finish after the lock was released.');
-            assertSame('ready1', trim($output));
+            assertSame('1', trim((string) stream_get_contents($pipes[1])));
         } finally {
             if (is_resource($process)) {
                 proc_terminate($process);
@@ -246,6 +245,9 @@ PHP;
                 fclose($lock);
             }
             unlink($script);
+            if (is_file($readyFile)) {
+                unlink($readyFile);
+            }
         }
     });
 });
