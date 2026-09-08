@@ -132,6 +132,16 @@ test('returns a generic 500 for limiter storage and mailer failures without leak
     } finally {
         removeEndpointDirectory($directory);
     }
+
+    [$invalidMailer, , $directory] = endpointController(static function (): void { throw new InvalidArgumentException('internal-mailer-detail'); });
+    try {
+        $response = $invalidMailer->handle(['REQUEST_METHOD' => 'POST', 'HTTP_ACCEPT' => 'application/json', 'REMOTE_ADDR' => '192.0.2.70'], validContactPost(), []);
+        assertSame(500, $response['status']);
+        assertContains('Le service est temporairement indisponible. Veuillez réessayer plus tard.', $response['body']);
+        assertTrue(!str_contains($response['body'], 'internal-mailer-detail'));
+    } finally {
+        removeEndpointDirectory($directory);
+    }
 });
 
 test('delivers a valid JSON contact response and trusted redirects only', function (): void {

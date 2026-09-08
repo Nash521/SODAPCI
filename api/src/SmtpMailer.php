@@ -46,9 +46,9 @@ final class SmtpMailer
         $mailer->SMTPDebug = 0;
         $mailer->setFrom($this->config['from_email'], $this->config['from_name']);
         $mailer->addAddress($this->config['recipient_email']);
-        $mailer->addReplyTo($this->messageValue($message, 'reply_to'));
+        $mailer->addReplyTo($this->messageEmail($message, 'reply_to'));
         $mailer->isHTML(true);
-        $mailer->Subject = $this->messageValue($message, 'subject');
+        $mailer->Subject = $this->messageHeader($message, 'subject');
         $mailer->Body = $this->messageValue($message, 'html');
         $mailer->AltBody = $this->messageValue($message, 'text');
 
@@ -121,6 +121,26 @@ final class SmtpMailer
     {
         $value = $message[$key] ?? null;
         if (!is_string($value) || $value === '') {
+            throw new InvalidArgumentException('Invalid outgoing message.');
+        }
+        return $value;
+    }
+
+    /** @param array<string, mixed> $message */
+    private function messageHeader(array $message, string $key): string
+    {
+        $value = $this->messageValue($message, $key);
+        if (preg_match('/[\r\n\x00]/', $value) === 1) {
+            throw new InvalidArgumentException('Invalid outgoing message.');
+        }
+        return $value;
+    }
+
+    /** @param array<string, mixed> $message */
+    private function messageEmail(array $message, string $key): string
+    {
+        $value = $this->messageHeader($message, $key);
+        if (filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
             throw new InvalidArgumentException('Invalid outgoing message.');
         }
         return $value;

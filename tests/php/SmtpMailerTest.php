@@ -111,3 +111,30 @@ test('maps TLS configuration to PHPMailer STARTTLS', function (): void {
 
     assertSame(PHPMailer::ENCRYPTION_STARTTLS, $recording->SMTPSecure);
 });
+
+test('rejects unsafe outgoing header values before PHPMailer receives them', function (): void {
+    $recording = new RecordingMailer();
+    $mailer = new SmtpMailer(smtpConfig(), static fn (): RecordingMailer => $recording);
+
+    assertThrows(InvalidArgumentException::class, 'Invalid outgoing message.', static function () use ($mailer): void {
+        $mailer->send([
+            'subject' => "Sujet\r\nBcc: attacker@example.test",
+            'html' => '<p>Bonjour</p>',
+            'text' => 'Bonjour',
+            'reply_to' => 'awa@example.test',
+            'attachments' => [],
+        ]);
+    });
+
+    assertThrows(InvalidArgumentException::class, 'Invalid outgoing message.', static function () use ($mailer): void {
+        $mailer->send([
+            'subject' => 'Sujet',
+            'html' => '<p>Bonjour</p>',
+            'text' => 'Bonjour',
+            'reply_to' => "awa@example.test\r\nBcc: attacker@example.test",
+            'attachments' => [],
+        ]);
+    });
+
+    assertTrue(!$recording->sent);
+});

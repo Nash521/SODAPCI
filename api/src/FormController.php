@@ -75,11 +75,23 @@ final class FormController
             if (!$this->limiter->consume($ip)) {
                 return $this->response(429, 'Trop de demandes ont été envoyées. Veuillez réessayer plus tard.', $json);
             }
+        } catch (Throwable $exception) {
+            $this->logFailure($exception);
+            return $this->response(500, self::UNAVAILABLE, $json);
+        }
+
+        try {
             $data = $this->validator->validate($post, $files);
-            $message = $this->messages->create($data);
-            ($this->mailer)($message);
         } catch (InvalidArgumentException $exception) {
             return $this->response(422, $exception->getMessage(), $json);
+        } catch (Throwable $exception) {
+            $this->logFailure($exception);
+            return $this->response(500, self::UNAVAILABLE, $json);
+        }
+
+        try {
+            $message = $this->messages->create($data);
+            ($this->mailer)($message);
         } catch (Throwable $exception) {
             $this->logFailure($exception);
             return $this->response(500, self::UNAVAILABLE, $json);
