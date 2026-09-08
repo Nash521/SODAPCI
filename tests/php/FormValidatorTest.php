@@ -12,10 +12,10 @@ function validMessagePost(string $type = 'contact'): array
 {
     return [
         'form_type' => $type,
-        'name' => '  Awa Koné  ',
+        'name' => '  Awa Kone  ',
         'email' => 'awa@example.test',
         'subject' => 'Demande de renseignements',
-        'message' => 'Bonjour, je souhaite obtenir des renseignements complémentaires.',
+        'message' => "Bonjour,\r\n\tje souhaite obtenir des renseignements complémentaires.",
         'phone' => '+225 07 01 02 03 04',
         'website' => '',
     ];
@@ -25,9 +25,9 @@ function validApplicationPost(): array
 {
     return [
         'form_type' => 'application',
-        'name' => 'Awa Koné',
+        'name' => 'Awa Kone',
         'email' => 'awa@example.test',
-        'position' => 'Chargée de projet',
+        'position' => 'Chargee de projet',
         'website' => '',
     ];
 }
@@ -61,9 +61,6 @@ function docFile(): array
 
 function docxFile(): array
 {
-    if (!class_exists(ZipArchive::class)) {
-        throw new RuntimeException('L’extension ZIP est nécessaire pour ce test.');
-    }
     $path = tempnam(sys_get_temp_dir(), 'sodapci-docx-');
     if ($path === false) {
         throw new RuntimeException('Impossible de créer le fichier temporaire.');
@@ -83,34 +80,37 @@ function applicationFiles(?array $cv = null, ?array $letter = null): array
     return ['cv' => $cv ?? pdfFile('cv.pdf'), 'cover_letter' => $letter ?? pdfFile('lettre.pdf')];
 }
 
-function assertError(array $result, string $field, string $message): void
+function assertValidationError(string $message, callable $callback): void
 {
-    assertSame(false, $result['valid']);
-    assertSame($message, $result['errors'][$field] ?? null);
+    assertThrows(InvalidArgumentException::class, $message, $callback);
 }
 
-test('accepte un rendez-vous valide et normalise les données', function (): void {
-    $result = validator()->validate(validMessagePost('appointment'), []);
-    assertSame(true, $result['valid']);
-    assertSame('Awa Koné', $result['data']['name']);
-    assertSame('appointment', $result['data']['form_type']);
+test('retourne directement les données canoniques d’un rendez-vous valide', function (): void {
+    $data = validator()->validate(validMessagePost('appointment'), []);
+    assertSame('appointment', $data['form_type']);
+    assertSame('Awa Kone', $data['name']);
+    assertSame("Bonjour,\r\n\tje souhaite obtenir des renseignements complémentaires.", $data['message']);
 });
 
-test('accepte un message de contact valide', function (): void {
-    $result = validator()->validate(validMessagePost(), []);
-    assertSame(true, $result['valid']);
-    assertSame('awa@example.test', $result['data']['email']);
+test('accepte un message de contact et les sauts de ligne de textarea', function (): void {
+    $data = validator()->validate(validMessagePost(), []);
+    assertSame('awa@example.test', $data['email']);
+    assertSame('+225 07 01 02 03 04', $data['phone']);
 });
 
 test('accepte des pièces jointes PDF DOC et DOCX réelles pour une candidature', function (): void {
-    $documents = [pdfFile(), docFile(), docxFile()];
-    foreach ($documents as $document) {
-        $result = validator()->validate(validApplicationPost(), applicationFiles($document));
-        assertSame(true, $result['valid'], 'Le document ' . $document['name'] . ' devrait être accepté.');
-        assertSame(2, count($result['data']['attachments']));
-        assertSame($document['name'], $result['data']['attachments'][0]['name']);
-        assertTrue($result['data']['attachments'][0]['size'] > 0);
+    foreach ([pdfFile(), docFile(), docxFile()] as $document) {
+        $data = validator()->validate(validApplicationPost(), applicationFiles($document));
+        assertSame(2, count($data['attachments']));
+        assertSame(['path', 'name', 'mime', 'size'], array_keys($data['attachments'][0]));
+        assertTrue($data['attachments'][0]['size'] > 0);
     }
+});
+
+test('refuse le champ piège avant tout autre contrôle', function (): void {
+    $post = validMessagePost('inconnu');
+    $post['website'] = 'https://spam.example';
+    assertValidationError('Soumission refusée.', fn (): array => validator()->validate($post, []));
 });
 
 test('refuse un type de formulaire absent ou inconnu', function (): void {
@@ -121,81 +121,113 @@ test('refuse un type de formulaire absent ou inconnu', function (): void {
         } else {
             $post['form_type'] = $type;
         }
-        assertError(validator()->validate($post, []), 'form_type', 'Le type de formulaire est invalide.');
+        assertValidationError('Le type de formulaire est invalide.', fn (): array => validator()->validate($post, []));
     }
 });
 
-test('refuse un champ piège rempli', function (): void {
-    $post = validMessagePost();
-    $post['website'] = 'https://spam.example';
-    assertError(validator()->validate($post, []), 'website', 'Votre envoi n’a pas pu être traité.');
+test('refuse chaque champ requis de contact manquant', function (): void {
+    foreach ([
+        'name' => 'Veuillez indiquer votre nom.',
+        'email' => 'Veuillez indiquer une adresse e-mail valide.',
+        'subject' => 'Veuillez indiquer le sujet de votre demande.',
+        'message' => 'Veuillez rédiger votre message.',
+    ] as $field => $message) {
+        $post = validMessagePost();
+        $post[$field] = '';
+        assertValidationError($message, fn (): array => validator()->validate($post, []));
+    }
 });
 
-test('refuse les noms et adresses e-mail manquants ou invalides', function (): void {
+test('refuse chaque champ requis de candidature manquant', function (): void {
+    foreach ([
+        'name' => 'Veuillez indiquer votre nom.',
+        'email' => 'Veuillez indiquer une adresse e-mail valide.',
+        'position' => 'Veuillez indiquer le poste recherché.',
+    ] as $field => $message) {
+        $post = validApplicationPost();
+        $post[$field] = '';
+        assertValidationError($message, fn (): array => validator()->validate($post, applicationFiles()));
+    }
+    assertValidationError('Veuillez joindre votre CV.', fn (): array => validator()->validate(validApplicationPost(), ['cover_letter' => pdfFile()]));
+    assertValidationError('Veuillez joindre votre lettre de motivation.', fn (): array => validator()->validate(validApplicationPost(), ['cv' => pdfFile()]));
+});
+
+test('applique les bornes du nom, du sujet et du poste', function (): void {
     $post = validMessagePost();
-    $post['name'] = '';
-    assertError(validator()->validate($post, []), 'name', 'Veuillez indiquer votre nom.');
+    $post['name'] = 'A';
+    assertValidationError('Votre nom doit contenir entre 2 et 120 caractères.', fn (): array => validator()->validate($post, []));
+    $post['name'] = str_repeat('a', 121);
+    assertValidationError('Votre nom doit contenir entre 2 et 120 caractères.', fn (): array => validator()->validate($post, []));
+    $post = validMessagePost();
+    $post['subject'] = 'A';
+    assertValidationError('Le sujet doit contenir entre 2 et 160 caractères.', fn (): array => validator()->validate($post, []));
+    $post['subject'] = str_repeat('a', 161);
+    assertValidationError('Le sujet doit contenir entre 2 et 160 caractères.', fn (): array => validator()->validate($post, []));
+    $post = validApplicationPost();
+    $post['position'] = 'A';
+    assertValidationError('Le poste recherché doit contenir entre 2 et 160 caractères.', fn (): array => validator()->validate($post, applicationFiles()));
+    $post['position'] = str_repeat('a', 161);
+    assertValidationError('Le poste recherché doit contenir entre 2 et 160 caractères.', fn (): array => validator()->validate($post, applicationFiles()));
+});
+
+test('refuse les e-mails invalides et plus longs que 254 caractères', function (): void {
     $post = validMessagePost();
     $post['email'] = "awa@\nexample.test";
-    assertError(validator()->validate($post, []), 'email', 'Veuillez indiquer une adresse e-mail valide.');
+    assertValidationError('Veuillez indiquer une adresse e-mail valide.', fn (): array => validator()->validate($post, []));
+    $post['email'] = str_repeat('a', 244) . '@example.test';
+    assertValidationError('Veuillez indiquer une adresse e-mail valide.', fn (): array => validator()->validate($post, []));
 });
 
-test('refuse les messages trop courts ou trop longs', function (): void {
+test('refuse les messages trop courts, trop longs ou avec un contrôle interdit', function (): void {
     $post = validMessagePost();
     $post['message'] = 'Court';
-    assertError(validator()->validate($post, []), 'message', 'Votre message doit contenir au moins 10 caractères.');
+    assertValidationError('Votre message doit contenir au moins 10 caractères.', fn (): array => validator()->validate($post, []));
     $post['message'] = str_repeat('a', 5001);
-    assertError(validator()->validate($post, []), 'message', 'Votre message ne doit pas dépasser 5000 caractères.');
+    assertValidationError('Votre message ne doit pas dépasser 5000 caractères.', fn (): array => validator()->validate($post, []));
+    $post['message'] = "Bonjour\x01 vous";
+    assertValidationError('Votre message contient des caractères non autorisés.', fn (): array => validator()->validate($post, []));
 });
 
 test('refuse les numéros de téléphone trop longs ou invalides', function (): void {
     $post = validMessagePost();
     $post['phone'] = str_repeat('1', 41);
-    assertError(validator()->validate($post, []), 'phone', 'Veuillez indiquer un numéro de téléphone valide.');
+    assertValidationError('Veuillez indiquer un numéro de téléphone valide.', fn (): array => validator()->validate($post, []));
     $post['phone'] = '07-AB-CD';
-    assertError(validator()->validate($post, []), 'phone', 'Veuillez indiquer un numéro de téléphone valide.');
+    assertValidationError('Veuillez indiquer un numéro de téléphone valide.', fn (): array => validator()->validate($post, []));
 });
 
-test('refuse les pièces jointes de candidature manquantes', function (): void {
-    assertError(validator()->validate(validApplicationPost(), ['cv' => pdfFile()]), 'cover_letter', 'Veuillez joindre votre lettre de motivation.');
+test('refuse le vérificateur de téléversement par défaut hors requête HTTP', function (): void {
+    assertValidationError('Le téléversement de votre CV a échoué.', fn (): array => (new FormValidator())->validate(validApplicationPost(), applicationFiles()));
 });
 
-test('refuse les erreurs de téléversement', function (): void {
-    assertError(validator()->validate(validApplicationPost(), applicationFiles(pdfFile('cv.pdf', null, UPLOAD_ERR_PARTIAL))), 'cv', 'Le téléversement de votre CV a échoué.');
+test('refuse les erreurs de téléversement et les fichiers au-delà de 5 Mio', function (): void {
+    assertValidationError('Le téléversement de votre CV a échoué.', fn (): array => validator()->validate(validApplicationPost(), applicationFiles(pdfFile('cv.pdf', null, UPLOAD_ERR_PARTIAL))));
+    assertValidationError('Chaque pièce jointe doit faire entre 1 octet et 5 Mio.', fn (): array => validator()->validate(validApplicationPost(), applicationFiles(pdfFile('cv.pdf', 5 * 1024 * 1024 + 1), pdfFile())));
 });
 
-test('refuse les fichiers au-delà de 5 Mio', function (): void {
-    assertError(validator()->validate(validApplicationPost(), applicationFiles(pdfFile('cv.pdf', 5 * 1024 * 1024 + 1))), 'cv', 'Chaque pièce jointe doit faire entre 1 octet et 5 Mio.');
-});
-
-test('refuse les extensions qui ne correspondent pas au contenu détecté', function (): void {
-    assertError(validator()->validate(validApplicationPost(), applicationFiles(pdfFile('cv.doc'))), 'cv', 'Le format de votre CV ne correspond pas à son contenu.');
-});
-
-test('refuse les formats de fichier interdits', function (): void {
+test('refuse les extensions incohérentes et les formats interdits', function (): void {
+    assertValidationError('Le format de votre CV ne correspond pas à son contenu.', fn (): array => validator()->validate(validApplicationPost(), applicationFiles(pdfFile('cv.doc'))));
     $file = temporaryFile("#!/bin/sh\necho nope\n", 'cv.sh');
-    assertError(validator()->validate(validApplicationPost(), applicationFiles($file)), 'cv', 'Seuls les fichiers PDF, DOC et DOCX sont acceptés pour votre CV.');
+    assertValidationError('Seuls les fichiers PDF, DOC et DOCX sont acceptés pour votre CV.', fn (): array => validator()->validate(validApplicationPost(), applicationFiles($file)));
 });
 
-test('nettoie le nom des pièces jointes retourné', function (): void {
-    $result = validator()->validate(validApplicationPost(), applicationFiles(pdfFile('../ CV final .pdf ')));
-    assertSame(true, $result['valid']);
-    assertSame('CV final .pdf', $result['data']['attachments'][0]['name']);
-});
-
-test('retourne exactement deux pièces jointes de candidature', function (): void {
-    $result = validator()->validate(validApplicationPost(), applicationFiles());
-    assertSame(true, $result['valid']);
-    assertSame(2, count($result['data']['attachments']));
-    foreach ($result['data']['attachments'] as $attachment) {
-        assertSame(['path', 'name', 'mime', 'size'], array_keys($attachment));
+test('renvoie des noms de fichiers ASCII sûrs avec l’extension détectée', function (): void {
+    $data = validator()->validate(validApplicationPost(), applicationFiles(pdfFile('../../<script>alert(1)</script>'), pdfFile('CV?.pdf')));
+    assertSame('script.pdf', $data['attachments'][0]['name']);
+    assertSame('CV.pdf', $data['attachments'][1]['name']);
+    foreach ($data['attachments'] as $attachment) {
+        assertSame(1, preg_match('/^[A-Za-z0-9_-]+\.(pdf|doc|docx)$/', $attachment['name']));
     }
 });
 
-test('refuse un total de pièces jointes supérieur à 10 Mio', function (): void {
-    $result = validator()->validate(validApplicationPost(), applicationFiles(
+test('accepte exactement 10 Mio et refuse un total supérieur', function (): void {
+    $atLimit = validator()->validate(validApplicationPost(), applicationFiles(
+        pdfFile('cv.pdf', 5 * 1024 * 1024),
+        pdfFile('lettre.pdf', 5 * 1024 * 1024)
+    ));
+    assertSame(2, count($atLimit['attachments']));
+    assertValidationError('La taille totale des pièces jointes ne doit pas dépasser 10 Mio.', fn (): array => validator()->validate(validApplicationPost(), applicationFiles(
         pdfFile('cv.pdf', 5 * 1024 * 1024),
         pdfFile('lettre.pdf', 5 * 1024 * 1024 + 1)
-    ));
-    assertError($result, 'attachments', 'La taille totale des pièces jointes ne doit pas dépasser 10 Mio.');
+    )));
 });

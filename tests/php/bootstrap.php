@@ -33,3 +33,16 @@ function assertContains(string $needle, string $haystack, string $message = ''):
 {
     assertTrue(str_contains($haystack, $needle), $message ?: "Expected '$needle' in '$haystack'.");
 }
+
+function assertThrows(string $exceptionClass, string $message, callable $callback): void
+{
+    try {
+        $callback();
+    } catch (Throwable $exception) {
+        assertSame($exceptionClass, $exception::class);
+        assertSame($message, $exception->getMessage());
+        return;
+    }
+
+    throw new RuntimeException("Expected $exceptionClass to be thrown.");
+}

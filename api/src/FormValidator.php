@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Sodapci\Forms;
 
 use Closure;
+use InvalidArgumentException;
 use finfo;
 use ZipArchive;
 
@@ -15,9 +16,7 @@ final class FormValidator
     /** @var Closure(string): bool */
     private Closure $uploadVerifier;
 
-    /**
-     * @param null|callable(string): bool $uploadVerifier
-     */
+    /** @param null|callable(string): bool $uploadVerifier */
     public function __construct(?callable $uploadVerifier = null)
     {
         $this->uploadVerifier = $uploadVerifier instanceof Closure
@@ -25,177 +24,154 @@ final class FormValidator
             : Closure::fromCallable($uploadVerifier ?? 'is_uploaded_file');
     }
 
-    /**
-     * @return array{valid: bool, errors: array<string, string>, data: array<string, mixed>}
-     */
+    /** @return array<string, mixed> */
     public function validate(array $post, array $files): array
     {
-        $errors = [];
-        $data = [];
-        $formType = $this->text($post['form_type'] ?? null);
-
-        if (!in_array($formType, ['appointment', 'contact', 'application'], true)) {
-            $errors['form_type'] = 'Le type de formulaire est invalide.';
-            return $this->result($errors, $data);
-        }
-        $data['form_type'] = $formType;
-
         if ($this->text($post['website'] ?? '') !== '') {
-            $errors['website'] = 'Votre envoi n’a pas pu être traité.';
+            $this->fail('Soumission refusée.');
         }
 
-        $this->validateRequiredText($post, $data, $errors, 'name', 'Veuillez indiquer votre nom.', 120);
-        $this->validateEmail($post, $data, $errors);
+        $formType = $this->text($post['form_type'] ?? null);
+        if (!in_array($formType, ['appointment', 'contact', 'application'], true)) {
+            $this->fail('Le type de formulaire est invalide.');
+        }
+
+        $data = [
+            'form_type' => $formType,
+            'name' => $this->requiredHeader($post, 'name', 'Veuillez indiquer votre nom.', 'Votre nom doit contenir entre 2 et 120 caractères.', 2, 120),
+            'email' => $this->email($post),
+        ];
 
         if ($formType === 'application') {
-            $this->validateRequiredText($post, $data, $errors, 'position', 'Veuillez indiquer le poste recherché.', 160);
-            $attachments = $this->validateAttachments($files, $errors);
-            if ($attachments !== []) {
-                $data['attachments'] = $attachments;
-            }
-        } else {
-            $this->validateRequiredText($post, $data, $errors, 'subject', 'Veuillez indiquer le sujet de votre demande.', 200);
-            $this->validateMessage($post, $data, $errors);
-            $this->validatePhone($post, $data, $errors);
+            $data['position'] = $this->requiredHeader($post, 'position', 'Veuillez indiquer le poste recherché.', 'Le poste recherché doit contenir entre 2 et 160 caractères.', 2, 160);
+            $data['attachments'] = $this->validateAttachments($files);
+            return $data;
         }
 
-        return $this->result($errors, $data);
+        $data['subject'] = $this->requiredHeader($post, 'subject', 'Veuillez indiquer le sujet de votre demande.', 'Le sujet doit contenir entre 2 et 160 caractères.', 2, 160);
+        $data['message'] = $this->message($post);
+        $phone = $this->phone($post);
+        if ($phone !== '') {
+            $data['phone'] = $phone;
+        }
+
+        return $data;
     }
 
-    /** @param array<string, string> $errors @param array<string, mixed> $data */
-    private function validateRequiredText(array $post, array &$data, array &$errors, string $field, string $requiredMessage, int $maxLength): void
+    private function requiredHeader(array $post, string $field, string $requiredMessage, string $boundsMessage, int $min, int $max): string
     {
         $value = $this->text($post[$field] ?? null);
         if ($value === '') {
-            $errors[$field] = $requiredMessage;
-            return;
+            $this->fail($requiredMessage);
         }
-        if ($this->hasControlCharacter($value) || $this->length($value) > $maxLength) {
-            $errors[$field] = 'La valeur indiquée est invalide.';
-            return;
+        if ($this->hasAnyControlCharacter($value)) {
+            $this->fail('La valeur indiquée contient des caractères non autorisés.');
         }
-        $data[$field] = $value;
+        $length = $this->length($value);
+        if ($length < $min || $length > $max) {
+            $this->fail($boundsMessage);
+        }
+        return $value;
     }
 
-    /** @param array<string, string> $errors @param array<string, mixed> $data */
-    private function validateEmail(array $post, array &$data, array &$errors): void
+    private function email(array $post): string
     {
         $email = $this->text($post['email'] ?? null);
         if (
             $email === ''
-            || $this->hasControlCharacter($email)
+            || $this->hasAnyControlCharacter($email)
             || $this->length($email) > 254
             || filter_var($email, FILTER_VALIDATE_EMAIL) === false
         ) {
-            $errors['email'] = 'Veuillez indiquer une adresse e-mail valide.';
-            return;
+            $this->fail('Veuillez indiquer une adresse e-mail valide.');
         }
-        $data['email'] = $email;
+        return $email;
     }
 
-    /** @param array<string, string> $errors @param array<string, mixed> $data */
-    private function validateMessage(array $post, array &$data, array &$errors): void
+    private function message(array $post): string
     {
         $message = $this->text($post['message'] ?? null);
         if ($message === '') {
-            $errors['message'] = 'Veuillez rédiger votre message.';
-            return;
+            $this->fail('Veuillez rédiger votre message.');
         }
-        if ($this->hasControlCharacter($message)) {
-            $errors['message'] = 'Votre message contient des caractères non autorisés.';
-            return;
+        if ($this->hasDisallowedTextareaControlCharacter($message)) {
+            $this->fail('Votre message contient des caractères non autorisés.');
         }
         $length = $this->length($message);
         if ($length < 10) {
-            $errors['message'] = 'Votre message doit contenir au moins 10 caractères.';
-            return;
+            $this->fail('Votre message doit contenir au moins 10 caractères.');
         }
         if ($length > 5000) {
-            $errors['message'] = 'Votre message ne doit pas dépasser 5000 caractères.';
-            return;
+            $this->fail('Votre message ne doit pas dépasser 5000 caractères.');
         }
-        $data['message'] = $message;
+        return $message;
     }
 
-    /** @param array<string, string> $errors @param array<string, mixed> $data */
-    private function validatePhone(array $post, array &$data, array &$errors): void
+    private function phone(array $post): string
     {
         $phone = $this->text($post['phone'] ?? '');
         if ($phone === '') {
-            return;
+            return '';
         }
-        if ($this->hasControlCharacter($phone) || $this->length($phone) > 40 || preg_match('/^[0-9+().\-\s]+$/', $phone) !== 1) {
-            $errors['phone'] = 'Veuillez indiquer un numéro de téléphone valide.';
-            return;
+        if ($this->length($phone) > 40 || preg_match('/^[0-9+().\-\s]+$/', $phone) !== 1) {
+            $this->fail('Veuillez indiquer un numéro de téléphone valide.');
         }
-        $data['phone'] = $phone;
+        return $phone;
     }
 
-    /**
-     * @param array<string, mixed> $files
-     * @param array<string, string> $errors
-     * @return list<array{path: string, name: string, mime: string, size: int}>
-     */
-    private function validateAttachments(array $files, array &$errors): array
+    /** @return list<array{path: string, name: string, mime: string, size: int}> */
+    private function validateAttachments(array $files): array
     {
-        $attachmentSpecs = [
+        $specs = [
             'cv' => ['label' => 'CV', 'required' => 'Veuillez joindre votre CV.'],
             'cover_letter' => ['label' => 'lettre de motivation', 'required' => 'Veuillez joindre votre lettre de motivation.'],
         ];
-        $candidateSizes = [];
-        foreach (array_keys($attachmentSpecs) as $field) {
-            $file = $files[$field] ?? null;
-            if (
-                is_array($file)
-                && ($file['error'] ?? null) === UPLOAD_ERR_OK
-                && is_string($file['tmp_name'] ?? null)
-                && $this->isVerifiedUpload($file['tmp_name'])
-            ) {
-                $size = filesize($file['tmp_name']);
-                if ($size !== false) {
-                    $candidateSizes[] = $size;
-                }
-            }
-        }
-        if (count($candidateSizes) === 2 && array_sum($candidateSizes) > self::MAX_TOTAL_FILE_SIZE) {
-            $errors['attachments'] = 'La taille totale des pièces jointes ne doit pas dépasser 10 Mio.';
-            return [];
-        }
-        $attachments = [];
+        $prepared = [];
 
-        foreach ($attachmentSpecs as $field => $spec) {
+        foreach ($specs as $field => $spec) {
             $file = $files[$field] ?? null;
-            if (!is_array($file) || !isset($file['tmp_name'], $file['name'], $file['error'])) {
-                $errors[$field] = $spec['required'];
-                continue;
+            if (!is_array($file) || !isset($file['name'], $file['tmp_name'], $file['error'])) {
+                $this->fail($spec['required']);
             }
-            if ($file['error'] !== UPLOAD_ERR_OK) {
-                $errors[$field] = sprintf('Le téléversement de votre %s a échoué.', $spec['label']);
-                continue;
-            }
-            if (!is_string($file['tmp_name']) || !is_string($file['name']) || !$this->isVerifiedUpload($file['tmp_name'])) {
-                $errors[$field] = sprintf('Le téléversement de votre %s a échoué.', $spec['label']);
-                continue;
+            if ($file['error'] !== UPLOAD_ERR_OK || !is_string($file['name']) || !is_string($file['tmp_name']) || !$this->isVerifiedUpload($file['tmp_name'])) {
+                $this->fail(sprintf('Le téléversement de votre %s a échoué.', $spec['label']));
             }
             $size = filesize($file['tmp_name']);
-            if ($size === false || $size < 1 || $size > self::MAX_FILE_SIZE) {
-                $errors[$field] = 'Chaque pièce jointe doit faire entre 1 octet et 5 Mio.';
-                continue;
-            }
-
-            $name = $this->sanitizeFilename($file['name']);
-            $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-            $mime = $this->detectMime($file['tmp_name']);
-            if (!in_array($extension, ['pdf', 'doc', 'docx'], true) || !$this->mimeMatchesExtension($mime, $extension, $file['tmp_name'])) {
-                $errors[$field] = in_array($extension, ['pdf', 'doc', 'docx'], true)
-                    ? sprintf('Le format de votre %s ne correspond pas à son contenu.', $spec['label'])
-                    : sprintf('Seuls les fichiers PDF, DOC et DOCX sont acceptés pour votre %s.', $spec['label']);
-                continue;
-            }
-            $attachments[] = ['path' => $file['tmp_name'], 'name' => $name, 'mime' => $mime, 'size' => $size];
+            $prepared[$field] = ['file' => $file, 'size' => $size, 'spec' => $spec];
         }
 
-        return count($errors) === 0 ? $attachments : [];
+        if (array_sum(array_column($prepared, 'size')) > self::MAX_TOTAL_FILE_SIZE) {
+            $this->fail('La taille totale des pièces jointes ne doit pas dépasser 10 Mio.');
+        }
+
+        $attachments = [];
+        foreach ($prepared as $field => $item) {
+            /** @var array{name: string, tmp_name: string, error: int} $file */
+            $file = $item['file'];
+            if ($item['size'] === false || $item['size'] < 1 || $item['size'] > self::MAX_FILE_SIZE) {
+                $this->fail('Chaque pièce jointe doit faire entre 1 octet et 5 Mio.');
+            }
+            $mime = $this->detectMime($file['tmp_name']);
+            $extension = $this->detectedExtension($mime, $file['tmp_name']);
+            if ($extension === null) {
+                $this->fail(sprintf('Seuls les fichiers PDF, DOC et DOCX sont acceptés pour votre %s.', $item['spec']['label']));
+            }
+            $sourceExtension = strtolower(pathinfo($this->basename($file['name']), PATHINFO_EXTENSION));
+            if ($sourceExtension !== '' && $sourceExtension !== $extension) {
+                if (in_array($sourceExtension, ['pdf', 'doc', 'docx'], true)) {
+                    $this->fail(sprintf('Le format de votre %s ne correspond pas à son contenu.', $item['spec']['label']));
+                }
+                $this->fail(sprintf('Seuls les fichiers PDF, DOC et DOCX sont acceptés pour votre %s.', $item['spec']['label']));
+            }
+            $attachments[] = [
+                'path' => $file['tmp_name'],
+                'name' => $this->sanitizeFilename($file['name'], $extension),
+                'mime' => $mime,
+                'size' => $item['size'],
+            ];
+        }
+
+        return $attachments;
     }
 
     private function isVerifiedUpload(string $path): bool
@@ -208,15 +184,21 @@ final class FormValidator
         return (new finfo(FILEINFO_MIME_TYPE))->file($path) ?: '';
     }
 
-    private function mimeMatchesExtension(string $mime, string $extension, string $path): bool
+    private function detectedExtension(string $mime, string $path): ?string
     {
-        return match ($extension) {
-            'pdf' => $mime === 'application/pdf',
-            'doc' => in_array($mime, ['application/msword', 'application/x-ole-storage', 'application/CDFV2'], true),
-            'docx' => $mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                || (in_array($mime, ['application/zip', 'application/x-zip-compressed'], true) && $this->isWordDocumentPackage($path)),
-            default => false,
-        };
+        if ($mime === 'application/pdf') {
+            return 'pdf';
+        }
+        if (in_array($mime, ['application/msword', 'application/x-ole-storage', 'application/CDFV2'], true)) {
+            return 'doc';
+        }
+        if (
+            $mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            || (in_array($mime, ['application/zip', 'application/x-zip-compressed'], true) && $this->isWordDocumentPackage($path))
+        ) {
+            return 'docx';
+        }
+        return null;
     }
 
     private function isWordDocumentPackage(string $path): bool
@@ -231,17 +213,21 @@ final class FormValidator
         $contentTypes = $archive->getFromName('[Content_Types].xml');
         $hasDocument = $archive->locateName('word/document.xml') !== false;
         $archive->close();
-
-        return $hasDocument && is_string($contentTypes)
-            && str_contains($contentTypes, 'wordprocessingml.document');
+        return $hasDocument && is_string($contentTypes) && str_contains($contentTypes, 'wordprocessingml.document');
     }
 
-    private function sanitizeFilename(string $name): string
+    private function sanitizeFilename(string $name, string $extension): string
     {
-        $name = basename(str_replace('\\', '/', $name));
-        $name = preg_replace('/[\x00-\x1F\x7F]/u', '', $name) ?? '';
-        $name = trim($name);
-        return $name === '' ? 'document' : $name;
+        $base = pathinfo($this->basename($name), PATHINFO_FILENAME);
+        $base = preg_replace('/[^A-Za-z0-9_-]+/', '-', $base) ?? '';
+        $base = trim($base, '-_');
+        $base = substr($base, 0, 80);
+        return ($base === '' ? 'document' : $base) . '.' . $extension;
+    }
+
+    private function basename(string $name): string
+    {
+        return basename(str_replace('\\', '/', $name));
     }
 
     private function text(mixed $value): string
@@ -249,9 +235,14 @@ final class FormValidator
         return is_string($value) ? trim($value) : '';
     }
 
-    private function hasControlCharacter(string $value): bool
+    private function hasAnyControlCharacter(string $value): bool
     {
-        return preg_match('/[\x00-\x1F\x7F]/u', $value) === 1;
+        return preg_match('/[\x00-\x1F\x7F]/', $value) === 1;
+    }
+
+    private function hasDisallowedTextareaControlCharacter(string $value): bool
+    {
+        return preg_match('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', $value) === 1;
     }
 
     private function length(string $value): int
@@ -259,9 +250,9 @@ final class FormValidator
         return function_exists('mb_strlen') ? mb_strlen($value) : strlen($value);
     }
 
-    /** @param array<string, string> $errors @param array<string, mixed> $data */
-    private function result(array $errors, array $data): array
+    /** @return never */
+    private function fail(string $message): void
     {
-        return ['valid' => $errors === [], 'errors' => $errors, 'data' => $data];
+        throw new InvalidArgumentException($message);
     }
 }
