@@ -17,6 +17,9 @@ final class RateLimiter
 
     /** @var Closure(): int */
     private Closure $clock;
+    private ?int $lastQuotaCheckAt = null;
+    private bool $lastQuotaWasFull = false;
+    private ?int $lastCleanupAt = null;
 
     /** @param null|callable(): int $clock */
     public function __construct(
@@ -24,6 +27,7 @@ final class RateLimiter
         private readonly int $limit,
         private readonly int $windowSeconds,
         ?callable $clock = null,
+        private readonly ?string $hmacSecret = null,
     ) {
         if (trim($directory) === '') {
             throw new InvalidArgumentException('Rate limiter directory must not be empty.');
@@ -33,6 +37,9 @@ final class RateLimiter
         }
         if ($windowSeconds <= 0) {
             throw new InvalidArgumentException('Window duration must be positive.');
+        }
+        if ($hmacSecret !== null && strlen($hmacSecret) < self::KEY_BYTES) {
+            throw new InvalidArgumentException('Rate limiter secret must contain at least 32 bytes.');
         }
 
         $this->clock = $clock instanceof Closure
@@ -51,17 +58,28 @@ final class RateLimiter
             $this->lock($maintenance, LOCK_EX);
             $key = $this->loadOrCreateKey();
             $bucket = hash_hmac('sha256', $normalizedIp, $key);
-            if ($this->countStateFiles() >= self::MAX_BUCKETS) {
-                $this->cleanupExpiredBuckets($now);
-            }
-
             $lockPath = $this->path($bucket . '.lock');
             $statePath = $this->path($bucket . '.state');
+            $cutoff = $now - $this->windowSeconds;
+            if (!$this->bucketExists($statePath) && $this->countStateFiles() >= self::MAX_BUCKETS) {
+                if ($this->lastCleanupAt !== $now) {
+                    $this->cleanupExpiredBuckets($now);
+                    $this->lastCleanupAt = $now;
+                    $this->lastQuotaCheckAt = null;
+                }
+                if ($this->lastQuotaCheckAt !== $now) {
+                    $this->lastQuotaWasFull = $this->countActiveBuckets($cutoff) >= self::MAX_BUCKETS;
+                    $this->lastQuotaCheckAt = $now;
+                }
+                if ($this->lastQuotaWasFull) {
+                    throw new RuntimeException('Rate limiter bucket quota exhausted.');
+                }
+            }
+
             $lock = $this->openHandle($lockPath);
             try {
                 $this->lock($lock, LOCK_EX);
                 $timestamps = $this->readState($statePath);
-                $cutoff = $now - $this->windowSeconds;
                 $pruned = array_values(array_filter(
                     $timestamps,
                     static fn (int $timestamp): bool => $timestamp >= $cutoff,
@@ -71,9 +89,6 @@ final class RateLimiter
                     $this->removeStateFiles($statePath);
                 }
 
-                if ($pruned === [] && $this->countActiveBuckets($cutoff) >= self::MAX_BUCKETS) {
-                    throw new RuntimeException('Rate limiter bucket quota exhausted.');
-                }
                 if (count($pruned) >= $this->limit) {
                     if ($pruned !== $timestamps) {
                         $this->writeState($statePath, $pruned);
@@ -83,6 +98,7 @@ final class RateLimiter
 
                 $pruned[] = $now;
                 $this->writeState($statePath, $pruned);
+                $this->lastQuotaCheckAt = null;
                 return true;
             } finally {
                 $this->unlockAndClose($lock);
@@ -187,6 +203,12 @@ final class RateLimiter
     /** @return string 32-byte key */
     private function loadOrCreateKey(): string
     {
+        if ($this->hmacSecret !== null) {
+            return $this->hmacSecret;
+        }
+        if ($this->isWindows()) {
+            throw new RuntimeException('An external rate limiter secret is required on Windows.');
+        }
         $path = $this->path(self::KEY_FILE);
         $backup = $path . '.bak';
         $primary = $this->readBytes($path);
@@ -483,6 +505,16 @@ final class RateLimiter
     private function countStateFiles(): int
     {
         return count($this->bucketStatePaths());
+    }
+
+    private function bucketExists(string $statePath): bool
+    {
+        foreach ([$statePath, $statePath . '.bak', $statePath . '.tmp', $statePath . '.recover.tmp', $statePath . self::TRANSACTION_SUFFIX, $statePath . self::TRANSACTION_SUFFIX . '.tmp'] as $path) {
+            if (is_file($path)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private function countActiveBuckets(int $cutoff): int

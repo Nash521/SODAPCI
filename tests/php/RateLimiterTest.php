@@ -29,10 +29,20 @@ function withRateLimiterDirectory(callable $callback): void
     }
 }
 
+function testRateLimiterSecret(): ?string
+{
+    return DIRECTORY_SEPARATOR === '\\' ? str_repeat('S', 32) : null;
+}
+
+function testRateLimiter(string $directory, int $limit, int $windowSeconds, ?callable $clock = null): RateLimiter
+{
+    return new RateLimiter($directory, $limit, $windowSeconds, $clock, testRateLimiterSecret());
+}
+
 test('accepts the first five requests and blocks the sixth', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
         $now = 1_700_000_000;
-        $limiter = new RateLimiter($directory, 5, 60, static fn (): int => $now);
+        $limiter = testRateLimiter($directory, 5, 60, static fn (): int => $now);
 
         for ($request = 1; $request <= 5; $request++) {
             assertSame(true, $limiter->consume('192.0.2.10'));
@@ -43,7 +53,7 @@ test('accepts the first five requests and blocks the sixth', function (): void {
 
 test('keeps each IP on an independent counter', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
-        $limiter = new RateLimiter($directory, 1, 60, static fn (): int => 1_700_000_000);
+        $limiter = testRateLimiter($directory, 1, 60, static fn (): int => 1_700_000_000);
 
         assertSame(true, $limiter->consume('192.0.2.10'));
         assertSame(false, $limiter->consume('192.0.2.10'));
@@ -54,7 +64,7 @@ test('keeps each IP on an independent counter', function (): void {
 test('expires timestamps older than the sliding window', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
         $now = 100;
-        $limiter = new RateLimiter($directory, 2, 10, static function () use (&$now): int {
+        $limiter = testRateLimiter($directory, 2, 10, static function () use (&$now): int {
             return $now;
         });
 
@@ -69,7 +79,7 @@ test('expires timestamps older than the sliding window', function (): void {
 test('does not extend the window when a request is rejected', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
         $now = 100;
-        $limiter = new RateLimiter($directory, 1, 10, static function () use (&$now): int {
+        $limiter = testRateLimiter($directory, 1, 10, static function () use (&$now): int {
             return $now;
         });
 
@@ -84,7 +94,7 @@ test('does not extend the window when a request is rejected', function (): void 
 test('keeps a timestamp exactly at the window boundary active', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
         $now = 100;
-        $limiter = new RateLimiter($directory, 1, 10, static function () use (&$now): int {
+        $limiter = testRateLimiter($directory, 1, 10, static function () use (&$now): int {
             return $now;
         });
 
@@ -97,7 +107,7 @@ test('keeps a timestamp exactly at the window boundary active', function (): voi
 test('uses the current time when no clock is injected', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
         $before = time();
-        $limiter = new RateLimiter($directory, 1, 60);
+        $limiter = testRateLimiter($directory, 1, 60);
         assertSame(true, $limiter->consume('198.51.100.22'));
         $after = time();
 
@@ -110,7 +120,7 @@ test('uses the current time when no clock is injected', function (): void {
 
 test('canonicalizes IPv6 and IPv4-mapped IPv6 into safe HMAC filenames', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
-        $limiter = new RateLimiter($directory, 1, 60, static fn (): int => 1_700_000_000);
+        $limiter = testRateLimiter($directory, 1, 60, static fn (): int => 1_700_000_000);
 
         assertSame(true, $limiter->consume(' 2001:0DB8:0:0:0:0:0:1 '));
         assertSame(false, $limiter->consume('2001:db8::1'));
@@ -135,27 +145,26 @@ test('canonicalizes IPv6 and IPv4-mapped IPv6 into safe HMAC filenames', functio
 test('uses a persistent random HMAC key instead of plain SHA-256', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
         $ip = '198.51.100.88';
-        $limiter = new RateLimiter($directory, 1, 60, static fn (): int => 1_700_000_000);
+        $secret = str_repeat('E', 32);
+        $limiter = new RateLimiter($directory, 1, 60, static fn (): int => 1_700_000_000, $secret);
         assertSame(true, $limiter->consume($ip));
 
         $keyPath = $directory . DIRECTORY_SEPARATOR . '.key';
-        $key = file_get_contents($keyPath);
-        assertTrue(is_string($key) && strlen($key) === 32);
-        assertTrue(!hash_equals(hash('sha256', $ip), (string) ($key === false ? '' : $key)));
+        assertTrue(!is_file($keyPath), 'An external secret must not create an in-directory key.');
         $stateFiles = glob($directory . DIRECTORY_SEPARATOR . '*.state') ?: [];
         assertSame(1, count($stateFiles));
         assertTrue(basename($stateFiles[0]) !== hash('sha256', $ip) . '.state');
 
-        $second = new RateLimiter($directory, 1, 60, static fn (): int => 1_700_000_000);
+        $second = new RateLimiter($directory, 1, 60, static fn (): int => 1_700_000_000, $secret);
         assertSame(false, $second->consume($ip));
-        assertSame($key, file_get_contents($keyPath));
+        assertTrue(!is_file($keyPath));
     });
 });
 
 test('creates a private state directory and never stores a raw IP', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
         $ip = '198.51.100.77';
-        $limiter = new RateLimiter($directory, 2, 60, static fn (): int => 1_700_000_000);
+        $limiter = testRateLimiter($directory, 2, 60, static fn (): int => 1_700_000_000);
         assertTrue(is_dir($directory));
         assertSame(true, $limiter->consume($ip));
 
@@ -173,7 +182,7 @@ test('creates a private state directory and never stores a raw IP', function ():
 
 test('fails closed with a controlled exception when state is corrupt', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
-        $limiter = new RateLimiter($directory, 2, 60, static fn (): int => 1_700_000_000);
+        $limiter = testRateLimiter($directory, 2, 60, static fn (): int => 1_700_000_000);
         assertSame(true, $limiter->consume('192.0.2.55'));
         $stateFiles = glob($directory . DIRECTORY_SEPARATOR . '*.state') ?: [];
         assertSame(1, count($stateFiles));
@@ -186,7 +195,7 @@ test('fails closed with a controlled exception when state is corrupt', function 
 test('fails closed when a committed primary state is corrupted', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
         $now = 100;
-        $limiter = new RateLimiter($directory, 2, 60, static function () use (&$now): int {
+        $limiter = testRateLimiter($directory, 2, 60, static function () use (&$now): int {
             return $now;
         });
         assertSame(true, $limiter->consume('192.0.2.61'));
@@ -214,7 +223,7 @@ test('fails closed when a committed primary state is corrupted', function (): vo
 
 test('does not treat an interrupted temporary state as a fresh counter', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
-        $limiter = new RateLimiter($directory, 1, 60, static fn (): int => 100);
+        $limiter = testRateLimiter($directory, 1, 60, static fn (): int => 100);
         assertSame(true, $limiter->consume('192.0.2.63'));
         $stateFiles = glob($directory . DIRECTORY_SEPARATOR . '*.state') ?: [];
         assertSame(1, count($stateFiles));
@@ -231,7 +240,7 @@ test('does not treat an interrupted temporary state as a fresh counter', functio
 
 test('fails closed when a backup exists without a transaction marker', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
-        $limiter = new RateLimiter($directory, 2, 60, static fn (): int => 100);
+        $limiter = testRateLimiter($directory, 2, 60, static fn (): int => 100);
         assertSame(true, $limiter->consume('192.0.2.64'));
         $stateFiles = glob($directory . DIRECTORY_SEPARATOR . '*.state') ?: [];
         assertSame(1, count($stateFiles));
@@ -248,7 +257,7 @@ test('fails closed when a backup exists without a transaction marker', function 
 
 test('recovers only a transaction marked between backup rotation and primary install', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
-        $limiter = new RateLimiter($directory, 2, 60, static fn (): int => 101);
+        $limiter = testRateLimiter($directory, 2, 60, static fn (): int => 101);
         assertSame(true, $limiter->consume('192.0.2.65'));
         $stateFiles = glob($directory . DIRECTORY_SEPARATOR . '*.state') ?: [];
         assertSame(1, count($stateFiles));
@@ -268,7 +277,7 @@ test('recovers only a transaction marked between backup rotation and primary ins
 test('reclaims expired buckets before enforcing the active-bucket quota', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
         $now = 100;
-        $limiter = new RateLimiter($directory, 1, 60, static function () use (&$now): int {
+        $limiter = testRateLimiter($directory, 1, 60, static function () use (&$now): int {
             return $now;
         });
         assertSame(true, $limiter->consume('192.0.2.70'));
@@ -280,6 +289,11 @@ test('reclaims expired buckets before enforcing the active-bucket quota', functi
         }
 
         assertThrows(RuntimeException::class, 'Rate limiter bucket quota exhausted.', fn (): bool => $limiter->consume('192.0.2.71'));
+        $entryCount = count(scandir($directory) ?: []);
+        for ($index = 72; $index < 92; $index++) {
+            assertThrows(RuntimeException::class, 'Rate limiter bucket quota exhausted.', fn (): bool => $limiter->consume('192.0.2.' . $index));
+        }
+        assertSame($entryCount, count(scandir($directory) ?: []));
         $now = 161;
         assertSame(true, $limiter->consume('192.0.2.71'));
         assertTrue(count(glob($directory . DIRECTORY_SEPARATOR . '*.state') ?: []) < 10);
@@ -292,20 +306,29 @@ test('rejects invalid constructor arguments', function (): void {
     assertThrows(InvalidArgumentException::class, 'Window duration must be positive.', fn (): RateLimiter => new RateLimiter(sys_get_temp_dir(), 1, 0));
     assertThrows(InvalidArgumentException::class, 'Window duration must be positive.', fn (): RateLimiter => new RateLimiter(sys_get_temp_dir(), 1, -1));
     assertThrows(InvalidArgumentException::class, 'Rate limiter directory must not be empty.', fn (): RateLimiter => new RateLimiter('', 1, 60));
+    assertThrows(InvalidArgumentException::class, 'Rate limiter secret must contain at least 32 bytes.', fn (): RateLimiter => new RateLimiter(sys_get_temp_dir(), 1, 60, null, 'short'));
     withRateLimiterDirectory(function (string $directory): void {
-        $limiter = new RateLimiter($directory, 1, 60);
+        $limiter = testRateLimiter($directory, 1, 60);
         assertThrows(InvalidArgumentException::class, 'IP address must not be empty.', fn (): bool => $limiter->consume('   '));
         assertThrows(InvalidArgumentException::class, 'Invalid IP address.', fn (): bool => $limiter->consume('not-an-ip'));
+        if (DIRECTORY_SEPARATOR === '\\') {
+            $withoutSecret = new RateLimiter($directory . DIRECTORY_SEPARATOR . 'windows-no-secret', 1, 60);
+            assertThrows(RuntimeException::class, 'An external rate limiter secret is required on Windows.', fn (): bool => $withoutSecret->consume('192.0.2.99'));
+            assertTrue(!is_file($directory . DIRECTORY_SEPARATOR . 'windows-no-secret' . DIRECTORY_SEPARATOR . '.key'));
+        }
     });
 });
 
 test('a second process waits while the same IP lock is held', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
         $ip = '203.0.113.25';
-        $limiter = new RateLimiter($directory, 1, 60, static fn (): int => 1_700_000_000);
+        $limiter = testRateLimiter($directory, 1, 60, static fn (): int => 1_700_000_000);
         assertSame(true, $limiter->consume('203.0.113.24'));
-        $keyBytes = file_get_contents($directory . DIRECTORY_SEPARATOR . '.key');
-        assertTrue(is_string($keyBytes) && strlen($keyBytes) === 32, 'The persistent HMAC key was not created.');
+        $keyBytes = testRateLimiterSecret();
+        if ($keyBytes === null) {
+            $keyBytes = file_get_contents($directory . DIRECTORY_SEPARATOR . '.key');
+        }
+        assertTrue(is_string($keyBytes) && strlen($keyBytes) === 32, 'The persistent HMAC key was not available.');
         $key = hash_hmac('sha256', $ip, $keyBytes);
         $lockPath = $directory . DIRECTORY_SEPARATOR . $key . '.lock';
         $lock = fopen($lockPath, 'c+b');
@@ -319,7 +342,7 @@ test('a second process waits while the same IP lock is held', function (): void 
 <?php
 declare(strict_types=1);
 require %s;
-$limiter = new \Sodapci\Forms\RateLimiter((string) $argv[1], 1, 60, static fn (): int => 1700000000);
+$limiter = new \Sodapci\Forms\RateLimiter((string) $argv[1], 1, 60, static fn (): int => 1700000000, DIRECTORY_SEPARATOR === '\\' ? str_repeat('S', 32) : null);
 file_put_contents((string) $argv[3], 'ready');
 usleep(500000);
 echo $limiter->consume((string) $argv[2]) ? '1' : '0';
@@ -390,13 +413,13 @@ PHP;
 test('simultaneous consumers allow exactly one request at limit one', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
         $ip = '203.0.113.26';
-        new RateLimiter($directory, 1, 60, static fn (): int => 1_700_000_000);
+        testRateLimiter($directory, 1, 60, static fn (): int => 1_700_000_000);
         $autoload = dirname(__DIR__, 2) . '/vendor/autoload.php';
         $childCode = <<<'PHP'
 <?php
 declare(strict_types=1);
 require %s;
-$limiter = new \Sodapci\Forms\RateLimiter((string) $argv[1], 1, 60, static fn (): int => 1700000000);
+$limiter = new \Sodapci\Forms\RateLimiter((string) $argv[1], 1, 60, static fn (): int => 1700000000, DIRECTORY_SEPARATOR === '\\' ? str_repeat('S', 32) : null);
 file_put_contents((string) $argv[3], 'ready');
 usleep(500000);
 echo $limiter->consume((string) $argv[2]) ? '1' : '0';

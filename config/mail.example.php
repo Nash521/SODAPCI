@@ -17,4 +17,6 @@ return [
     ],
     'rate_limit_count' => 5,
     'rate_limit_window_seconds' => 3600,
+    // Generate at least 32 random bytes; keep this only in sodap-mail-config.php above public_html.
+    'rate_limit_secret' => 'GENERER_UN_SECRET_ALEATOIRE_DE_32_OCTETS_OU_PLUS',
 ];
