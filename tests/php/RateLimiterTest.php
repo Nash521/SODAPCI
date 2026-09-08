@@ -54,7 +54,9 @@ test('keeps each IP on an independent counter', function (): void {
 test('expires timestamps older than the sliding window', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
         $now = 100;
-        $limiter = new RateLimiter($directory, 2, 10, static fn (): int => $now);
+        $limiter = new RateLimiter($directory, 2, 10, static function () use (&$now): int {
+            return $now;
+        });
 
         assertSame(true, $limiter->consume('198.51.100.4'));
         $now = 101;
@@ -67,13 +69,42 @@ test('expires timestamps older than the sliding window', function (): void {
 test('does not extend the window when a request is rejected', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
         $now = 100;
-        $limiter = new RateLimiter($directory, 1, 10, static fn (): int => $now);
+        $limiter = new RateLimiter($directory, 1, 10, static function () use (&$now): int {
+            return $now;
+        });
 
         assertSame(true, $limiter->consume('203.0.113.8'));
         $now = 109;
         assertSame(false, $limiter->consume('203.0.113.8'));
         $now = 111;
         assertSame(true, $limiter->consume('203.0.113.8'));
+    });
+});
+
+test('keeps a timestamp exactly at the window boundary active', function (): void {
+    withRateLimiterDirectory(function (string $directory): void {
+        $now = 100;
+        $limiter = new RateLimiter($directory, 1, 10, static function () use (&$now): int {
+            return $now;
+        });
+
+        assertSame(true, $limiter->consume('198.51.100.21'));
+        $now = 110;
+        assertSame(false, $limiter->consume('198.51.100.21'));
+    });
+});
+
+test('uses the current time when no clock is injected', function (): void {
+    withRateLimiterDirectory(function (string $directory): void {
+        $before = time();
+        $limiter = new RateLimiter($directory, 1, 60);
+        assertSame(true, $limiter->consume('198.51.100.22'));
+        $after = time();
+
+        $stateFiles = glob($directory . DIRECTORY_SEPARATOR . '*.state') ?: [];
+        assertSame(1, count($stateFiles));
+        $timestamp = (int) trim((string) file_get_contents($stateFiles[0]));
+        assertTrue($timestamp >= $before && $timestamp <= $after, 'Default clock timestamp was outside the current time range.');
     });
 });
 
@@ -135,13 +166,86 @@ test('rejects invalid constructor arguments', function (): void {
     assertThrows(InvalidArgumentException::class, 'Rate limiter directory must not be empty.', fn (): RateLimiter => new RateLimiter('', 1, 60));
 });
 
-test('two limiter instances share locked state for the same IP', function (): void {
+test('a second process waits while the same IP lock is held', function (): void {
     withRateLimiterDirectory(function (string $directory): void {
-        $clock = static fn (): int => 1_700_000_000;
-        $first = new RateLimiter($directory, 1, 60, $clock);
-        $second = new RateLimiter($directory, 1, 60, $clock);
+        $ip = '203.0.113.25';
+        $key = hash('sha256', $ip);
+        $lockPath = $directory . DIRECTORY_SEPARATOR . $key . '.lock';
+        $lock = fopen($lockPath, 'c+b');
+        assertTrue($lock !== false, 'Could not open the contention lock.');
+        assertTrue(flock($lock, LOCK_EX), 'Could not acquire the contention lock.');
 
-        assertSame(true, $first->consume('203.0.113.25'));
-        assertSame(false, $second->consume('203.0.113.25'));
+        $script = tempnam(sys_get_temp_dir(), 'sodapci-rate-child-');
+        assertTrue($script !== false, 'Could not create the child process script.');
+        $autoload = dirname(__DIR__, 2) . '/vendor/autoload.php';
+        $childCode = <<<'PHP'
+<?php
+declare(strict_types=1);
+require %s;
+$limiter = new \Sodapci\Forms\RateLimiter((string) $argv[1], 1, 60, static fn (): int => 1700000000);
+fwrite(STDOUT, 'ready');
+fflush(STDOUT);
+usleep(200000);
+echo $limiter->consume((string) $argv[2]) ? '1' : '0';
+PHP;
+        file_put_contents($script, sprintf(
+            $childCode,
+            var_export($autoload, true),
+        ));
+
+        $process = null;
+        $pipes = [];
+        try {
+            $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($script) . ' ' . escapeshellarg($directory) . ' ' . escapeshellarg($ip);
+            $process = proc_open($command, [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
+            assertTrue(is_resource($process), 'Could not start the child process.');
+            stream_set_blocking($pipes[1], false);
+
+            $output = '';
+            $readyDeadline = microtime(true) + 2.0;
+            do {
+                $output .= (string) stream_get_contents($pipes[1]);
+                if (str_contains($output, 'ready')) {
+                    break;
+                }
+                usleep(10_000);
+            } while (microtime(true) < $readyDeadline);
+            assertTrue(str_contains($output, 'ready'), 'The child process did not start.');
+            usleep(300_000);
+            $status = proc_get_status($process);
+            assertSame(true, $status['running'], 'The child process entered consume while the lock was held.');
+
+            assertTrue(flock($lock, LOCK_UN), 'Could not release the contention lock.');
+            fclose($lock);
+            $lock = false;
+
+            $deadline = microtime(true) + 5.0;
+            do {
+                $status = proc_get_status($process);
+                if (!$status['running']) {
+                    break;
+                }
+                $output .= (string) stream_get_contents($pipes[1]);
+                usleep(10_000);
+            } while (microtime(true) < $deadline);
+            $output .= (string) stream_get_contents($pipes[1]);
+            assertSame(false, $status['running'], 'The child process did not finish after the lock was released.');
+            assertSame('ready1', trim($output));
+        } finally {
+            if (is_resource($process)) {
+                proc_terminate($process);
+                proc_close($process);
+            }
+            foreach ($pipes as $pipe) {
+                if (is_resource($pipe)) {
+                    fclose($pipe);
+                }
+            }
+            if (is_resource($lock)) {
+                flock($lock, LOCK_UN);
+                fclose($lock);
+            }
+            unlink($script);
+        }
     });
 });
