@@ -44,7 +44,7 @@ function temporaryFile(string $contents, string $name, ?int $size = null, int $e
         ftruncate($handle, $size);
         fclose($handle);
     }
-    register_shutdown_function(static fn (): bool => is_file($path) ? unlink($path) : false);
+    trackTemporaryFile($path);
 
     return ['name' => $name, 'tmp_name' => $path, 'error' => $error, 'size' => filesize($path)];
 }
@@ -70,7 +70,7 @@ function docxFile(): array
     $archive->addFromString('[Content_Types].xml', '<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>');
     $archive->addFromString('word/document.xml', '<?xml version="1.0"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body/></w:document>');
     $archive->close();
-    register_shutdown_function(static fn (): bool => is_file($path) ? unlink($path) : false);
+    trackTemporaryFile($path);
 
     return ['name' => 'lettre.docx', 'tmp_name' => $path, 'error' => UPLOAD_ERR_OK, 'size' => filesize($path)];
 }
@@ -212,12 +212,16 @@ test('refuse les extensions incohérentes et les formats interdits', function ()
 });
 
 test('renvoie des noms de fichiers ASCII sûrs avec l’extension détectée', function (): void {
-    $data = validator()->validate(validApplicationPost(), applicationFiles(pdfFile('../../<script>alert(1)</script>'), pdfFile('CV?.pdf')));
+    $data = validator()->validate(validApplicationPost(), applicationFiles(pdfFile('../../<script>alert(1)</script>.pdf'), pdfFile('CV?.pdf')));
     assertSame('script.pdf', $data['attachments'][0]['name']);
     assertSame('CV.pdf', $data['attachments'][1]['name']);
     foreach ($data['attachments'] as $attachment) {
         assertSame(1, preg_match('/^[A-Za-z0-9_-]+\.(pdf|doc|docx)$/', $attachment['name']));
     }
+});
+
+test('refuse un fichier sans extension même si son contenu est valide', function (): void {
+    assertValidationError('Le format de votre CV ne correspond pas à son contenu.', fn (): array => validator()->validate(validApplicationPost(), applicationFiles(pdfFile('cv-sans-extension'))));
 });
 
 test('accepte exactement 10 Mio et refuse un total supérieur', function (): void {

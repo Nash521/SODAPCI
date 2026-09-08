@@ -157,8 +157,11 @@ final class FormValidator
                 $this->fail(sprintf('Seuls les fichiers PDF, DOC et DOCX sont acceptés pour votre %s.', $item['spec']['label']));
             }
             $sourceExtension = strtolower(pathinfo($this->basename($file['name']), PATHINFO_EXTENSION));
-            if ($sourceExtension !== '' && $sourceExtension !== $extension) {
+            if ($sourceExtension === '' || !$this->sourceExtensionMatches($sourceExtension, $extension)) {
                 if (in_array($sourceExtension, ['pdf', 'doc', 'docx'], true)) {
+                    $this->fail(sprintf('Le format de votre %s ne correspond pas à son contenu.', $item['spec']['label']));
+                }
+                if ($sourceExtension === '') {
                     $this->fail(sprintf('Le format de votre %s ne correspond pas à son contenu.', $item['spec']['label']));
                 }
                 $this->fail(sprintf('Seuls les fichiers PDF, DOC et DOCX sont acceptés pour votre %s.', $item['spec']['label']));
@@ -199,6 +202,17 @@ final class FormValidator
             return 'docx';
         }
         return null;
+    }
+
+    private function sourceExtensionMatches(string $sourceExtension, string $detectedExtension): bool
+    {
+        $safeAliases = [
+            'pdf' => ['pdf'],
+            'doc' => ['doc'],
+            'docx' => ['docx'],
+        ];
+
+        return in_array($sourceExtension, $safeAliases[$detectedExtension] ?? [], true);
     }
 
     private function isWordDocumentPackage(string $path): bool

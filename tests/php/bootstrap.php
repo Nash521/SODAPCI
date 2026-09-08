@@ -5,6 +5,7 @@ require dirname(__DIR__, 2) . '/vendor/autoload.php';
 
 $GLOBALS['form_validator_tests'] = [];
 $GLOBALS['form_validator_failures'] = [];
+$GLOBALS['form_validator_temp_files'] = [];
 
 function test(string $name, callable $callback): void
 {
@@ -45,4 +46,19 @@ function assertThrows(string $exceptionClass, string $message, callable $callbac
     }
 
     throw new RuntimeException("Expected $exceptionClass to be thrown.");
+}
+
+function trackTemporaryFile(string $path): void
+{
+    $GLOBALS['form_validator_temp_files'][] = $path;
+}
+
+function cleanupTemporaryFiles(): void
+{
+    foreach ($GLOBALS['form_validator_temp_files'] as $path) {
+        if (is_file($path)) {
+            unlink($path);
+        }
+    }
+    $GLOBALS['form_validator_temp_files'] = [];
 }
