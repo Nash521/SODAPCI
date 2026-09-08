@@ -1,7 +1,8 @@
 <?php
 
 return [
-    // Example settings only: copy this to config/mail.php and replace the password on the server.
+    // Example settings only: copy this as sodap-mail-config.php immediately above public_html.
+    // Never place the real configuration under the web root; replace the password on the server.
     'smtp_host' => 'mail.lasodapci.com',
     'smtp_port' => 465,
     'smtp_encryption' => 'ssl',
@@ -14,8 +15,6 @@ return [
         'lasodapci.com',
         'www.lasodapci.com',
     ],
-    'rate_limit' => [
-        'max_requests' => 5,
-        'window_seconds' => 3600,
-    ],
+    'rate_limit_count' => 5,
+    'rate_limit_window_seconds' => 3600,
 ];
