@@ -194,6 +194,19 @@ test('refuse les numéros de téléphone trop longs ou invalides', function (): 
     assertValidationError('Veuillez indiquer un numéro de téléphone valide.', fn (): array => validator()->validate($post, []));
     $post['phone'] = '07-AB-CD';
     assertValidationError('Veuillez indiquer un numéro de téléphone valide.', fn (): array => validator()->validate($post, []));
+    $post['phone'] = "07 01\r\n02 03";
+    assertValidationError('Veuillez indiquer un numéro de téléphone valide.', fn (): array => validator()->validate($post, []));
+    $post['phone'] = "07\t01 02 03";
+    assertValidationError('Veuillez indiquer un numéro de téléphone valide.', fn (): array => validator()->validate($post, []));
+});
+
+test('refuse les injections CRLF dans les champs destinés aux en-têtes', function (): void {
+    $post = validMessagePost();
+    $post['subject'] = "Renseignement\r\nBcc: victime@example.test";
+    assertValidationError('La valeur indiquée contient des caractères non autorisés.', fn (): array => validator()->validate($post, []));
+    $post = validApplicationPost();
+    $post['position'] = "Projet\r\nBcc: victime@example.test";
+    assertValidationError('La valeur indiquée contient des caractères non autorisés.', fn (): array => validator()->validate($post, applicationFiles()));
 });
 
 test('refuse le vérificateur de téléversement par défaut hors requête HTTP', function (): void {

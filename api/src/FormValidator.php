@@ -113,7 +113,7 @@ final class FormValidator
         if ($phone === '') {
             return '';
         }
-        if ($this->length($phone) > 40 || preg_match('/^[0-9+().\-\s]+$/', $phone) !== 1) {
+        if ($this->hasAnyControlCharacter($phone) || $this->length($phone) > 40 || preg_match('/^[0-9+(). \-]+$/', $phone) !== 1) {
             $this->fail('Veuillez indiquer un numéro de téléphone valide.');
         }
         return $phone;
