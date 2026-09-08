@@ -124,6 +124,17 @@ for (const token of classTokens) {
 requireFormContract("contact-form", "contact", ["name", "email", "phone", "subject", "message"]);
 requireFormContract("application-form", "application", ["name", "email", "position", "cv", "cover_letter"]);
 
+const applicationForm = formById("application-form");
+for (const snippet of [
+  'accept=".pdf,.doc,.docx"',
+  '5 Mo maximum par fichier',
+  '10 Mo maximum au total',
+]) {
+  if (!applicationForm.includes(snippet)) {
+    failures.push(`Missing upload guidance in #application-form: ${snippet}`);
+  }
+}
+
 if (failures.length > 0) {
   console.error("Contact page verification failed:");
   for (const failure of failures) {
